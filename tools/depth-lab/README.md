@@ -2,6 +2,8 @@
 
 关联 Issue #25。独立本地工具，不改变线上碎光。面向 Gemini 335 + Apple Silicon Mac，读取 Orbbec SDK 的 Y16 深度及内参，用 SDK 深度比例转毫米，拟合平面法向距离。
 
+无视觉背景先读 [`docs/gemini-335.md`](../../docs/gemini-335.md)。现场对照表：[`docs/evidence/depth-lab/field-log.md`](../../docs/evidence/depth-lab/field-log.md)。先用 Orbbec Viewer 确认 Color / IR / Depth，再进本页校准；模拟模式和单测不能当作墙面验收。
+
 ## 启动
 
 完成下方虚拟环境安装后，双击 `启动深度测试.command`，或在本目录运行 `.venv/bin/python server.py`，打开 http://127.0.0.1:8765 。终端 Ctrl+C 停止服务；网页“断开”停止采集。
@@ -16,6 +18,8 @@ python3.12 -m venv .venv
 若 PyPI 无对应 Mac wheel，使用[官方 v2.1.2 发布页](https://github.com/orbbec/pyorbbecsdk/releases/tag/v2.1.2) 的 cp312、macosx_13_0_arm64 wheel。使用虚拟环境，不升级固件或更改系统安全设置。
 
 ## 实测步骤
+
+先完成 [Orbbec Viewer 三路检查](../../docs/evidence/depth-lab/README.md)，再进入本工具。
 
 1. USB 3 连接相机，关闭其他占用设备的软件；点击连接。无设备时显示错误，不自动切换模拟。
 2. 固定相机，朝向真实空平面，拖动框选；可以用墙或硬板，不要触摸电脑显示器。
@@ -41,7 +45,9 @@ python3.12 -m venv .venv
 
 ## 当前验证记录
 
-2026-09-15：Mac ARM64 已成功导入官方 SDK，设备枚举为 0。9 项几何算法测试通过。真实深度流、物理触碰精度、遮挡和投影尚待设备连接后验收。
+2026-09-15：Mac ARM64 已成功导入官方 SDK，设备枚举为 0。9 项几何算法测试通过。真实深度流已在用户 Mac 上读取（当次帧龄 8 ms），当时未校准。
+
+2026-09-18：补充学习路径和对照表。Windows 开发会话未检测到 Gemini 335，也没有 Orbbec Viewer。几何单测 9 项通过；模拟模式校准后 `away`（噪声 2.0 mm），80 mm → `near`，12 mm → `contact_candidate`，离开 → `away`。空平面校准、触碰精度、遮挡和投影仍待 Mac 现场填写对照表 A–C。#25 保持打开。
 
 ## macOS USB 拒绝访问（uvc_open -3）
 

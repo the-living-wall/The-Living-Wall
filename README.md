@@ -72,7 +72,7 @@ MediaPipe 是预训练的手部视觉模型；碎光的行为是可测试的规�
 
 ## 硬件下一阶段
 
-目标是普通白墙上的无框互动。计划使用 Orbbec Gemini 335 的 RGB＋深度数据，结合墙面平面估计和投影校准，输出接触位置与抬手信号。
+目标是普通白墙上的无框互动。计划使用 Orbbec Gemini 335 的 RGB＋深度数据，结合墙面平面估计和投影校准，输出接触位置与抬手信号。无视觉背景的入门、名词和现场顺序见 [`docs/gemini-335.md`](docs/gemini-335.md)；#25 对照表见 [`docs/evidence/depth-lab/`](docs/evidence/depth-lab/README.md)。
 
 行为引擎已预留可选 `contact` 字段：`false` 时可以引起注意，但不能积累抚摸享受或成长；现有屏幕输入省略该字段，继续作为模拟互动。**这只是接口准备，不代表深度适配器已实现。**
 
@@ -90,6 +90,7 @@ MediaPipe 是预训练的手部视觉模型；碎光的行为是可测试的规�
 - [产品需求文档（PRD）](docs/PRD.md)
 - [协作约定（AGENTS）](AGENTS.md)
 - [灯光录制批次与 OpenSpec 工作流](docs/recording-batches.md)
+- [Gemini 335 学习路径](docs/gemini-335.md)
 - [呈现与需求](docs/03-呼吸与陪伴.md)
 - [报名简介与演示脚本](docs/hackathon.md)
 - [第三方资源说明](THIRD_PARTY_NOTICES.md)
