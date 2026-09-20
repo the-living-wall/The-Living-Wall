@@ -16,6 +16,10 @@
 
 ## 3. 验证与交付
 
+- [x] 3.4 同伴可复现交付：纳入现场服务源码及测试，说明普通前端/相机两种启动路径；从干净代码副本安装依赖并验证，不依赖原机器 .runtime。
+
+可复现验证补充（2026-09-20）：从 Git 暂存索引导出干净副本，新建 Python 3.12 venv，`npm ci` 与 `pip install -r requirements.txt` 成功；40 项前端测试、typecheck、lint、build、OpenSpec strict validate、24 项 Python（含服务→前端适配协议）和 3 项 guide 测试通过。独立端口前端主页及深度 `/api/state` 均返回 200，未打开相机或中断原现场服务。初次 lint 发现上游 guide 测试未 await，补齐后重跑通过。NumPy 矩阵运算仍有数值警告；npm 安装报告现有 11 项漏洞（1 low / 2 moderate / 8 high），未执行强制升级。此次验证限本机 Apple Silicon macOS，不代表 Windows/Linux 相机或完整现场验收通过；3.2 仍未完成。此前 `.runtime` 依赖缺口已补齐，核心服务与来源提交 bd167a1 内容一致。
+
 - [x] 3.1 运行npm test、typecheck、lint、build与新适配测试，记录真实结果，生产构建检查实验入口隔离。
 - [ ] 3.2 浏览器验证原版画面、输入位置、镜像、断流和模式切换；真实相机可达与近墙移动由现场配合确认，分别记录自动验证和人工体验。
 - [x] 3.3 PR关联Issue并说明未完成的现场验收；提供主前端测试入口，不将本地完成描述为生产发布。
