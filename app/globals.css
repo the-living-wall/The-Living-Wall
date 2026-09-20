@@ -322,5 +322,5 @@ canvas:focus-visible {
 .sound-panel a { text-decoration:underline; }
 .sound-panel p,.sound-message { font-size:12px; max-width:360px; }
 @media(max-width:700px) { .control-stack { align-items:flex-start; } .sound-row { gap:6px; } .sound-row button { font-size:12px; padding:8px 10px; } .sound-panel { right:auto; left:0; } }
-.sound-controls { position:relative; }
+.sound-controls { position:relative; pointer-events:auto; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
