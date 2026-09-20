@@ -75,7 +75,7 @@ export type Signal = {
   contact?: boolean;
 };
 export const phaseCopy: Record<Phase, [string, string]> = {
-  alone: ['独处', '碎光正随着自己的呼吸，缓慢游动。'],
+  alone: ['独处', '小莹正随着自己的呼吸，缓慢游动。'],
   observe: ['观察', '它停了一下，想看清你的动作。'],
   probe: ['试探', '几片光先靠近，身体还留在原处。'],
   approach: ['靠近', '它愿意跟上来，但还留着一点距离。'],

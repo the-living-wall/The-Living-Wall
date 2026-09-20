@@ -287,7 +287,7 @@ export default function Home() {
     });
     register({
       name: 'get_creature_state',
-      description: '读取碎光当前行为与本轮互动经历；不包含图像或身份信息。',
+      description: '读取小莹当前行为与本轮互动经历；不包含图像或身份信息。',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -310,13 +310,13 @@ export default function Home() {
         onDoubleClick={() => {
           if (pure.current) exitProjection();
         }}
-        aria-label="碎光互动区域。慢慢靠近，停留，或挥动。方向键也可控制；纯画面时双击或按 Escape 返回。"
+        aria-label="小莹互动区域。慢慢靠近，停留，或挥动。方向键也可控制；纯画面时双击或按 Escape 返回。"
       />
       <header className="mast">
         <div className="brand">
           <span className="mark">✳</span>
           <div>
-            <h1>碎光</h1>
+            <h1>小莹</h1>
             <div className="eyebrow">FRAGMENT / LIVING LIGHT</div>
           </div>
         </div>
@@ -329,7 +329,7 @@ export default function Home() {
           让它慢慢舒展开。
         </h2>
         <p>
-          {camera ? '让手掌完整进入镜头。' : '把鼠标慢慢移向碎光。'}
+          {camera ? '让手掌完整进入镜头。' : '把鼠标慢慢移向小莹。'}
           <br />
           沿身体外围，缓慢来回抚摸。
           <br />
