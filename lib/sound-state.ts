@@ -35,10 +35,13 @@ export class SoundDirector {
     }
     if (!s.stroked) this.stage = 0;
     if (s.stroked && !p.stroked) this.since = s.time;
+    if (s.resting && !p.resting) {
+      this.next = s.time + 5;
+      return { stop: true, cue: 'rest' };
+    }
     if (s.time < this.next) return { stop };
     let cue: SoundCue | undefined;
-    if (s.resting && !p.resting) cue = 'rest';
-    else if (s.stroked) {
+    if (s.stroked) {
       const elapsed = s.time - this.since;
       if (this.stage === 0) {
         cue = 'touch';

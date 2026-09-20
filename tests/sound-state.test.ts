@@ -53,3 +53,13 @@ void test('new encounter discards old sound state', () => {
   assert.deepEqual(d.update(base), { stop: true });
   assert.equal(d.update({ ...base, time: 1, stroked: true }).cue, 'touch');
 });
+
+void test('rest entry preempts the previous cue cooldown', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 1, stroked: true });
+  assert.deepEqual(d.update({ ...base, time: 1.2, resting: true }), {
+    stop: true,
+    cue: 'rest',
+  });
+});
