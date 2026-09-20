@@ -5,12 +5,12 @@ import {
 } from './sound-state.ts';
 const clips = ['purr', 'voice', 'touch', 'scales', 'roll'] as const;
 const settings = {
-  purr: { rate: 0.7, seconds: 6, gain: 0.38, cutoff: 850 },
+  purr: { rate: 0.7, seconds: 3, gain: 0.38, cutoff: 850 },
   rest: { rate: 0.6, seconds: 4, gain: 0.15, cutoff: 650 },
-  voice: { rate: 0.88, seconds: 2.5, gain: 0.35, cutoff: 3200 },
-  touch: { rate: 0.8, seconds: 0.8, gain: 0.2, cutoff: 1800 },
+  voice: { rate: 0.88, seconds: 1.2, gain: 0.5, cutoff: 3200 },
+  touch: { rate: 0.8, seconds: 1, gain: 0.3, cutoff: 1800 },
   scales: { rate: 0.6, seconds: 1.2, gain: 0.32, cutoff: 2800 },
-  roll: { rate: 0.7, seconds: 2, gain: 0.12, cutoff: 1400 },
+  roll: { rate: 0.7, seconds: 2, gain: 0.4, cutoff: 3500 },
 };
 export class CreatureAudio {
   private context: AudioContext;
@@ -60,7 +60,7 @@ export class CreatureAudio {
   }
   update(state: SoundState) {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
-    const event = this.director.update(state);
+    const event = this.director.update(state, !!this.active);
     if (event.stop) this.stop();
     if (event.cue) this.play(event.cue);
   }
@@ -72,7 +72,11 @@ export class CreatureAudio {
     const c = this.context,
       config = settings[cue],
       start = c.currentTime;
-    const duration = Math.min(config.seconds, buffer.duration / config.rate);
+    const offset = cue === 'roll' ? 0.5 : 0;
+    const duration = Math.min(
+      config.seconds,
+      (buffer.duration - offset) / config.rate,
+    );
     const source = c.createBufferSource(),
       gain = c.createGain(),
       filter = c.createBiquadFilter();
@@ -114,7 +118,7 @@ export class CreatureAudio {
     gain.gain.linearRampToValueAtTime(0, start + duration + tail);
     const active = { source, gain, nodes };
     this.active = active;
-    source.start(start, 0, duration * config.rate);
+    source.start(start, offset, duration * config.rate);
     // The source ending precedes delay tails; disconnect only after tail completion.
     source.onended = () => {
       setTimeout(

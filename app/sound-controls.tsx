@@ -159,7 +159,10 @@ export default function SoundControls({
                 }}
               />
             </label>
-            <p>声音随互动短暂出现，安静时留白。</p>
+            <p>
+              触碰轻响 → 抚摸约 1 秒小生物回应 → 约 4 秒呼噜 → 约 8
+              秒翻动。受惊、快速转身会响起鳞片声，安静时留白。
+            </p>
             <a href="/audio/credits.html" target="_blank" rel="noreferrer">
               声音来源与署名
             </a>
