@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import HandCamera from './hand-camera';
+import SoundControls from './sound-controls';
 import { Button } from '@/components/ui/button';
 import { Creature, clamp, phaseCopy, type Phase } from '@/lib/creature';
 import { CreatureRenderer } from '@/lib/draw-creature';
@@ -88,9 +89,7 @@ export default function Home() {
     } catch {
       storageOK.current = false;
       // Defer so react-compiler does not flag sync setState in effect body.
-      queueMicrotask(() =>
-        setMessage('成长暂时无法保存，仍可继续互动。'),
-      );
+      queueMicrotask(() => setMessage('成长暂时无法保存，仍可继续互动。'));
     }
     creature.current.setDay(localDay());
     const save = () => {
@@ -367,12 +366,15 @@ export default function Home() {
           <br />
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
-        <div className="controls">
-          <Button className="primary" onClick={toggleCamera}>
-            {camera ? '关闭摄像头' : '启用摄像头'}
-          </Button>
-          <Button onClick={reset}>重新相遇</Button>
-          <Button onClick={enterProjection}>全屏纯画面</Button>
+        <div className="control-stack">
+          <SoundControls creature={creature} />
+          <div className="controls">
+            <Button className="primary" onClick={toggleCamera}>
+              {camera ? '关闭摄像头' : '启用摄像头'}
+            </Button>
+            <Button onClick={reset}>重新相遇</Button>
+            <Button onClick={enterProjection}>全屏纯画面</Button>
+          </div>
         </div>
       </footer>
       {camera && (
@@ -382,9 +384,7 @@ export default function Home() {
           onFailure={failure}
         />
       )}
-      {message && !projection && (
-        <output className="message">{message}</output>
-      )}
+      {message && !projection && <output className="message">{message}</output>}
       {projection && (
         <button className="exit-projection" onClick={exitProjection}>
           退出纯画面
