@@ -1,11 +1,15 @@
-import { SoundDirector, type SoundCue, type SoundState } from './sound-state';
+import {
+  SoundDirector,
+  type SoundCue,
+  type SoundState,
+} from './sound-state.ts';
 const clips = ['purr', 'voice', 'touch', 'scales', 'roll'] as const;
 const settings = {
   purr: { rate: 0.7, seconds: 6, gain: 0.38, cutoff: 850 },
   rest: { rate: 0.6, seconds: 4, gain: 0.15, cutoff: 650 },
   voice: { rate: 0.88, seconds: 2.5, gain: 0.35, cutoff: 3200 },
   touch: { rate: 0.8, seconds: 0.8, gain: 0.2, cutoff: 1800 },
-  scales: { rate: 0.6, seconds: 1.2, gain: 0.14, cutoff: 1700 },
+  scales: { rate: 0.6, seconds: 1.2, gain: 0.32, cutoff: 2800 },
   roll: { rate: 0.7, seconds: 2, gain: 0.12, cutoff: 1400 },
 };
 export class CreatureAudio {
