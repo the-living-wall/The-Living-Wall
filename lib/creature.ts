@@ -75,7 +75,7 @@ export type Signal = {
   contact?: boolean;
 };
 export const phaseCopy: Record<Phase, [string, string]> = {
-  alone: ['独处', '碎光正随着自己的呼吸，缓慢游动。'],
+  alone: ['独处', '小莹正随着自己的呼吸，缓慢游动。'],
   observe: ['观察', '它停了一下，想看清你的动作。'],
   probe: ['试探', '几片光先靠近，身体还留在原处。'],
   approach: ['靠近', '它愿意跟上来，但还留着一点距离。'],
@@ -91,6 +91,10 @@ export const ease = (a: number, b: number, rate: number, dt: number) =>
   a + (b - a) * (1 - Math.exp(-rate * dt));
 export class Creature {
   enjoyment = 0;
+  /** Existing valid-stroke decision, exposed for sound only. */
+  stroked = false;
+  /** Valid touch area, including a stationary pause between strokes. */
+  touching = false;
   touchZone: TouchZone = 'none';
   touchAngle = 0;
   breathPhase = 0;
@@ -349,6 +353,9 @@ export class Creature {
       this.alarm < 0.1 &&
       this.calm > 1.5 &&
       !this.resting;
+    this.stroked = stroked;
+    this.touching =
+      permitted && speed < 0.48 && this.alarm < 0.1 && !this.resting;
     this.enjoyment = ease(
       this.enjoyment,
       stroked ? 1 : 0,

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import HandCamera from './hand-camera';
 import DepthInputPoller from './depth-input';
+import SoundControls from './sound-controls';
 import { Button } from '@/components/ui/button';
 import { Creature, clamp, phaseCopy, type Phase } from '@/lib/creature';
 import { CreatureRenderer } from '@/lib/draw-creature';
@@ -336,7 +337,7 @@ export default function Home() {
     });
     register({
       name: 'get_creature_state',
-      description: '读取碎光当前行为与本轮互动经历；不包含图像或身份信息。',
+      description: '读取小莹当前行为与本轮互动经历；不包含图像或身份信息。',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -359,14 +360,14 @@ export default function Home() {
         onDoubleClick={() => {
           if (pure.current) exitProjection();
         }}
-        aria-label="碎光互动区域。慢慢靠近，停留，或挥动。方向键也可控制；纯画面时双击或按 Escape 返回。"
+        aria-label="小莹互动区域。慢慢靠近，停留，或挥动。方向键也可控制；纯画面时双击或按 Escape 返回。"
       />
       <header className="mast">
         <div className="brand">
           <span className="mark">✳</span>
           <div>
-            <h1>碎光</h1>
-            <div className="eyebrow">FRAGMENT / LIVING LIGHT</div>
+            <h1>小莹</h1>
+            <div className="eyebrow">THE LIVING WALL</div>
           </div>
         </div>
         <span className="edition">实验 03 · 把陪伴长成光</span>
@@ -382,7 +383,7 @@ export default function Home() {
             ? '在深度测试台校准空墙，再将物体靠近墙面。'
             : camera
               ? '让手掌完整进入镜头。'
-              : '把鼠标慢慢移向碎光。'}
+              : '把鼠标慢慢移向小莹。'}
           <br />
           沿身体外围，缓慢来回抚摸。
           <br />
@@ -424,45 +425,51 @@ export default function Home() {
           <br />
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
-        <div className="controls">
-          <Button className="primary" onClick={toggleCamera}>
-            {camera ? '关闭摄像头' : '启用摄像头'}
-          </Button>
-          {import.meta.env.DEV && (
-            <Button onClick={toggleDepth}>
-              {depth ? '关闭深度实验' : '启用深度实验'}
+        <div className="control-stack">
+          {message && !projection && (
+            <output className="message">{message}</output>
+          )}
+          <SoundControls creature={creature} />
+          <div className="controls">
+            <Button className="primary" onClick={toggleCamera}>
+              {camera ? '关闭摄像头' : '启用摄像头'}
             </Button>
-          )}
-          {depth && (
-            <>
-              <label className="depth-option">
-                <input
-                  type="checkbox"
-                  checked={mirrorX}
-                  onChange={(e) => setMirrorX(e.target.checked)}
-                />
-                左右镜像
-              </label>
-              <label className="depth-option">
-                <input
-                  type="checkbox"
-                  checked={mirrorY}
-                  onChange={(e) => setMirrorY(e.target.checked)}
-                />
-                上下镜像
-              </label>
-              <a
-                className="depth-lab-link"
-                href="http://127.0.0.1:8769/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                打开深度测试台校准
-              </a>
-            </>
-          )}
-          <Button onClick={reset}>重新相遇</Button>
-          <Button onClick={enterProjection}>全屏纯画面</Button>
+            {import.meta.env.DEV && (
+              <Button onClick={toggleDepth}>
+                {depth ? '关闭深度实验' : '启用深度实验'}
+              </Button>
+            )}
+            {depth && (
+              <>
+                <label className="depth-option">
+                  <input
+                    type="checkbox"
+                    checked={mirrorX}
+                    onChange={(e) => setMirrorX(e.target.checked)}
+                  />
+                  左右镜像
+                </label>
+                <label className="depth-option">
+                  <input
+                    type="checkbox"
+                    checked={mirrorY}
+                    onChange={(e) => setMirrorY(e.target.checked)}
+                  />
+                  上下镜像
+                </label>
+                <a
+                  className="depth-lab-link"
+                  href="http://127.0.0.1:8769/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  打开深度测试台校准
+                </a>
+              </>
+            )}
+            <Button onClick={reset}>重新相遇</Button>
+            <Button onClick={enterProjection}>全屏纯画面</Button>
+          </div>
         </div>
       </footer>
       {camera && (
@@ -491,7 +498,6 @@ export default function Home() {
           aria-label={`深度输入位置：横向 ${Math.round(depthPoint.x * 100)}%，纵向 ${Math.round(depthPoint.y * 100)}%`}
         />
       )}
-      {message && !projection && <output className="message">{message}</output>}
       {projection && (
         <button className="exit-projection" onClick={exitProjection}>
           退出纯画面

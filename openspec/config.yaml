@@ -1,6 +1,6 @@
 schema: spec-driven
 context: |
-  The Living Wall / 碎光 uses React/TypeScript/Vinext.
+  The Living Wall / 小莹 uses React/TypeScript/Vinext.
   Follow AGENTS.md: Issue first, isolated worktree, GitHub-user/issue-name branch,
   PR to main and actual test evidence. PRD owns product scope and current behavior.
   OpenSpec describes changes; archive does not imply deployment or acceptance.

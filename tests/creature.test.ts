@@ -435,3 +435,38 @@ void test('fast swipe does not drive stretch; startle still works', () => {
   // Startled gate blocks stroked stretch drive; spring continues to settle.
   assert.ok(c.stretchAmp() < 0.1);
 });
+
+void test('audio stroke signal obeys the existing physical contact gate', () => {
+  const c = new Creature();
+  for (let i = 0; i < 600; i++)
+    c.step(1 / 60, {
+      x: c.x + 0.1,
+      y: c.y,
+      speed: 0.16,
+      seen: true,
+      contact: false,
+    });
+  assert.equal(c.stroked, false);
+  assert.equal(c.enjoyment, 0);
+  assert.equal(c.touching, false);
+  for (let i = 0; i < 180; i++)
+    c.step(1 / 60, {
+      x: c.x + 0.1,
+      y: c.y,
+      speed: 0.16,
+      seen: true,
+      contact: true,
+    });
+  assert.equal(c.stroked, true);
+  c.step(1 / 60, { x: c.x + 0.1, y: c.y, speed: 0, seen: true, contact: true });
+  assert.equal(c.stroked, false);
+  assert.equal(c.touching, true);
+  c.step(1 / 60, {
+    x: c.x + 0.1,
+    y: c.y,
+    speed: 0,
+    seen: true,
+    contact: false,
+  });
+  assert.equal(c.touching, false);
+});

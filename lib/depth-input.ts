@@ -72,7 +72,7 @@ export function adaptDepthState(
   const [x, y] = center as [number, number];
   return {
     kind: 'active',
-    message: '检测到近墙区域，原版碎光跟随中（尚未识别手或确认触碰）。',
+    message: '检测到近墙区域，小莹跟随中（尚未识别手或确认触碰）。',
     point: { x: mirrorX ? 1 - x : x, y: mirrorY ? 1 - y : y },
   };
 }

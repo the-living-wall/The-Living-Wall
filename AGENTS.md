@@ -1,4 +1,4 @@
-# The Living Wall · 碎光 协作约定
+# The Living Wall · 小莹 协作约定
 
 人和 AI 共用的开发流程。产品定位、模块与功能编号以 [`docs/PRD.md`](./docs/PRD.md) 为准；本文件不重复产品细节。根目录 `README.md` 是开发者快速说明。
 

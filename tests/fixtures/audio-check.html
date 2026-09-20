@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><title>小莹音频集成检查（本地）</title>
+<h1>六份素材与真实音频引擎检查</h1><p>用自动输入驱动真实 Creature，依次抚摸、受惊；检测 Web Audio 非静音输出。此页不部署。</p><button id="run">开始检查</button><pre id="result">待开始</pre>
+<script type="module">
+import {Creature} from '/lib/creature.ts';
+import {CreatureAudio} from '/lib/creature-audio.ts';
+const output=document.querySelector('#result'), events=[];
+const Native=window.AudioContext;
+const lengths={touch:1.973,voice:2,purr:94.816,scales:1.877,roll:17.224};
+window.AudioContext=class extends Native{
+ constructor(){super();const analyser=this.createAnalyser(); const nativeConnect=AudioNode.prototype.connect, destination=this.destination;
+ AudioNode.prototype.connect=function(target,...args){if(target===destination)nativeConnect.call(this,analyser);return nativeConnect.call(this,target,...args)};
+ const samples=new Float32Array(analyser.fftSize); const timer=setInterval(()=>{if(this.state==='closed')return clearInterval(timer);analyser.getFloatTimeDomainData(samples);const e=events.at(-1);if(e)e.peak=Math.max(e.peak,...samples.map(Math.abs));},10);
+ const create=this.createBufferSource.bind(this);this.createBufferSource=()=>{const node=create(),start=node.start.bind(node);node.start=(...a)=>{const name=Object.keys(lengths).sort((x,y)=>Math.abs(lengths[x]-node.buffer.duration)-Math.abs(lengths[y]-node.buffer.duration))[0];events.push({name,at:+this.currentTime.toFixed(2),duration:a[2]/node.playbackRate.value,peak:0});return start(...a)};return node;};
+ }
+};
+document.querySelector('#run').onclick=async()=>{
+ document.querySelector('#run').disabled=true;
+ const engine=new CreatureAudio(.45), music=new Audio('/audio/kalimba.mp3');music.volume=.05;
+ try{
+ await Promise.all([engine.start(),music.play()]);const c=new Creature();let last=performance.now(),elapsed=0;
+ const tick=()=>{const now=performance.now(),dt=Math.min((now-last)/1000,.05);last=now;elapsed+=dt;
+ // Real behavior receives slow strokes and a brief reversal every two seconds.
+ const speed=elapsed<14?(elapsed%2<.15?0:.15):elapsed<14.15?5:0;
+ c.step(dt,{x:c.x+.065,y:c.y,speed,seen:elapsed<14.15});engine.update(c);
+ output.textContent=JSON.stringify({elapsed:+elapsed.toFixed(1),phase:c.phase,stroked:c.stroked,enjoyment:+c.enjoyment.toFixed(2),events},null,2);
+ if(elapsed<17)requestAnimationFrame(tick);else{
+ const passed=['touch','voice','purr','roll','scales'].every(name=>events.some(e=>e.name===name&&e.peak>.0001));
+ output.textContent=JSON.stringify({passed:passed&&music.currentTime>10,musicSeconds:music.currentTime,events},null,2);engine.close();music.pause();}
+ };requestAnimationFrame(tick);
+ }catch(e){output.textContent='FAIL '+e;engine.close();music.pause()}
+};
+</script>

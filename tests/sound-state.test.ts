@@ -1,0 +1,183 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { SoundDirector, type SoundState } from '../lib/sound-state.ts';
+const base: SoundState = {
+  time: 0,
+  phase: 'alone',
+  stroked: false,
+  touching: false,
+  enjoyment: 0,
+  resting: false,
+  alarm: 0,
+  heading: 0,
+  frightCount: 0,
+};
+void test('idle stays silent; entering observe chirps only once', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(d.update({ ...base, time: 1 }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 2, phase: 'observe' }).cue, 'scales');
+  assert.equal(
+    d.update({ ...base, time: 40, phase: 'observe' }).cue,
+    undefined,
+  );
+});
+void test('long stroke has a finite sequence, never loops', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  const cues: string[] = [];
+  for (let time = 1; time < 100; time += 0.1) {
+    const e = d.update({ ...base, time, stroked: true, enjoyment: 0.8 });
+    if (e.cue) cues.push(e.cue);
+  }
+  assert.deepEqual(cues, ['touch', 'voice', 'purr', 'roll']);
+});
+void test('leaving fades and does not queue the happy sound', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 1, stroked: true });
+  assert.equal(d.update({ ...base, time: 1.1 }).stop, true);
+  assert.equal(d.update({ ...base, time: 20, enjoyment: 0.9 }).cue, undefined);
+});
+void test('alarm preempts with scales and rest plays once per rest entry', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.deepEqual(d.update({ ...base, time: 1, stroked: true, alarm: 0.3 }), {
+    stop: true,
+    cue: 'scales',
+  });
+  assert.equal(d.update({ ...base, time: 10, resting: true }).cue, 'rest');
+  assert.equal(d.update({ ...base, time: 50, resting: true }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 51 }).stop, true);
+});
+void test('new encounter discards old sound state', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 20, stroked: true });
+  assert.deepEqual(d.update(base), { stop: true });
+  assert.equal(d.update({ ...base, time: 1, stroked: true }).cue, 'touch');
+});
+
+void test('rest entry preempts the previous cue cooldown', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 1, stroked: true });
+  assert.deepEqual(d.update({ ...base, time: 1.2, resting: true }), {
+    stop: true,
+    cue: 'rest',
+  });
+});
+
+void test('shock survives following frames and silence resumes after finite cue', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 1, stroked: true });
+  assert.deepEqual(d.update({ ...base, time: 1.1, alarm: 0.8 }), {
+    stop: true,
+    cue: 'scales',
+  });
+  for (let time = 1.2; time < 2.3; time += 0.1)
+    assert.deepEqual(d.update({ ...base, time, alarm: 0.7 }), { stop: false });
+  assert.equal(d.update({ ...base, time: 2.5, alarm: 0.5 }).stop, true);
+  assert.deepEqual(d.update({ ...base, time: 3, alarm: 0.4 }), { stop: false });
+});
+void test('rapid real turns make bounded bursts, slowing fades, idle stays quiet', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  const cues: number[] = [];
+  for (let frame = 1; frame <= 180; frame++) {
+    const time = frame / 60;
+    const e = d.update({ ...base, time, heading: time * 2 });
+    if (e.cue) {
+      assert.equal(e.cue, 'scales');
+      cues.push(time);
+    }
+  }
+  assert.equal(cues.length, 3);
+  assert.ok(cues[1] - cues[0] >= 1.3);
+  assert.equal(d.update({ ...base, time: 3.02, heading: 6.001 }).stop, true);
+  assert.equal(d.update({ ...base, time: 4, heading: 6.001 }).cue, undefined);
+});
+void test('wrapped angle, slow breathing turns and resumed frames do not rustle', () => {
+  const d = new SoundDirector();
+  d.update({ ...base, heading: Math.PI - 0.001 });
+  assert.equal(
+    d.update({ ...base, time: 0.02, heading: -Math.PI + 0.001 }).cue,
+    undefined,
+  );
+  assert.equal(d.update({ ...base, time: 2, heading: 0 }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 2.02, heading: 0.01 }).cue, undefined);
+});
+void test('a new fright during recovery preempts cooldown once', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 0.1, alarm: 0.8, frightCount: 1 });
+  assert.equal(
+    d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue,
+    'scales',
+  );
+  assert.deepEqual(
+    d.update({ ...base, time: 0.52, alarm: 0.9, frightCount: 2 }),
+    { stop: false },
+  );
+});
+
+void test('all petting cues respond within eight seconds without looping', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  const cues: { cue: string; time: number }[] = [];
+  for (let frame = 1; frame <= 1200; frame++) {
+    const time = frame / 60;
+    const e = d.update({
+      ...base,
+      time,
+      stroked: true,
+      touching: true,
+      enjoyment: 0.9,
+    });
+    if (e.cue) cues.push({ cue: e.cue, time });
+  }
+  assert.deepEqual(
+    cues.map((x) => x.cue),
+    ['touch', 'voice', 'purr', 'roll'],
+  );
+  assert.ok(cues[1].time < 1.2);
+  assert.ok(cues[2].time < 4.1);
+  assert.ok(cues[3].time < 8.1);
+});
+void test('brief stroke reversals retain the sequence; idle cannot advance it', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(
+    d.update({ ...base, time: 0.1, stroked: true, touching: true }).cue,
+    'touch',
+  );
+  assert.deepEqual(d.update({ ...base, time: 0.3, touching: true }), {
+    stop: false,
+  });
+  assert.equal(
+    d.update({ ...base, time: 0.4, stroked: true, touching: true }).cue,
+    undefined,
+  );
+  d.update({ ...base, time: 1, stroked: true, touching: true });
+  assert.equal(
+    d.update({ ...base, time: 1.3, stroked: true, touching: true }).cue,
+    'voice',
+  );
+  assert.equal(d.update({ ...base, time: 1.6, touching: true }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 2, touching: true }).stop, true);
+  assert.equal(d.update({ ...base, time: 10, touching: true }).cue, undefined);
+});
+void test('busy playback does not consume the creature response', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 0.1, stroked: true });
+  assert.equal(
+    d.update({ ...base, time: 1.3, stroked: true }, true).cue,
+    undefined,
+  );
+  assert.equal(
+    d.update({ ...base, time: 1.4, stroked: true }, false).cue,
+    'voice',
+  );
+});
