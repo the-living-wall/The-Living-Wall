@@ -5,6 +5,7 @@ const base: SoundState = {
   time: 0,
   phase: 'alone',
   stroked: false,
+  touching: false,
   enjoyment: 0,
   resting: false,
   alarm: 0,
@@ -118,5 +119,65 @@ void test('a new fright during recovery preempts cooldown once', () => {
   assert.deepEqual(
     d.update({ ...base, time: 0.52, alarm: 0.9, frightCount: 2 }),
     { stop: false },
+  );
+});
+
+void test('all petting cues respond within eight seconds without looping', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  const cues: { cue: string; time: number }[] = [];
+  for (let frame = 1; frame <= 1200; frame++) {
+    const time = frame / 60;
+    const e = d.update({
+      ...base,
+      time,
+      stroked: true,
+      touching: true,
+      enjoyment: 0.9,
+    });
+    if (e.cue) cues.push({ cue: e.cue, time });
+  }
+  assert.deepEqual(
+    cues.map((x) => x.cue),
+    ['touch', 'voice', 'purr', 'roll'],
+  );
+  assert.ok(cues[1].time < 1.2);
+  assert.ok(cues[2].time < 4.1);
+  assert.ok(cues[3].time < 8.1);
+});
+void test('brief stroke reversals retain the sequence; idle cannot advance it', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(
+    d.update({ ...base, time: 0.1, stroked: true, touching: true }).cue,
+    'touch',
+  );
+  assert.deepEqual(d.update({ ...base, time: 0.3, touching: true }), {
+    stop: false,
+  });
+  assert.equal(
+    d.update({ ...base, time: 0.4, stroked: true, touching: true }).cue,
+    undefined,
+  );
+  d.update({ ...base, time: 1, stroked: true, touching: true });
+  assert.equal(
+    d.update({ ...base, time: 1.3, stroked: true, touching: true }).cue,
+    'voice',
+  );
+  assert.equal(d.update({ ...base, time: 1.6, touching: true }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 2, touching: true }).stop, true);
+  assert.equal(d.update({ ...base, time: 10, touching: true }).cue, undefined);
+});
+void test('busy playback does not consume the creature response', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 0.1, stroked: true });
+  assert.equal(
+    d.update({ ...base, time: 1.3, stroked: true }, true).cue,
+    undefined,
+  );
+  assert.equal(
+    d.update({ ...base, time: 1.4, stroked: true }, false).cue,
+    'voice',
   );
 });

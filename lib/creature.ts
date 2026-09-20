@@ -93,6 +93,8 @@ export class Creature {
   enjoyment = 0;
   /** Existing valid-stroke decision, exposed for sound only. */
   stroked = false;
+  /** Valid touch area, including a stationary pause between strokes. */
+  touching = false;
   touchZone: TouchZone = 'none';
   touchAngle = 0;
   breathPhase = 0;
@@ -352,6 +354,8 @@ export class Creature {
       this.calm > 1.5 &&
       !this.resting;
     this.stroked = stroked;
+    this.touching =
+      permitted && speed < 0.48 && this.alarm < 0.1 && !this.resting;
     this.enjoyment = ease(
       this.enjoyment,
       stroked ? 1 : 0,
