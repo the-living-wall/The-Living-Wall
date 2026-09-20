@@ -1,0 +1,44 @@
+[
+  {
+    "original": "695630__sadiquecat__female-cat-purr.mp3",
+    "name": "呼噜声",
+    "type": "呼吸",
+    "stage": "⑤ 结束与休息",
+    "note": "呼吸速度太快了，不柔和，需要降速和柔和处理，现在显得很急躁"
+  },
+  {
+    "original": "578799__nomiqbomi__rattle-4.mp3",
+    "name": "触碰音",
+    "type": "空气 / 波纹",
+    "stage": "③ 初次触碰",
+    "note": ""
+  },
+  {
+    "original": "770077__tanweraman__snake-rattle-sound-hq.wav",
+    "name": "鳞片声",
+    "type": "音乐参考",
+    "stage": "② 注意与试探",
+    "note": "太快了需要改慢"
+  },
+  {
+    "original": "alex_jauk-my-dreamy-place-kalimba-song-460952.mp3",
+    "name": "背景音乐-铺垫在底下",
+    "type": "未分类",
+    "stage": "未分配",
+    "note": ""
+  },
+  {
+    "original": "249706__brunoboselli__3-egg-shaker-rolls.wav",
+    "name": "鳞片声",
+    "type": "鳞片 / 碎片",
+    "stage": "④ 持续亲近",
+    "note": ""
+  },
+  {
+    "original": "469066__hawkeye_sprout__cute-creature-01.wav",
+    "name": "抚摸声",
+    "type": "核心 / 小语言",
+    "stage": "③ 初次触碰",
+    "note": "需要修改的是声音的尾巴在延续长一点"
+  }
+]
