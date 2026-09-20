@@ -1,26 +1,70 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import HandCamera from './hand-camera';
+import DepthInputPoller from './depth-input';
 import SoundControls from './sound-controls';
 import { Button } from '@/components/ui/button';
 import { Creature, clamp, phaseCopy, type Phase } from '@/lib/creature';
 import { CreatureRenderer } from '@/lib/draw-creature';
-const storageKey = 'fragment-growth-v1';
+import type { DepthPoint } from '@/lib/depth-input';
+import {
+  depthArchiveKey,
+  normalArchiveKey,
+  saveCreatureArchive,
+  switchCreatureArchive,
+} from '@/lib/creature-archive';
 const localDay = () => new Date().toLocaleDateString('sv-SE');
 export default function Home() {
   const canvas = useRef<HTMLCanvasElement>(null),
     creature = useRef(new Creature()),
     renderer = useRef(new CreatureRenderer());
   const input = useRef({ x: 0.5, y: 0.5, speed: 0, active: false, time: 0 });
-  const source = useRef<'mouse' | 'camera'>('mouse');
+  const source = useRef<'mouse' | 'camera' | 'depth'>('mouse');
+  const archiveKey = useRef(normalArchiveKey);
   const pure = useRef(false);
   const [camera, setCamera] = useState(false),
+    [depth, setDepth] = useState(false),
+    [mirrorX, setMirrorX] = useState(false),
+    [mirrorY, setMirrorY] = useState(false),
+    [depthPoint, setDepthPoint] = useState<DepthPoint | null>(null),
     [message, setMessage] = useState(''),
     [projection, setProjection] = useState(false),
     [phase, setPhase] = useState<Phase>('alone'),
     [feeling, setFeeling] = useState(''),
     [growth, setGrowth] = useState(0);
   const storageOK = useRef(true);
+  const saveArchive = useCallback(() => {
+    try {
+      saveCreatureArchive(localStorage, archiveKey.current, creature.current);
+    } catch {
+      if (storageOK.current) setMessage('成长暂时无法保存，仍可继续互动。');
+      storageOK.current = false;
+    }
+  }, []);
+  const switchArchive = useCallback((key: string) => {
+    let next: Creature;
+    try {
+      next = switchCreatureArchive(
+        localStorage,
+        creature.current,
+        archiveKey.current,
+        key,
+      );
+    } catch {
+      next = new Creature();
+      storageOK.current = false;
+      setMessage('成长暂时无法读取，仍可继续互动。');
+    }
+    archiveKey.current = key;
+    next.setDay(localDay());
+    next.resize(innerWidth, innerHeight);
+    creature.current = next;
+    renderer.current = new CreatureRenderer();
+    input.current.active = false;
+    input.current.speed = 0;
+    setGrowth(next.maturity);
+    setPhase('alone');
+  }, []);
   const sample = useCallback((x: number, y: number, active: boolean) => {
     const p = input.current;
     if (!active) {
@@ -30,7 +74,7 @@ export default function Home() {
     const now = performance.now(),
       dt = Math.max(0.008, (now - p.time) / 1000);
     const valid = p.active && now - p.time < 300;
-    const factor = source.current === 'camera' ? 1 - Math.exp(-dt / 0.055) : 1;
+    const factor = source.current === 'mouse' ? 1 : 1 - Math.exp(-dt / 0.055);
     const nx = valid ? p.x + (clamp(x) - p.x) * factor : clamp(x),
       ny = valid ? p.y + (clamp(y) - p.y) * factor : clamp(y);
     const m = creature.current;
@@ -61,11 +105,29 @@ export default function Home() {
   }, []);
   const toggleCamera = () => {
     const next = !camera;
+    if (depth) {
+      setDepth(false);
+      setDepthPoint(null);
+      switchArchive(normalArchiveKey);
+    }
     source.current = next ? 'camera' : 'mouse';
     input.current.active = false;
     input.current.speed = 0;
     setCamera(next);
     setMessage(next ? '正在准备摄像头…' : '摄像头已关闭，可以继续用鼠标互动。');
+  };
+  const toggleDepth = () => {
+    const next = !depth;
+    setCamera(false);
+    setDepth(next);
+    setDepthPoint(null);
+    switchArchive(next ? depthArchiveKey : normalArchiveKey);
+    source.current = next ? 'depth' : 'mouse';
+    setMessage(
+      next
+        ? '正在连接本地深度测试台；这是近墙区域实验，尚未识别手或确认触碰。'
+        : '深度实验已关闭，普通成长档案已恢复。',
+    );
   };
   const exitProjection = useCallback(() => {
     pure.current = false;
@@ -84,7 +146,7 @@ export default function Home() {
   };
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(normalArchiveKey);
       if (saved) creature.current.restore(JSON.parse(saved));
     } catch {
       storageOK.current = false;
@@ -92,27 +154,16 @@ export default function Home() {
       queueMicrotask(() => setMessage('成长暂时无法保存，仍可继续互动。'));
     }
     creature.current.setDay(localDay());
-    const save = () => {
-      try {
-        localStorage.setItem(
-          storageKey,
-          JSON.stringify(creature.current.archive()),
-        );
-      } catch {
-        if (storageOK.current) setMessage('成长暂时无法保存，仍可继续互动。');
-        storageOK.current = false;
-      }
-    };
     const saver = window.setInterval(() => {
       creature.current.setDay(localDay());
-      save();
+      saveArchive();
     }, 5000);
-    window.addEventListener('pagehide', save);
+    window.addEventListener('pagehide', saveArchive);
     const c = canvas.current!,
       ctx = c.getContext('2d');
     if (!ctx) {
       clearInterval(saver);
-      window.removeEventListener('pagehide', save);
+      window.removeEventListener('pagehide', saveArchive);
       queueMicrotask(() =>
         setMessage('此浏览器无法显示互动图形，请使用支持 Canvas 的浏览器。'),
       );
@@ -153,7 +204,7 @@ export default function Home() {
         reset();
         return;
       }
-      if (source.current === 'camera') return;
+      if (source.current !== 'mouse') return;
       const offsets: Record<string, [number, number]> = {
         ArrowLeft: [-0.02, 0],
         ArrowRight: [0.02, 0],
@@ -220,9 +271,9 @@ export default function Home() {
     };
     raf = requestAnimationFrame(frame);
     return () => {
-      save();
+      saveArchive();
       clearInterval(saver);
-      window.removeEventListener('pagehide', save);
+      window.removeEventListener('pagehide', saveArchive);
       cancelAnimationFrame(raf);
       c.removeEventListener('pointermove', move);
       c.removeEventListener('pointerdown', move);
@@ -234,7 +285,7 @@ export default function Home() {
       document.removeEventListener('fullscreenchange', fullscreen);
       document.removeEventListener('visibilitychange', visibility);
     };
-  }, [sample, reset, exitProjection]);
+  }, [sample, reset, exitProjection, saveArchive]);
   useEffect(() => {
     type Tool = {
       name: string;
@@ -328,7 +379,11 @@ export default function Home() {
           让它慢慢舒展开。
         </h2>
         <p>
-          {camera ? '让手掌完整进入镜头。' : '把鼠标慢慢移向小莹。'}
+          {depth
+            ? '在深度测试台校准空墙，再将物体靠近墙面。'
+            : camera
+              ? '让手掌完整进入镜头。'
+              : '把鼠标慢慢移向小莹。'}
           <br />
           沿身体外围，缓慢来回抚摸。
           <br />
@@ -353,7 +408,11 @@ export default function Home() {
       </aside>
       <footer className="bottom">
         <div className="help">
-          {camera ? '手部互动 · 不录制、不上传' : '鼠标 / 触摸 / 方向键'}
+          {depth
+            ? '本地近墙区域实验 · 不等于手部识别或物理触碰'
+            : camera
+              ? '手部互动 · 不录制、不上传'
+              : '鼠标 / 触摸 / 方向键'}
           <br />
           {growth < 0.15
             ? '初生白光'
@@ -367,11 +426,47 @@ export default function Home() {
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
         <div className="control-stack">
+          {message && !projection && (
+            <output className="message">{message}</output>
+          )}
           <SoundControls creature={creature} />
           <div className="controls">
             <Button className="primary" onClick={toggleCamera}>
               {camera ? '关闭摄像头' : '启用摄像头'}
             </Button>
+            {import.meta.env.DEV && (
+              <Button onClick={toggleDepth}>
+                {depth ? '关闭深度实验' : '启用深度实验'}
+              </Button>
+            )}
+            {depth && (
+              <>
+                <label className="depth-option">
+                  <input
+                    type="checkbox"
+                    checked={mirrorX}
+                    onChange={(e) => setMirrorX(e.target.checked)}
+                  />
+                  左右镜像
+                </label>
+                <label className="depth-option">
+                  <input
+                    type="checkbox"
+                    checked={mirrorY}
+                    onChange={(e) => setMirrorY(e.target.checked)}
+                  />
+                  上下镜像
+                </label>
+                <a
+                  className="depth-lab-link"
+                  href="http://127.0.0.1:8769/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  打开深度测试台校准
+                </a>
+              </>
+            )}
             <Button onClick={reset}>重新相遇</Button>
             <Button onClick={enterProjection}>全屏纯画面</Button>
           </div>
@@ -384,7 +479,25 @@ export default function Home() {
           onFailure={failure}
         />
       )}
-      {message && !projection && <output className="message">{message}</output>}
+      {depth && (
+        <DepthInputPoller
+          mirrorX={mirrorX}
+          mirrorY={mirrorY}
+          onPoint={sample}
+          onPosition={setDepthPoint}
+          onStatus={setMessage}
+        />
+      )}
+      {depth && depthPoint && (
+        <div
+          className="depth-position"
+          style={{
+            left: `${depthPoint.x * 100}%`,
+            top: `${depthPoint.y * 100}%`,
+          }}
+          aria-label={`深度输入位置：横向 ${Math.round(depthPoint.x * 100)}%，纵向 ${Math.round(depthPoint.y * 100)}%`}
+        />
+      )}
       {projection && (
         <button className="exit-projection" onClick={exitProjection}>
           退出纯画面

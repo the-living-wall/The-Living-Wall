@@ -201,6 +201,31 @@ canvas:focus-visible {
   opacity: 0.5;
   cursor: wait;
 }
+.depth-option,
+.depth-lab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 43px;
+  color: #dce8e7;
+  font-size: 13px;
+}
+.depth-lab-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.depth-position {
+  position: fixed;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #c6efbc;
+  border-radius: 50%;
+  background: #c6efbc44;
+  box-shadow: 0 0 20px #c6efbcaa;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
 .message {
   position: fixed;
   z-index: 4;
@@ -231,6 +256,9 @@ canvas:focus-visible {
 .projection .status,
 .projection .bottom,
 .projection .camera-preview {
+  display: none;
+}
+.projection .depth-position {
   display: none;
 }
 .projection .stage {
@@ -313,6 +341,7 @@ canvas:focus-visible {
 
 /* Sound controls stay in the existing footer and disappear in projection mode. */
 .control-stack { display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+.control-stack > .message { position:static; }
 .sound-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
 .sound-options { position:relative; font-size:13px; color:#c1c9c4; }
 .sound-options summary { cursor:pointer; padding:8px; }

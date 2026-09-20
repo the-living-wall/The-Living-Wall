@@ -144,7 +144,12 @@ class Lab:
                     scaled=(300.,300.,159.5,119.5)
                     with self.lock:
                         if self.sim_object and not self.detector.calibrating:
-                            depth[92:148,130:190] -= self.sim_gap
+                            # Connected body/arm with an independently near-wall palm.
+                            depth[65:180,85:125] -= 180
+                            depth[105:130,125:180] -= 100
+                            depth[96:142,180:207] -= self.sim_gap
+                            # A second disconnected palm.
+                            depth[65:95,215:245] -= self.sim_gap
                     depth += np.random.default_rng().normal(0,.6,depth.shape).astype(np.float32)
                     stop.wait(.07)
                 with self.lock:
@@ -181,7 +186,7 @@ class Lab:
             age=time.monotonic()-self.frame_at if self.frame_at else None
             result=dict(self.result)
             if age is not None and age>1.5:
-                result.update(state='unknown',gap_mm=None,position=None,message='画面已过期，不能用于触碰判断。')
+                result.update(state='unknown',gap_mm=None,position=None,regions=[],near_regions=[],diagnostic_valid=False,message='画面已过期，不能用于触碰判断。')
             return dict(mode=self.mode,message=self.message,result=result,image=self.image,
                         age_ms=round(age*1000) if age is not None else None,roi=self.detector.roi)
 
@@ -211,6 +216,10 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply({'error':'Invalid host'},403)
         if self.path=='/':
             return self.reply((ROOT/'index.html').read_bytes(),mime='text/html; charset=utf-8')
+        if self.path=='/guide.mjs':
+            return self.reply((ROOT/'guide.mjs').read_bytes(),mime='text/javascript; charset=utf-8')
+        if self.path in ('/entity','/entity.html'):
+            return self.reply((ROOT/'entity.html').read_bytes(),mime='text/html; charset=utf-8')
         if self.path=='/api/state':
             snapshot = lab.snapshot()
             snapshot['capture_stdin'] = getattr(self.server, 'capture_stdin', False)

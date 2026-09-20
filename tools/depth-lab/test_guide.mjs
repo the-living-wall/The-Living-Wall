@@ -1,0 +1,7 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {Guide,steps} from './guide.mjs';
+const data={mode:'simulation',age_ms:10,image:'PRIVATE',result:{state:'near',diagnostic_valid:true,regions:[{contour:[[1,2]]}],near_regions:[{gap_mm:20}],valid_ratio:1}};
+await test('prepare, sampling, confirmation, complete and privacy',()=>{const g=new Guide();g.start('simulation',[0,0,1,1],0);for(let i=0;i<steps.length;i++){const t=i*30000;g.ready(t);g.sample(data,t);assert.equal(g.report.samples.length,i);g.tick(t+5000);g.sample(data,t+5100);g.tick(t+25000);assert.equal(g.phase,'confirm');g.confirm(true,t+26000);}assert.equal(g.phase,'done');assert.equal(g.report.status,'completed');assert.equal(g.report.source,'simulation');assert.equal(g.report.samples.length,9);assert.ok(!JSON.stringify(g.report).includes('PRIVATE'));assert.ok(!JSON.stringify(g.report).includes('contour'));});
+await test('lost frames interrupt and never become valid samples',()=>{const g=new Guide();g.start('pipe',[0,0,1,1],0);g.ready(0);g.tick(5000);g.sample({...data,mode:'pipe',age_ms:2000},5100);assert.equal(g.phase,'interrupted');assert.equal(g.report.samples.length,0);g.confirm(false,5200);assert.equal(g.report.steps[0].interrupted,true);g.finish('ended_early',5300);assert.equal(g.report.status,'ended_early');});
+await test('mode change interrupts',()=>{const g=new Guide();g.start('pipe',[0,0,1,1],0);g.ready(0);g.sample(data,10);assert.equal(g.phase,'interrupted');});

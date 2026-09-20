@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-19",
+  "timezone": "Asia/Shanghai",
+  "record_type": "summary_transcribed_from_tool_output",
+  "issue": 50,
+  "pull_request": 51,
+  "frontend_commit": "e6741a3283cad696bfbe2f97b7ae40538228c1df",
+  "camera_mode": "pipe",
+  "background_model": "pixel-wall-v2",
+  "roi": [0.2, 0.2, 0.8, 0.8],
+  "mirror_x": false,
+  "mirror_y": false,
+  "depth_runtime_location": ".runtime/depth-lab-v2",
+  "runtime_is_in_frontend_commit": false,
+  "display": {"connection": "AirPlay", "resolution": [1920, 1080], "refresh_hz": 30},
+  "empty_wall_snapshot": {"diagnostic_valid": true, "valid_ratio": 1, "background_ratio": 0.999, "near_regions": 0, "age_ms": 7},
+  "first_observation": {"samples": 60, "active": 0, "waiting": 60, "invalid": 0, "errors": 0, "action_timing_confirmed": false},
+  "second_observation": {
+    "seconds": 60.047,
+    "samples": 237,
+    "active": 139,
+    "waiting": 98,
+    "invalid": 0,
+    "errors": 0,
+    "max_foreground_regions": 2,
+    "max_near_regions": 3,
+    "selected_center_x_range": [0.5911, 0.7907],
+    "selected_center_y_range": [0.5307, 0.7818],
+    "final_four_samples": [
+      {"t_seconds": 59, "kind": "waiting", "age_ms": 1, "point": null, "near_regions": 0},
+      {"t_seconds": 59.3, "kind": "waiting", "age_ms": 20, "point": null, "near_regions": 0},
+      {"t_seconds": 59.5, "kind": "waiting", "age_ms": 6, "point": null, "near_regions": 0},
+      {"t_seconds": 59.8, "kind": "waiting", "age_ms": 25, "point": null, "near_regions": 0}
+    ]
+  },
+  "user_feedback": {
+    "visible_response": true,
+    "direction_approximately_matches_hand": true,
+    "perceived_response": "slow",
+    "effective_region_unclear": true
+  },
+  "retention": {"full_poll_sequence_saved": false, "video_saved": false, "raw_depth_saved": false},
+  "limitations": ["poll counts are not unique camera frames", "no action ground-truth timeline", "no end-to-end latency measurement", "no hand-part semantic recognition", "no full sensitivity map", "site acceptance remains partial"]
+}
