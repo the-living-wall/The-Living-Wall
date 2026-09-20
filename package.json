@@ -12,7 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "build:tencent": "DEPLOY_TARGET=tencent vinext build",
-    "test": "node --test tests/creature.test.ts tests/recording-batch.test.mjs",
+    "test": "node --test tests/creature.test.ts tests/recording-batch.test.mjs tests/sound-state.test.ts",
     "qa:lighting": "node scripts/lighting-browser-qa.mjs",
     "spec:validate": "openspec validate --all --strict",
     "setup:assets": "node scripts/setup-assets.mjs",

@@ -91,6 +91,8 @@ export const ease = (a: number, b: number, rate: number, dt: number) =>
   a + (b - a) * (1 - Math.exp(-rate * dt));
 export class Creature {
   enjoyment = 0;
+  /** Existing valid-stroke decision, exposed for sound only. */
+  stroked = false;
   touchZone: TouchZone = 'none';
   touchAngle = 0;
   breathPhase = 0;
@@ -349,6 +351,7 @@ export class Creature {
       this.alarm < 0.1 &&
       this.calm > 1.5 &&
       !this.resting;
+    this.stroked = stroked;
     this.enjoyment = ease(
       this.enjoyment,
       stroked ? 1 : 0,
