@@ -317,7 +317,7 @@ export default function Home() {
           <span className="mark">✳</span>
           <div>
             <h1>小莹</h1>
-            <div className="eyebrow">FRAGMENT / LIVING LIGHT</div>
+            <div className="eyebrow">THE LIVING WALL</div>
           </div>
         </div>
         <span className="edition">实验 03 · 把陪伴长成光</span>
