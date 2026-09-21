@@ -397,7 +397,7 @@ export default function Home() {
             <div className="eyebrow">THE LIVING WALL</div>
           </div>
         </div>
-        <span className="edition">实验 03 · 把陪伴长成光</span>
+        <span className="edition">小莹 · 把陪伴长成光</span>
       </header>
       <section className="guide">
         <h2>
@@ -448,7 +448,11 @@ export default function Home() {
             <p>{growthInfo.description}</p>
             <div className="growth-meter">
               <span>成长</span>
-              <progress value={growth} max={1} aria-label={`成长 ${growthPercent}%`} />
+              <progress
+                value={growth}
+                max={1}
+                aria-label={`成长 ${growthPercent}%`}
+              />
             </div>
             <div className="growth-meter">
               <span>亲密</span>
