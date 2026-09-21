@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { Creature } from '@/lib/creature';
 import { CreatureAudio } from '@/lib/creature-audio';
+import type { SoundCue } from '@/lib/sound-state';
 import { Button } from '@/components/ui/button';
 export default function SoundControls({
   creature,
@@ -9,14 +10,41 @@ export default function SoundControls({
   creature: RefObject<Creature>;
 }) {
   const engine = useRef<CreatureAudio | null>(null);
-  const music = useRef<HTMLAudioElement | null>(null);
   const generation = useRef(0);
-  const [effects, setEffects] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [effects, setEffects] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [volume, setVolume] = useState(0.45);
-  const [musicVolume, setMusicVolume] = useState(0.12);
   const [message, setMessage] = useState('');
+  const volumeRef = useRef(volume);
+  const effectsRef = useRef(effects);
+  const loadingRef = useRef(loading);
+  useEffect(() => {
+    volumeRef.current = volume;
+    effectsRef.current = effects;
+    loadingRef.current = loading;
+  }, [volume, effects, loading]);
+  const startEffects = useCallback(async () => {
+    const token = ++generation.current;
+    setMessage('');
+    let next = engine.current;
+    try {
+      if (!next) {
+        next = new CreatureAudio(volumeRef.current);
+        engine.current = next;
+      }
+      setLoading(true);
+      await next.start();
+      if (generation.current !== token) return;
+      setLoading(false);
+      setEffects(true);
+    } catch {
+      // AudioContext may wait for the first user gesture. Keep the UI enabled
+      // and retry silently when the user first interacts with the page.
+      if (generation.current !== token) return;
+      setLoading(true);
+      setEffects(true);
+    }
+  }, []);
   useEffect(() => {
     let raf = 0;
     const frame = () => {
@@ -28,101 +56,50 @@ export default function SoundControls({
       generation.current++;
       engine.current?.close();
       engine.current = null;
-      music.current?.pause();
       setEffects(false);
       setLoading(false);
-      setPlaying(false);
     };
     const hide = () => {
       if (document.hidden) {
-        const wasOn =
-          !!engine.current || (!!music.current && !music.current.paused);
+        const wasOn = !!engine.current;
         stop();
         if (wasOn) setMessage('声音已暂停，回来后可重新开启。');
       }
     };
     document.addEventListener('visibilitychange', hide);
     window.addEventListener('pagehide', stop);
-    const disposeMusic = () => {
-      const a = music.current;
-      if (a) {
-        a.onerror = null;
-        a.pause();
-        a.removeAttribute('src');
-        a.load();
-        music.current = null;
-      }
+    const initialStart = window.setTimeout(() => void startEffects(), 0);
+    const retryOnGesture = () => {
+      if (loadingRef.current || !engine.current || !effectsRef.current)
+        void startEffects();
     };
+    window.addEventListener('pointerdown', retryOnGesture, { once: true });
     return () => {
       cancelAnimationFrame(raf);
       stop();
       document.removeEventListener('visibilitychange', hide);
       window.removeEventListener('pagehide', stop);
-      disposeMusic();
+      window.removeEventListener('pointerdown', retryOnGesture);
+      window.clearTimeout(initialStart);
     };
-  }, [creature]);
+  }, [creature, startEffects]);
   const toggleEffects = async () => {
-    const token = ++generation.current;
     setMessage('');
     if (engine.current) {
+      generation.current++;
       engine.current.close();
       engine.current = null;
       setEffects(false);
       setLoading(false);
       return;
     }
-    let next: CreatureAudio | null = null;
-    try {
-      next = new CreatureAudio(volume);
-      engine.current = next;
-      setLoading(true);
-      await next.start();
-      if (generation.current !== token) return;
-      setLoading(false);
-      setEffects(true);
-    } catch {
-      next?.close();
-      if (generation.current !== token) return;
-      engine.current = null;
-      setLoading(false);
-      setEffects(false);
-      setMessage('音效未能加载，请点「开启互动声音」重试。仍可正常互动。');
-    }
-  };
-  const toggleMusic = async () => {
-    setMessage('');
-    if (!music.current) {
-      music.current = new Audio('/audio/kalimba.mp3');
-      music.current.loop = true;
-      music.current.onerror = () => {
-        setPlaying(false);
-        setMessage('背景音乐未能加载，可重新开启。');
-      };
-    }
-    const a = music.current;
-    if (!a.paused) {
-      a.pause();
-      setPlaying(false);
-      return;
-    }
-    a.volume = musicVolume;
-    try {
-      await a.play();
-      if (document.hidden) a.pause();
-      else setPlaying(!a.paused);
-    } catch {
-      setPlaying(false);
-      setMessage('背景音乐未能播放，可重新开启。');
-    }
+    await startEffects();
   };
   return (
     <div className="sound-controls">
       <div className="sound-row">
         <Button onClick={toggleEffects} aria-pressed={effects || loading}>
-          {loading ? '取消加载音效' : effects ? '关闭互动声音' : '开启互动声音'}
-        </Button>
-        <Button onClick={toggleMusic} aria-pressed={playing}>
-          {playing ? '关闭背景音乐' : '开启背景音乐'}
+          {effects || loading ? '关闭声音' : '开启声音'}
         </Button>
         <details className="sound-options">
           <summary>声音设置</summary>
@@ -143,26 +120,22 @@ export default function SoundControls({
                 }}
               />
             </label>
-            <label>
-              音乐音量{' '}
-              <input
-                aria-label="音乐音量"
-                type="range"
-                min="0"
-                max="0.5"
-                step="0.01"
-                value={musicVolume}
-                onChange={(e) => {
-                  const n = +e.target.value;
-                  setMusicVolume(n);
-                  if (music.current) music.current.volume = n;
-                }}
-              />
-            </label>
             <p>
-              触碰轻响 → 抚摸约 1 秒小生物回应 → 约 4 秒呼噜 → 约 8
-              秒翻动。受惊、快速转身会响起鳞片声，安静时留白。
+              初次接触轻响；抚摸后逐渐回应、呼噜、翻动。快速转身只轻响一次，
+              享受抚摸时不打断。休息呼吸与满足舒气为本地试听候选。
             </p>
+            {import.meta.env.DEV && (
+              <div>
+                <p>逐段试听（声音默认开启，鼠标离开小莹）</p>
+                {([
+                  ['touch', '接触'], ['scales', '转身'], ['startle', '受惊'],
+                  ['voice', '抚摸回应'], ['curiosity', '好奇 B'], ['purr', '享受'], ['roll', '翻动'],
+                  ['rest', '呼吸候选'], ['settle', '舒气候选'],
+                ] as [SoundCue, string][]).map(([cue, label]) => (
+                  <Button key={cue} disabled={!effects} onClick={() => engine.current?.audition(cue)}>{label}</Button>
+                ))}
+              </div>
+            )}
             <a href="/audio/credits.html" target="_blank" rel="noreferrer">
               声音来源与署名
             </a>

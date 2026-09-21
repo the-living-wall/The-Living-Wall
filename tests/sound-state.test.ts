@@ -12,15 +12,23 @@ const base: SoundState = {
   heading: 0,
   frightCount: 0,
 };
-void test('idle stays silent; entering observe chirps only once', () => {
+void test('idle and observing remain silent', () => {
   const d = new SoundDirector();
   d.update(base);
   assert.equal(d.update({ ...base, time: 1 }).cue, undefined);
-  assert.equal(d.update({ ...base, time: 2, phase: 'observe' }).cue, 'scales');
+  assert.equal(d.update({ ...base, time: 2, phase: 'observe' }).cue, undefined);
   assert.equal(
     d.update({ ...base, time: 40, phase: 'observe' }).cue,
     undefined,
   );
+});
+void test('curiosity speaks once when observation becomes a probe or invitation', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(d.update({ ...base, time: 1, phase: 'observe' }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 2, phase: 'probe' }).cue, 'curiosity');
+  assert.equal(d.update({ ...base, time: 3, phase: 'probe' }).cue, undefined);
+  assert.equal(d.update({ ...base, time: 4, phase: 'invite' }).cue, 'curiosity');
 });
 void test('long stroke has a finite sequence, never loops', () => {
   const d = new SoundDirector();
@@ -44,7 +52,7 @@ void test('alarm preempts with scales and rest plays once per rest entry', () =>
   d.update(base);
   assert.deepEqual(d.update({ ...base, time: 1, stroked: true, alarm: 0.3 }), {
     stop: true,
-    cue: 'scales',
+    cue: 'startle',
   });
   assert.equal(d.update({ ...base, time: 10, resting: true }).cue, 'rest');
   assert.equal(d.update({ ...base, time: 50, resting: true }).cue, undefined);
@@ -74,7 +82,7 @@ void test('shock survives following frames and silence resumes after finite cue'
   d.update({ ...base, time: 1, stroked: true });
   assert.deepEqual(d.update({ ...base, time: 1.1, alarm: 0.8 }), {
     stop: true,
-    cue: 'scales',
+    cue: 'startle',
   });
   for (let time = 1.2; time < 2.3; time += 0.1)
     assert.deepEqual(d.update({ ...base, time, alarm: 0.7 }), { stop: false });
@@ -93,9 +101,8 @@ void test('rapid real turns make bounded bursts, slowing fades, idle stays quiet
       cues.push(time);
     }
   }
-  assert.equal(cues.length, 3);
-  assert.ok(cues[1] - cues[0] >= 1.3);
-  assert.equal(d.update({ ...base, time: 3.02, heading: 6.001 }).stop, true);
+  assert.equal(cues.length, 1);
+  assert.equal(d.update({ ...base, time: 3.02, heading: 6.001 }).stop, false);
   assert.equal(d.update({ ...base, time: 4, heading: 6.001 }).cue, undefined);
 });
 void test('wrapped angle, slow breathing turns and resumed frames do not rustle', () => {
@@ -114,12 +121,34 @@ void test('a new fright during recovery preempts cooldown once', () => {
   d.update({ ...base, time: 0.1, alarm: 0.8, frightCount: 1 });
   assert.equal(
     d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue,
-    'scales',
+    'startle',
   );
   assert.deepEqual(
     d.update({ ...base, time: 0.52, alarm: 0.9, frightCount: 2 }),
     { stop: false },
   );
+});
+
+void test('stationary contact acknowledges once without advancing enjoyment', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(d.update({ ...base, time: 0.1, touching: true }).cue, 'touch');
+  for (let time = 0.2; time < 10; time += 0.1)
+    assert.equal(d.update({ ...base, time, touching: true }).cue, undefined);
+});
+
+void test('turning during petting cannot steal or reset the enjoyment sequence', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  const cues: string[] = [];
+  for (let frame = 1; frame < 1200; frame++) {
+    const time = frame / 60;
+    const e = d.update({ ...base, time, heading: time * 2, touching: true, stroked: true, enjoyment: 0.9 });
+    if (e.cue) cues.push(e.cue);
+  }
+  assert.deepEqual(cues, ['touch', 'voice', 'purr', 'roll']);
+  assert.equal(d.update({ ...base, time: 20.1, enjoyment: 0.8 }).cue, 'settle');
+  assert.equal(d.update({ ...base, time: 21, enjoyment: 0.8 }).cue, undefined);
 });
 
 void test('all petting cues respond within eight seconds without looping', () => {
