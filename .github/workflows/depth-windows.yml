@@ -1,0 +1,33 @@
+name: Depth lab Windows
+
+on:
+  pull_request:
+    paths:
+      - 'tools/depth-lab/**'
+      - '.github/workflows/depth-windows.yml'
+  workflow_dispatch:
+
+jobs:
+  windows:
+    name: Windows install and depth simulation
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Verify quoting when the checkout path contains a space.
+          path: 'depth windows'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - name: Install pinned dependencies using the Windows script
+        working-directory: depth windows/tools/depth-lab
+        shell: cmd
+        run: |
+          chcp 65001 >nul
+          call "安装环境.bat" --no-pause
+      - name: Test detector, device errors and simulation without a camera
+        working-directory: depth windows/tools/depth-lab
+        shell: cmd
+        run: .venv\Scripts\python -m unittest -v test_detector test_server test_metrology
