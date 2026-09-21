@@ -1,4 +1,5 @@
 import { Creature, ease, RIPPLE_SPEED, DISTURB_NEAR_AMP } from './creature';
+import { getVisualStageParams } from './visual-stage';
 /** Rest pose is squat (~0.82 Y) and enjoyment facing often adds X; boost world-Y. */
 const STRETCH_VISUAL_Y = 0.75;
 const STRETCH_SQUASH = 0.5;
@@ -26,7 +27,8 @@ export class CreatureRenderer {
     const unit = Math.min(w, h),
       cx = c.x * w,
       cy = c.y * h,
-      base = unit * 0.165 * c.growthScale,
+      visual = getVisualStageParams(c.growthStage),
+      base = unit * 0.165 * c.growthScale * visual.bodyScale,
       t = c.time;
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, w, h);
@@ -48,6 +50,7 @@ export class CreatureRenderer {
     const towardLength = Math.max(1, Math.hypot(towardX, towardY));
     const tipLength = Math.min(towardLength, base * 2.4) * c.feeler;
     for (const p of this.particles) {
+      if (p.i >= visual.particleLimit) continue;
       const isCore = p.i < 28,
         isScout = p.i >= 194;
       const phase = p.seed;
@@ -55,13 +58,18 @@ export class CreatureRenderer {
         qy = 0;
       if (isCore) {
         const radius =
-          base * (0.025 + Math.sqrt(p.i / 28) * 0.21) * c.core * breathe;
+          base *
+          (0.025 + Math.sqrt(p.i / 28) * 0.21) *
+          c.core *
+          visual.coreScale *
+          breathe;
         const a = p.angle + t * 0.16;
         qx = Math.cos(a) * radius * (1 + c.openness * 0.15);
         qy = Math.sin(a) * radius * 0.8;
       } else if (isScout) {
         const n = (p.i - 194) / 15;
-        const reach = base * 0.55 + n * tipLength;
+        const reach =
+          base * 0.55 * visual.scoutScale + n * tipLength * visual.scoutScale;
         const beat = Math.sin(t * 2 - n * 4) * base * 0.028;
         qx = reach;
         qy =
@@ -78,7 +86,12 @@ export class CreatureRenderer {
           p.angle +
           t * (0.06 + c.openness * 0.045) +
           Math.sin(t * 0.5 + phase) * 0.1;
-        const r = base * (0.28 + Math.sqrt(n) * 0.75) * c.radius * breathe;
+        const r =
+          base *
+          (0.28 + Math.sqrt(n) * 0.75) *
+          c.radius *
+          visual.bodyRadius *
+          breathe;
         const wave =
           1 +
           Math.sin(a * 3 + t * 0.65) * 0.1 +
@@ -200,7 +213,11 @@ export class CreatureRenderer {
         : isScout
           ? 0.5 + c.feeler * 0.4
           : 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(phase + t * 0.8));
-      const size = p.size * (0.6 + unit / 1400) * (isCore ? 0.7 : 1);
+      const size =
+        p.size *
+        (0.6 + unit / 1400) *
+        visual.fragmentScale *
+        (isCore ? 0.7 : 1);
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(
@@ -217,8 +234,15 @@ export class CreatureRenderer {
           (0.46 + wave * 0.54) *
           (1 + rippleBoost * 0.9 + disturbBoost * 0.3 + stretchBoost * 0.25),
       );
-      const saturation = isCore ? c.maturity * 15 : c.maturity * 85;
-      const hue = (190 + p.i * 1.8 + c.enjoyment * 35) % 360;
+      const saturation = Math.min(
+        78,
+        visual.saturation + (isCore ? c.maturity * 8 : c.maturity * 16),
+      );
+      const hue =
+        (visual.hue +
+          ((p.i % 28) / 27 - 0.5) * visual.hueRange +
+          c.enjoyment * 35) %
+        360;
       ctx.fillStyle = `hsla(${hue},${saturation}%,${isCore ? 96 : 88 - c.maturity * 16}%,${luminous})`;
       ctx.shadowColor = 'rgba(210,234,255,.65)';
       ctx.shadowBlur = isCore ? 12 : isScout ? 7 : 2;
