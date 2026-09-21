@@ -3,13 +3,21 @@ import {
   type SoundCue,
   type SoundState,
 } from './sound-state.ts';
+import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
 const clips = ['purr', 'voice', 'touch', 'scales', 'roll'] as const;
 const settings = {
-  purr: { rate: 0.7, seconds: 3, gain: 0.38, cutoff: 850 },
-  rest: { rate: 0.6, seconds: 4, gain: 0.15, cutoff: 650 },
-  voice: { rate: 0.88, seconds: 1.2, gain: 0.5, cutoff: 3200 },
-  touch: { rate: 0.8, seconds: 1, gain: 0.3, cutoff: 1800 },
-  scales: { rate: 0.6, seconds: 1.2, gain: 0.32, cutoff: 2800 },
+  // The source purr is about 10 dB louder than the other clips. Keep it as
+  // an intimate response instead of letting it dominate the interaction mix.
+  purr: { rate: 0.7, seconds: 2.8, gain: 0.17, cutoff: 850 },
+  rest: { rate: 1, seconds: 2.4, gain: 0.2, cutoff: 900 },
+  settle: { rate: 1, seconds: 0.8, gain: 0.23, cutoff: 1400 },
+  curiosity: { rate: 1, seconds: 0.78, gain: 0.28, cutoff: 2400 },
+  // The touch-response voice was masking the quieter body cues in the test
+  // mix, so keep it at half its previous level while preserving its tone.
+  voice: { rate: 0.88, seconds: 1.2, gain: 0.25, cutoff: 3200 },
+  touch: { rate: 0.8, seconds: 0.4, gain: 0.22, cutoff: 1800 },
+  scales: { rate: 0.75, seconds: 0.35, gain: 0.16, cutoff: 2200 },
+  startle: { rate: 0.7, seconds: 0.65, gain: 0.24, cutoff: 2600 },
   roll: { rate: 0.7, seconds: 2, gain: 0.4, cutoff: 3500 },
 };
 export class CreatureAudio {
@@ -56,6 +64,9 @@ export class CreatureAudio {
         }),
       );
       if (this.closed) throw new Error('Audio closed');
+      this.buffers.set('rest', makeAirCandidate(this.context, 2.4));
+      this.buffers.set('settle', makeAirCandidate(this.context, 0.8));
+      this.buffers.set('curiosity', makeCuriosityCandidate(this.context));
       this.ready = true;
     } finally {
       clearTimeout(timer);
@@ -74,7 +85,7 @@ export class CreatureAudio {
   private play(cue: SoundCue) {
     // Drop conflicting cues; no queue that could speak after the user leaves.
     if (this.active) return;
-    const buffer = this.buffers.get(cue === 'rest' ? 'purr' : cue);
+    const buffer = this.buffers.get(cue === 'startle' ? 'scales' : cue);
     if (!buffer) return;
     const c = this.context,
       config = settings[cue],
@@ -114,13 +125,11 @@ export class CreatureAudio {
     }
     const tail = cue === 'voice' ? 0.8 : 0;
     gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(
-      config.gain,
-      start + Math.min(0.25, duration / 4),
-    );
+    const attack = Math.min(0.08, duration / 4);
+    gain.gain.linearRampToValueAtTime(config.gain, start + attack);
     gain.gain.setValueAtTime(
       config.gain,
-      start + Math.max(0.25, duration + tail - 0.5),
+      start + Math.max(attack, duration + tail - Math.min(0.5, duration / 2)),
     );
     gain.gain.linearRampToValueAtTime(0, start + duration + tail);
     const active = { source, gain, nodes };
@@ -136,6 +145,11 @@ export class CreatureAudio {
         tail * 1000 + 50,
       );
     };
+  }
+  audition(cue: SoundCue) {
+    if (!this.ready || this.closed) return;
+    this.stop();
+    this.play(cue);
   }
   stop() {
     const a = this.active;

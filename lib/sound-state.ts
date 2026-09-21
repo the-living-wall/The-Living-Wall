@@ -1,5 +1,5 @@
 /** Discrete cues, never a looping soundtrack. Time is Creature simulation time. */
-export type SoundCue = 'touch' | 'voice' | 'purr' | 'scales' | 'roll' | 'rest';
+export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
 export type SoundState = {
   time: number;
   phase: string;
@@ -21,6 +21,7 @@ export class SoundDirector {
   private motionSound = false;
   private nextScales = 0;
   private shockUntil = 0;
+  private nextTouch = 0;
   reset() {
     this.previous = undefined;
     this.lastStroke = -Infinity;
@@ -30,6 +31,7 @@ export class SoundDirector {
     this.motionSound = false;
     this.nextScales = 0;
     this.shockUntil = 0;
+    this.nextTouch = 0;
   }
   update(s: SoundState, busy = false): { stop: boolean; cue?: SoundCue } {
     const p = this.previous;
@@ -53,19 +55,19 @@ export class SoundDirector {
             ),
           ) / dt
         : 0;
+    const wasTurning = this.turning;
     this.turning = speed >= (this.turning ? 0.65 : 1.2);
     const shock =
       (s.alarm >= 0.1 && p.alarm < 0.1) || s.frightCount > p.frightCount;
     if (shock) this.shockUntil = s.time + 1.2;
-    const moving = this.turning || s.time < this.shockUntil;
-    if (moving) {
+    if (shock || s.time < this.shockUntil) {
       this.stage = 0;
       this.lastStroke = -Infinity;
       this.since = s.time;
-      if (shock || s.time >= this.nextScales) {
-        this.nextScales = s.time + 1.3;
+      if (shock) {
+        this.nextScales = s.time + 4;
         this.motionSound = true;
-        return { stop: true, cue: 'scales' };
+        return { stop: true, cue: 'startle' };
       }
       // Don't stop the shock cue on every frame while alarm remains high.
       return { stop: false };
@@ -90,6 +92,7 @@ export class SoundDirector {
       this.since = s.time;
       return { stop };
     }
+    const satisfied = stoppedStroke && this.stage >= 3 && p.enjoyment > 0.45;
     if (stoppedStroke) this.stage = 0;
     if (s.stroked) {
       if (this.stage === 0) this.since = s.time;
@@ -99,9 +102,29 @@ export class SoundDirector {
       this.next = s.time + 5;
       return { stop: true, cue: 'rest' };
     }
+    if (satisfied) return { stop: true, cue: 'settle' };
+    if (
+      !s.stroked &&
+      !s.touching &&
+      (s.phase === 'probe' || s.phase === 'invite') &&
+      p.phase !== s.phase
+    ) {
+      return { stop: false, cue: 'curiosity' };
+    }
+    // Contact acknowledgment is independent of moving fast enough to stroke.
+    if (s.touching && !p.touching && s.time >= this.nextTouch) {
+      this.nextTouch = s.time + 1.5;
+      if (s.stroked && this.stage === 0) {
+        this.stage = 1;
+        this.next = s.time + 1.1;
+      }
+      return { stop: true, cue: 'touch' };
+    }
     if (s.stroked && this.stage === 0 && !endedMotion) {
       this.stage = 1;
       this.next = s.time + 1.1;
+      if (s.time < this.nextTouch) return { stop };
+      this.nextTouch = s.time + 1.5;
       return { stop: true, cue: 'touch' };
     }
     // Never advance the sequence if the real audio channel is still occupied.
@@ -122,7 +145,14 @@ export class SoundDirector {
         cue = 'roll';
         this.stage = 4;
       }
-    } else if (s.phase === 'observe' && p.phase !== 'observe') cue = 'scales';
+    }
+    // Material sound belongs to the turn onset, not every second of rotation.
+    // Consume the onset even when busy: no late sound and no petting reset.
+    if (!cue && this.turning && !wasTurning && !s.touching && !s.stroked &&
+        !s.resting && !busy && s.time >= this.nextScales) {
+      this.nextScales = s.time + 4;
+      cue = 'scales';
+    }
     if (cue)
       this.next = s.time + (cue === 'purr' ? 3.3 : cue === 'voice' ? 2.2 : 1.1);
     return { stop, cue };
