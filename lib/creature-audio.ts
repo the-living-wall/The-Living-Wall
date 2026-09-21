@@ -33,7 +33,14 @@ export class CreatureAudio {
   }
   async start() {
     // Resume immediately inside the click gesture, before fetching.
-    await this.context.resume();
+    // A rejected/blocked autoplay request can otherwise leave resume() pending
+    // forever. Fail quickly so the unified UI can explain the gesture fallback.
+    await Promise.race([
+      this.context.resume(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Audio autoplay was blocked')), 1500),
+      ),
+    ]);
     const timer = setTimeout(() => this.request.abort(), 20000);
     try {
       await Promise.all(

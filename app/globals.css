@@ -166,6 +166,77 @@ canvas:focus-visible {
   color: #a6b0b3;
   line-height: 1.9;
 }
+.growth-summary {
+  width: min(330px, 42vw);
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid #303a3c;
+  border-radius: 10px;
+  background: #0c1113b8;
+  backdrop-filter: blur(8px);
+}
+.growth-summary-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.growth-summary-heading strong {
+  color: #e5eeee;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+.growth-summary-heading span,
+.growth-summary p,
+.help-note {
+  color: #a6b0b3;
+  font-size: 12px;
+}
+.growth-summary p {
+  margin: 4px 0 9px;
+  line-height: 1.6;
+}
+.growth-meter {
+  display: grid;
+  grid-template-columns: 28px minmax(70px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  color: #a6b0b3;
+  font-size: 11px;
+}
+.growth-meter progress {
+  width: 100%;
+  height: 4px;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  appearance: none;
+  background: #273032;
+}
+.growth-meter progress::-webkit-progress-bar {
+  background: #273032;
+  border-radius: 8px;
+}
+.growth-meter progress::-webkit-progress-value {
+  background: #c6efbc;
+  border-radius: 8px;
+}
+.growth-meter progress::-moz-progress-bar {
+  background: #c6efbc;
+  border-radius: 8px;
+}
+.growth-meter em {
+  color: #c6efbc;
+  font-size: 11px;
+  font-style: normal;
+  white-space: nowrap;
+}
+.help-note {
+  margin-top: 8px;
+  line-height: 1.6;
+}
 .help kbd {
   font: 12px monospace;
   color: #d2dada;
@@ -322,6 +393,9 @@ canvas:focus-visible {
   }
   .help {
     font-size: 13px;
+  }
+  .growth-summary {
+    width: min(330px, calc(100vw - 44px));
   }
   .camera-preview {
     left: 22px;

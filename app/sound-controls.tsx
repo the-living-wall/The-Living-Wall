@@ -1,8 +1,15 @@
 'use client';
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react';
 import type { Creature } from '@/lib/creature';
 import { CreatureAudio } from '@/lib/creature-audio';
 import { Button } from '@/components/ui/button';
+
 export default function SoundControls({
   creature,
 }: {
@@ -11,12 +18,14 @@ export default function SoundControls({
   const engine = useRef<CreatureAudio | null>(null);
   const music = useRef<HTMLAudioElement | null>(null);
   const generation = useRef(0);
-  const [effects, setEffects] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [volume, setVolume] = useState(0.45);
   const [musicVolume, setMusicVolume] = useState(0.12);
   const [message, setMessage] = useState('');
+  const volumeRef = useRef(volume);
+  const musicVolumeRef = useRef(musicVolume);
+
   useEffect(() => {
     let raf = 0;
     const frame = () => {
@@ -29,9 +38,8 @@ export default function SoundControls({
       engine.current?.close();
       engine.current = null;
       music.current?.pause();
-      setEffects(false);
+      setSoundOn(false);
       setLoading(false);
-      setPlaying(false);
     };
     const hide = () => {
       if (document.hidden) {
@@ -61,68 +69,69 @@ export default function SoundControls({
       disposeMusic();
     };
   }, [creature]);
-  const toggleEffects = async () => {
+
+  const activate = useCallback(async () => {
     const token = ++generation.current;
     setMessage('');
-    if (engine.current) {
-      engine.current.close();
-      engine.current = null;
-      setEffects(false);
-      setLoading(false);
-      return;
-    }
-    let next: CreatureAudio | null = null;
-    try {
-      next = new CreatureAudio(volume);
-      engine.current = next;
-      setLoading(true);
-      await next.start();
-      if (generation.current !== token) return;
-      setLoading(false);
-      setEffects(true);
-    } catch {
-      next?.close();
-      if (generation.current !== token) return;
-      engine.current = null;
-      setLoading(false);
-      setEffects(false);
-      setMessage('音效未能加载，请点「开启互动声音」重试。仍可正常互动。');
-    }
-  };
-  const toggleMusic = async () => {
-    setMessage('');
+    const next = new CreatureAudio(volumeRef.current);
+    engine.current = next;
     if (!music.current) {
       music.current = new Audio('/audio/kalimba.mp3');
       music.current.loop = true;
-      music.current.onerror = () => {
-        setPlaying(false);
-        setMessage('背景音乐未能加载，可重新开启。');
-      };
+      music.current.preload = 'auto';
+      music.current.onerror = () =>
+        setMessage('背景音乐暂时不可用，互动音效仍会继续。');
     }
-    const a = music.current;
-    if (!a.paused) {
-      a.pause();
-      setPlaying(false);
-      return;
+    const audio = music.current;
+    audio.volume = musicVolumeRef.current;
+    setLoading(true);
+    const [effects, musicResult] = await Promise.allSettled([
+      next.start(),
+      audio.play(),
+    ]);
+    if (generation.current !== token) return;
+    const effectsReady = effects.status === 'fulfilled';
+    const musicReady = musicResult.status === 'fulfilled' && !audio.paused;
+    if (!effectsReady && !musicReady) {
+      next.close();
+      engine.current = null;
+      audio.pause();
+      setSoundOn(false);
+      setMessage('浏览器暂未允许自动播放，请点击“开启声音”一次。');
+    } else {
+      setSoundOn(true);
+      if (!effectsReady) next.close();
+      if (!musicReady) audio.pause();
+      if (!effectsReady || !musicReady)
+        setMessage('部分声音暂不可用；点击声音按钮可再次尝试。');
     }
-    a.volume = musicVolume;
-    try {
-      await a.play();
-      if (document.hidden) a.pause();
-      else setPlaying(!a.paused);
-    } catch {
-      setPlaying(false);
-      setMessage('背景音乐未能播放，可重新开启。');
-    }
+    setLoading(false);
+  }, []);
+
+  const deactivate = () => {
+    generation.current++;
+    engine.current?.close();
+    engine.current = null;
+    music.current?.pause();
+    setSoundOn(false);
+    setLoading(false);
+    setMessage('声音已关闭。');
   };
+  const toggleSound = () => {
+    if (loading || soundOn) deactivate();
+    else void activate();
+  };
+  useEffect(() => {
+    const timer = window.setTimeout(() => void activate(), 0);
+    // Browsers requiring a gesture reject this attempt; the button then retries it.
+    return () => window.clearTimeout(timer);
+  }, [activate]);
+
   return (
     <div className="sound-controls">
       <div className="sound-row">
-        <Button onClick={toggleEffects} aria-pressed={effects || loading}>
-          {loading ? '取消加载音效' : effects ? '关闭互动声音' : '开启互动声音'}
-        </Button>
-        <Button onClick={toggleMusic} aria-pressed={playing}>
-          {playing ? '关闭背景音乐' : '开启背景音乐'}
+        <Button onClick={toggleSound} aria-pressed={soundOn || loading}>
+          {loading ? '声音加载中…' : soundOn ? '关闭声音' : '开启声音'}
         </Button>
         <details className="sound-options">
           <summary>声音设置</summary>
@@ -138,6 +147,7 @@ export default function SoundControls({
                 value={volume}
                 onChange={(e) => {
                   const n = +e.target.value;
+                  volumeRef.current = n;
                   setVolume(n);
                   engine.current?.volume(n);
                 }}
@@ -154,12 +164,15 @@ export default function SoundControls({
                 value={musicVolume}
                 onChange={(e) => {
                   const n = +e.target.value;
+                  musicVolumeRef.current = n;
                   setMusicVolume(n);
                   if (music.current) music.current.volume = n;
                 }}
               />
             </label>
             <p>
+              默认会同时尝试开启互动音效与背景音乐。若浏览器拦截自动播放，点击上方按钮即可恢复。
+              <br />
               触碰轻响 → 抚摸约 1 秒小生物回应 → 约 4 秒呼噜 → 约 8
               秒翻动。受惊、快速转身会响起鳞片声，安静时留白。
             </p>

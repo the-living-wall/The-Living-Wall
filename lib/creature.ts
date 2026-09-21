@@ -17,6 +17,73 @@ export type Growth = {
   day: string;
   dailyCare: number;
 };
+export type GrowthStage = 0 | 1 | 2 | 3 | 4;
+export type GrowthStageInfo = {
+  stage: GrowthStage;
+  name: string;
+  minMaturity: number;
+  maxMaturity: number;
+  description: string;
+};
+export const GROWTH_STAGES: readonly GrowthStageInfo[] = [
+  {
+    stage: 0,
+    name: '初生白光',
+    minMaturity: 0,
+    maxMaturity: 0.15,
+    description: '它还在学习这里是否安全。',
+  },
+  {
+    stage: 1,
+    name: '青痕萌发',
+    minMaturity: 0.15,
+    maxMaturity: 0.35,
+    description: '它开始记住你的靠近。',
+  },
+  {
+    stage: 2,
+    name: '流彩舒展',
+    minMaturity: 0.35,
+    maxMaturity: 0.65,
+    description: '它愿意向你展开了。',
+  },
+  {
+    stage: 3,
+    name: '亲密共生',
+    minMaturity: 0.65,
+    maxMaturity: 0.85,
+    description: '它已经把你当作熟悉的光。',
+  },
+  {
+    stage: 4,
+    name: '成熟光体',
+    minMaturity: 0.85,
+    maxMaturity: 1,
+    description: '它已经长成自己的样子。',
+  },
+] as const;
+
+export function getGrowthStage(maturity: number): GrowthStage {
+  const value = clamp(Number.isFinite(maturity) ? maturity : 0);
+  if (value >= 0.85) return 4;
+  if (value >= 0.65) return 3;
+  if (value >= 0.35) return 2;
+  if (value >= 0.15) return 1;
+  return 0;
+}
+
+export function getGrowthStageInfo(stage: GrowthStage): GrowthStageInfo {
+  return GROWTH_STAGES[stage] ?? GROWTH_STAGES[0];
+}
+
+export function getGrowthProgressToNextStage(maturity: number) {
+  const value = clamp(Number.isFinite(maturity) ? maturity : 0);
+  const info = getGrowthStageInfo(getGrowthStage(value));
+  if (info.stage === 4) return 1;
+  return clamp(
+    (value - info.minMaturity) / (info.maxMaturity - info.minMaturity),
+  );
+}
 /** A single stroke-born wave that expands from contact and fades out. */
 export type Ripple = {
   x: number;
@@ -109,6 +176,9 @@ export class Creature {
   dailyCare = 0;
   get maturity() {
     return clamp(this.care / 1800);
+  }
+  get growthStage(): GrowthStage {
+    return getGrowthStage(this.maturity);
   }
   get growthScale() {
     return 1 + this.maturity * 0.42;

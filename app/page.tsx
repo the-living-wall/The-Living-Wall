@@ -4,7 +4,14 @@ import HandCamera from './hand-camera';
 import DepthInputPoller from './depth-input';
 import SoundControls from './sound-controls';
 import { Button } from '@/components/ui/button';
-import { Creature, clamp, phaseCopy, type Phase } from '@/lib/creature';
+import {
+  Creature,
+  clamp,
+  getGrowthStageInfo,
+  phaseCopy,
+  type Phase,
+  type GrowthStage,
+} from '@/lib/creature';
 import { CreatureRenderer } from '@/lib/draw-creature';
 import type { DepthPoint } from '@/lib/depth-input';
 import {
@@ -14,6 +21,14 @@ import {
   switchCreatureArchive,
 } from '@/lib/creature-archive';
 const localDay = () => new Date().toLocaleDateString('sv-SE');
+const intimacyCopy = (affection: number) =>
+  affection >= 0.7
+    ? '安心相伴'
+    : affection >= 0.45
+      ? '愿意靠近'
+      : affection >= 0.2
+        ? '开始熟悉'
+        : '初次相遇';
 export default function Home() {
   const canvas = useRef<HTMLCanvasElement>(null),
     creature = useRef(new Creature()),
@@ -31,7 +46,9 @@ export default function Home() {
     [projection, setProjection] = useState(false),
     [phase, setPhase] = useState<Phase>('alone'),
     [feeling, setFeeling] = useState(''),
-    [growth, setGrowth] = useState(0);
+    [growth, setGrowth] = useState(0),
+    [growthStage, setGrowthStage] = useState<GrowthStage>(0),
+    [affection, setAffection] = useState(0);
   const storageOK = useRef(true);
   const saveArchive = useCallback(() => {
     try {
@@ -63,6 +80,8 @@ export default function Home() {
     input.current.active = false;
     input.current.speed = 0;
     setGrowth(next.maturity);
+    setGrowthStage(next.growthStage);
+    setAffection(next.affection);
     setPhase('alone');
   }, []);
   const sample = useCallback((x: number, y: number, active: boolean) => {
@@ -95,6 +114,9 @@ export default function Home() {
     renderer.current = new CreatureRenderer();
     input.current.active = false;
     input.current.speed = 0;
+    setGrowth(c.maturity);
+    setGrowthStage(c.growthStage);
+    setAffection(c.affection);
     setPhase('alone');
   }, []);
   const failure = useCallback((text: string) => {
@@ -254,6 +276,8 @@ export default function Home() {
       if (now - lastUI > 200) {
         setPhase(model.phase);
         setGrowth(model.maturity);
+        setGrowthStage(model.growthStage);
+        setAffection(model.affection);
         setFeeling(
           model.alarm > 0.1
             ? ''
@@ -351,6 +375,9 @@ export default function Home() {
     });
     return () => lifecycle.abort();
   }, [reset]);
+  const growthInfo = getGrowthStageInfo(growthStage);
+  const growthPercent = Math.round(growth * 100);
+  const affectionPercent = Math.round(affection * 100);
   return (
     <main className={'habitat' + (projection ? ' projection' : '')}>
       <canvas
@@ -413,15 +440,27 @@ export default function Home() {
             : camera
               ? '手部互动 · 不录制、不上传'
               : '鼠标 / 触摸 / 方向键'}
-          <br />
-          {growth < 0.15
-            ? '初生白光'
-            : growth < 0.65
-              ? '微色萌发'
-              : '流彩渐成'}{' '}
-          · 成长 {Math.round(growth * 100)}%
-          <br />
-          成长保存在本机浏览器 · 不识别身份
+          <div className="growth-summary" aria-label="小莹的成长与亲密度">
+            <div className="growth-summary-heading">
+              <strong>{growthInfo.name}</strong>
+              <span>成长 {growthPercent}%</span>
+            </div>
+            <p>{growthInfo.description}</p>
+            <div className="growth-meter">
+              <span>成长</span>
+              <progress value={growth} max={1} aria-label={`成长 ${growthPercent}%`} />
+            </div>
+            <div className="growth-meter">
+              <span>亲密</span>
+              <progress
+                value={affection}
+                max={1}
+                aria-label={`亲密度 ${affectionPercent}%`}
+              />
+              <em>{intimacyCopy(affection)}</em>
+            </div>
+          </div>
+          <div className="help-note">成长保存在本机浏览器 · 不识别身份</div>
           <br />
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
