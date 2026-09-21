@@ -4,6 +4,9 @@ import {
   Creature,
   disturbFalloff,
   DISTURB_RADIUS,
+  getGrowthProgressToNextStage,
+  getGrowthStage,
+  getGrowthStageInfo,
   STRETCH_GAIN,
   STRETCH_GAIN_Y,
   STRETCH_MAX,
@@ -12,6 +15,38 @@ import {
   type Phase,
 } from '../lib/creature.ts';
 const gentle: Signal = { x: 0.57, y: 0.53, speed: 0.16, seen: true };
+
+void test('growth maturity maps to the shared five-stage boundaries', () => {
+  assert.equal(getGrowthStage(0), 0);
+  assert.equal(getGrowthStage(0.14999), 0);
+  assert.equal(getGrowthStage(0.15), 1);
+  assert.equal(getGrowthStage(0.35), 2);
+  assert.equal(getGrowthStage(0.65), 3);
+  assert.equal(getGrowthStage(0.85), 4);
+  assert.equal(getGrowthStage(-1), 0);
+  assert.equal(getGrowthStage(2), 4);
+  assert.equal(getGrowthStage(Number.NaN), 0);
+});
+
+void test('growth stage metadata and progress are stable', () => {
+  assert.equal(getGrowthStageInfo(0).name, '初生白光');
+  assert.equal(getGrowthStageInfo(3).description, '它已经把你当作熟悉的光。');
+  assert.equal(getGrowthProgressToNextStage(0.15), 0);
+  assert.ok(Math.abs(getGrowthProgressToNextStage(0.25) - 0.5) < 1e-12);
+  assert.equal(getGrowthProgressToNextStage(0.85), 1);
+  assert.equal(getGrowthProgressToNextStage(2), 1);
+});
+
+void test('creature exposes stage as a read-only maturity projection', () => {
+  const c = new Creature();
+  assert.equal(c.growthStage, 0);
+  c.care = 630;
+  assert.equal(c.growthStage, 2);
+  c.alarm = 1;
+  c.fatigue = 1;
+  c.resting = true;
+  assert.equal(c.growthStage, 2);
+});
 function run(c: Creature, seconds: number, s: Signal, phases?: Set<Phase>) {
   for (let i = 0; i < Math.round(seconds * 60); i++) {
     c.step(1 / 60, s);

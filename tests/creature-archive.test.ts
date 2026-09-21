@@ -35,3 +35,22 @@ void test('depth experiment writes only its archive and restores normal growth',
   assert.equal(JSON.parse(values.get(depthArchiveKey)!).care, 50);
   assert.equal(JSON.parse(values.get(normalArchiveKey)!).care, 240);
 });
+
+void test('legacy version one archive derives the shared stage without migration', () => {
+  const c = new Creature();
+  c.restore({
+    version: 1,
+    care: 630,
+    affection: 0.2,
+    day: '2026-09-21',
+    dailyCare: 12,
+  });
+  assert.equal(c.growthStage, 2);
+  assert.deepEqual(c.archive(), {
+    version: 1,
+    care: 630,
+    affection: 0.2,
+    day: '2026-09-21',
+    dailyCare: 12,
+  });
+});
