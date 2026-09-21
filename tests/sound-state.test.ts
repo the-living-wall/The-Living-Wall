@@ -10,6 +10,7 @@ const base: SoundState = {
   resting: false,
   alarm: 0,
   heading: 0,
+  motionSpeed: 0,
   frightCount: 0,
 };
 void test('idle and observing remain silent', () => {
@@ -146,9 +147,33 @@ void test('turning during petting cannot steal or reset the enjoyment sequence',
     const e = d.update({ ...base, time, heading: time * 2, touching: true, stroked: true, enjoyment: 0.9 });
     if (e.cue) cues.push(e.cue);
   }
-  assert.deepEqual(cues, ['touch', 'voice', 'purr', 'roll']);
+  assert.deepEqual(cues, ['scales', 'touch', 'voice', 'purr', 'roll']);
   assert.equal(d.update({ ...base, time: 20.1, enjoyment: 0.8 }).cue, 'settle');
   assert.equal(d.update({ ...base, time: 21, enjoyment: 0.8 }).cue, undefined);
+});
+
+void test('every fast turn onset speaks even during touch', () => {
+  const d = new SoundDirector();
+  d.update({ ...base, touching: true, stroked: true });
+  assert.equal(
+    d.update({ ...base, time: 0.1, heading: 0.2, touching: true, stroked: true }).cue,
+    'scales',
+  );
+  d.update({ ...base, time: 0.2, heading: 0.4, touching: true, stroked: true });
+  d.update({ ...base, time: 0.8, heading: 0.4, touching: true, stroked: true });
+  assert.equal(
+    d.update({ ...base, time: 0.9, heading: 1.1, touching: true, stroked: true }).cue,
+    'scales',
+  );
+});
+
+void test('actual creature movement emits one short whoosh per movement burst', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  assert.equal(d.update({ ...base, time: 0.1, motionSpeed: 0.3 }).cue, 'move');
+  assert.equal(d.update({ ...base, time: 0.2, motionSpeed: 0.4 }).cue, undefined);
+  d.update({ ...base, time: 0.8, motionSpeed: 0.05 });
+  assert.equal(d.update({ ...base, time: 0.9, motionSpeed: 0.3 }).cue, 'move');
 });
 
 void test('all petting cues respond within eight seconds without looping', () => {
