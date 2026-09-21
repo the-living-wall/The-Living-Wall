@@ -218,6 +218,8 @@ export class Creature {
   time = 0;
   x = 0.5;
   y = 0.53;
+  /** Actual rendered body displacement per second, used by the sound layer. */
+  motionSpeed = 0;
   lookX = 0.5;
   lookY = 0.53;
   trust = 0;
@@ -664,8 +666,17 @@ export class Creature {
           : this.phase === 'bond'
             ? 1
             : 0.55;
+    const previousX = this.x;
+    const previousY = this.y;
     this.x = ease(this.x, clamp(tx, 0.18, 0.82), rate, dt);
     this.y = ease(this.y, clamp(ty, 0.25, 0.76), rate, dt);
+    this.motionSpeed =
+      dt > 0
+        ? Math.hypot(
+            (this.x - previousX) * this.aspectX,
+            (this.y - previousY) * this.aspectY,
+          ) / dt
+        : 0;
     return this;
   }
   snapshot() {
@@ -688,6 +699,7 @@ export class Creature {
       presence: +this.presence.toFixed(2),
       x: +this.x.toFixed(3),
       y: +this.y.toFixed(3),
+      motionSpeed: +this.motionSpeed.toFixed(3),
       ripples: this.ripples.length,
       disturb: +this.disturbIntensity.toFixed(3),
       stretchX: +this.stretchX.toFixed(3),

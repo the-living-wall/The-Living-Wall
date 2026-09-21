@@ -4,7 +4,7 @@ import {
   type SoundState,
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
-const clips = ['purr', 'voice', 'touch', 'scales', 'roll'] as const;
+const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move'] as const;
 const settings = {
   // The source purr is about 10 dB louder than the other clips. Keep it as
   // an intimate response instead of letting it dominate the interaction mix.
@@ -12,6 +12,8 @@ const settings = {
   rest: { rate: 1, seconds: 2.4, gain: 0.2, cutoff: 900 },
   settle: { rate: 1, seconds: 0.8, gain: 0.23, cutoff: 1400 },
   curiosity: { rate: 1, seconds: 0.78, gain: 0.28, cutoff: 2400 },
+  // Candidate B whoosh: play only its first second as the movement gesture.
+  move: { rate: 1, seconds: 1, gain: 0.3, cutoff: 2400 },
   // The touch-response voice was masking the quieter body cues in the test
   // mix, so keep it at half its previous level while preserving its tone.
   voice: { rate: 0.88, seconds: 1.2, gain: 0.25, cutoff: 3200 },
@@ -80,6 +82,8 @@ export class CreatureAudio {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
     const event = this.director.update(state, !!this.active);
     if (event.stop) this.stop();
+    if ((event.cue === 'scales' || event.cue === 'move') && this.active)
+      this.stop();
     if (event.cue) this.play(event.cue);
   }
   private play(cue: SoundCue) {

@@ -1,5 +1,5 @@
 /** Discrete cues, never a looping soundtrack. Time is Creature simulation time. */
-export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
+export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'move' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
 export type SoundState = {
   time: number;
   phase: string;
@@ -9,6 +9,8 @@ export type SoundState = {
   resting: boolean;
   alarm: number;
   heading: number;
+  /** Actual creature displacement speed, separate from hand/input speed. */
+  motionSpeed: number;
   frightCount: number;
 };
 export class SoundDirector {
@@ -18,8 +20,8 @@ export class SoundDirector {
   private stage = 0;
   private next = 0;
   private turning = false;
+  private moving = false;
   private motionSound = false;
-  private nextScales = 0;
   private shockUntil = 0;
   private nextTouch = 0;
   reset() {
@@ -28,8 +30,8 @@ export class SoundDirector {
     this.stage = 0;
     this.next = 0;
     this.turning = false;
+    this.moving = false;
     this.motionSound = false;
-    this.nextScales = 0;
     this.shockUntil = 0;
     this.nextTouch = 0;
   }
@@ -65,12 +67,22 @@ export class SoundDirector {
       this.lastStroke = -Infinity;
       this.since = s.time;
       if (shock) {
-        this.nextScales = s.time + 4;
         this.motionSound = true;
         return { stop: true, cue: 'startle' };
       }
       // Don't stop the shock cue on every frame while alarm remains high.
       return { stop: false };
+    }
+    const fastTurnOnset = this.turning && !wasTurning && !s.resting;
+    if (fastTurnOnset) {
+      // A visible rapid rotation is itself a body event. Emit it before the
+      // petting sequence so contact cannot swallow the material cue.
+      return { stop: true, cue: 'scales' };
+    }
+    const wasMoving = this.moving;
+    this.moving = s.motionSpeed >= (wasMoving ? 0.12 : 0.22);
+    if (this.moving && !wasMoving && !s.resting) {
+      return { stop: true, cue: 'move' };
     }
     const endedMotion = this.motionSound;
     this.motionSound = false;
@@ -127,7 +139,8 @@ export class SoundDirector {
       this.nextTouch = s.time + 1.5;
       return { stop: true, cue: 'touch' };
     }
-    // Never advance the sequence if the real audio channel is still occupied.
+    // A fast material turn remains audible even when another cue is playing;
+    // other petting stages still wait for the real audio channel.
     if (s.time < this.next || (busy && !stop)) return { stop };
     let cue: SoundCue | undefined;
     if (s.stroked) {
@@ -146,13 +159,9 @@ export class SoundDirector {
         this.stage = 4;
       }
     }
-    // Material sound belongs to the turn onset, not every second of rotation.
-    // Consume the onset even when busy: no late sound and no petting reset.
-    if (!cue && this.turning && !wasTurning && !s.touching && !s.stroked &&
-        !s.resting && !busy && s.time >= this.nextScales) {
-      this.nextScales = s.time + 4;
-      cue = 'scales';
-    }
+    // Every fast turn onset is a material change in the creature's body.
+    // It remains audible while touching or stroking, and has no cooldown;
+    // the hysteresis above prevents repeated cues during one continuous turn.
     if (cue)
       this.next = s.time + (cue === 'purr' ? 3.3 : cue === 'voice' ? 2.2 : 1.1);
     return { stop, cue };
