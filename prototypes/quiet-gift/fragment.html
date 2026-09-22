@@ -55,19 +55,34 @@
 #quiet-gift .q-toolbar button{min-height:44px}
 #quiet-gift .q-sheet{bottom:155px}
 }
+
+#quiet-gift .q-intent-button{border:0;border-radius:0;background:transparent;padding:0 0 10px;min-width:220px}
+#quiet-gift .q-intent-button:hover{background:transparent;color:#c6efbc}
+#quiet-gift .q-intent-button strong{font-size:21px;margin:10px 0;letter-spacing:2px}
+#quiet-gift .q-intent-button .q-switch{font-size:14px}
+#quiet-gift .q-mood-help{font-size:12px;color:#8f9a9e;max-width:235px;margin:4px 0;text-align:left}
+#quiet-gift .q-note{padding:10px 12px;min-height:44px;font-size:14px}
+#quiet-gift .q-note:hover,#quiet-gift .q-pause:hover{color:#c6efbc}
+#quiet-gift #q-back{pointer-events:auto;color:#a6b0b3;margin-bottom:12px;min-height:44px}
+#quiet-gift .q-sound-status{position:absolute;top:88px;right:40px;z-index:3;font-size:12px;color:#a6b0b3;margin:0}
+#quiet-gift .q-pause{min-height:44px;font-size:12px}
+#quiet-gift .q-credits{padding:10px 24px;background:#080b0c;color:#829093;font-size:11px}
+#quiet-gift .q-credits summary{cursor:default}#quiet-gift .q-credits a{color:#a6b0b3}
+@media(max-width:680px){#quiet-gift .q-mast{gap:8px;padding:20px}#quiet-gift .q-brand{gap:10px}#quiet-gift .q-eyebrow{letter-spacing:1px;font-size:10px}#quiet-gift .q-sound-status{top:105px;right:20px;left:20px;text-align:right}#quiet-gift .q-guide{margin-top:30px}#quiet-gift .q-mood{top:350px;left:24px;right:24px}#quiet-gift canvas{top:470px;height:210px}#quiet-gift .q-world{min-height:840px}#quiet-gift[data-view=home] canvas,#quiet-gift[data-view=receive] canvas{top:360px;height:290px}#quiet-gift #q-intents{top:480px}#quiet-gift .q-toolbar nav{gap:14px}}
 </style>
 <div id="quiet-gift" aria-label="小莹赠光视觉方向原型">
   <main class="q-world">
     <canvas id="q-canvas" role="img" aria-label="完整黑色空间中的小莹，缓慢呼吸，鼠标靠近时回应。"></canvas>
-    <header class="q-mast"><div class="q-brand"><span class="q-mark" aria-hidden="true">◌</span><div><h1>小莹</h1><div class="q-eyebrow">THE LIVING WALL</div></div></div><div class="q-actions"><span class="q-edition">把陪伴，长成光</span><button type="button" id="q-pause" class="q-pause cursor-interaction" aria-pressed="false">暂停</button></div></header>
-    <section class="q-guide"><h2 id="q-title">给一个人，
+    <header class="q-mast"><div class="q-brand"><span class="q-mark" aria-hidden="true">◌</span><div><h1>小莹</h1><div class="q-eyebrow">THE LIVING WALL</div></div></div><div class="q-actions"><span class="q-edition">把陪伴，长成光</span><button type="button" id="q-sound" class="q-pause cursor-interaction" aria-pressed="false">开启声音</button><button type="button" id="q-pause" class="q-pause cursor-interaction" aria-pressed="false">暂停</button></div></header><p id="q-sound-status" class="q-sound-status" role="status" aria-live="polite"></p>
+    <section class="q-guide"><button type="button" id="q-back" class="q-text cursor-interaction" hidden>回到陪伴</button><h2 id="q-title">给一个人，
 留一点光。</h2><p id="q-copy">有些心意，不必说很多。
 让小莹，陪你一起表达。</p></section>
-    <aside class="q-mood" id="q-mood"><button type="button" id="q-change" class="q-intent-button cursor-interaction" aria-expanded="false" aria-controls="q-intents"><span>此刻的心意</span><strong id="q-intent-label">陪你一会儿</strong><span class="q-switch">换一种心意 <i data-lucide="chevron-down" aria-hidden="true"></i></span></button></aside>
-    <div class="q-bottom"><div class="q-help"><p id="q-hint" role="status" aria-live="polite">小莹 · 安静地呼吸着</p><p class="q-sub" id="q-sub">不用完成什么，按你的节奏来。</p></div><div class="q-actions"><button type="button" id="q-note" class="q-button cursor-interaction">捎一句话</button><button type="button" id="q-next" class="q-button q-primary cursor-interaction">看看收到的样子&nbsp; ↗</button></div></div>
-    <section class="q-sheet" id="q-intents" hidden><fieldset><legend>想把哪份心意交给对方？</legend><div class="q-choices"><button type="button" data-intent="rest" class="q-choice cursor-interaction" aria-pressed="true">陪你一会儿</button><button type="button" data-intent="thanks" class="q-choice cursor-interaction" aria-pressed="false">想谢谢你</button><button type="button" data-intent="joy" class="q-choice cursor-interaction" aria-pressed="false">分你一点开心</button></div></fieldset></section>
+    <aside class="q-mood" id="q-mood"><button type="button" id="q-change" class="q-intent-button cursor-interaction" aria-expanded="false" aria-controls="q-intents"><span>你想对朋友说什么？</span><strong id="q-intent-label">陪你歇一会儿</strong><span class="q-switch">更换 <i data-lucide="chevron-down" aria-hidden="true"></i></span></button><p class="q-mood-help">选一句开头，再写成你自己的话。</p></aside>
+    <div class="q-bottom"><div class="q-help"><p id="q-hint" role="status" aria-live="polite">小莹 · 安静地呼吸着</p><p class="q-sub" id="q-sub">不用完成什么，按你的节奏来。</p></div><div class="q-actions"><button type="button" id="q-note" class="q-text q-note cursor-interaction">捎一句话</button><button type="button" id="q-next" class="q-button q-primary cursor-interaction">看看收到的样子&nbsp; ↗</button></div></div>
+    <section class="q-sheet" id="q-intents" hidden><fieldset><legend>想把哪份心意交给对方？</legend><div class="q-choices"><button type="button" data-intent="rest" class="q-choice cursor-interaction" aria-pressed="true">陪你歇一会儿</button><button type="button" data-intent="thanks" class="q-choice cursor-interaction" aria-pressed="false">想谢谢你</button><button type="button" data-intent="joy" class="q-choice cursor-interaction" aria-pressed="false">分你一点开心</button></div></fieldset></section>
     <section class="q-sheet" id="q-editor" hidden><label for="q-message" id="q-editor-label">捎一句话，也可以留白</label><textarea id="q-message" maxlength="80" rows="3">最近辛苦了。
 没什么要紧的事，只是想陪你歇一会儿。</textarea><div class="q-sheet-actions"><button type="button" id="q-cancel" class="q-text cursor-interaction">取消</button><button type="button" id="q-save" class="q-button q-primary cursor-interaction">保存留言</button></div></section>
   </main>
-  <footer class="q-toolbar"><span>视觉原型 · 仅本页演示</span><nav aria-label="两张关键画面"><button type="button" data-view="create" aria-pressed="true" class="cursor-interaction">01　创作</button><button type="button" data-view="receive" aria-pressed="false" class="cursor-interaction">02　朋友收到</button></nav></footer>
+  <footer class="q-toolbar"><span>体验原型 · 尚未生成分享链接</span><nav aria-label="体验画面"><button type="button" data-view="home" aria-pressed="true" class="cursor-interaction">陪伴</button><button type="button" data-view="create" aria-pressed="true" class="cursor-interaction">制作心意</button><button type="button" data-view="receive" aria-pressed="false" class="cursor-interaction">朋友收到</button></nav></footer>
+<details class="q-credits"><summary>声音来源</summary><p>轻触：Rattle 4 · nomiqbomi · CC0。短回应：<a href="https://freesound.org/people/Hawkeye_Sprout/sounds/469066/" target="_blank" rel="noreferrer">Cute Creature 01 · Hawkeye_Sprout</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>。沿用网站素材，截取、减速、低通与淡入淡出；本页仅试听两种回应。</p></details>
 </div>

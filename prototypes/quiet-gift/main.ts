@@ -1,3 +1,4 @@
+import { GiftAudio } from './audio';
 import { Creature } from '../../lib/creature';
 import { CreatureRenderer } from '../../lib/draw-creature';
 type WidgetState = {
@@ -16,32 +17,34 @@ const root = document.getElementById('quiet-gift')!;
 const get = <T extends HTMLElement = HTMLElement>(id: string) =>
   root.querySelector<T>('#q-' + id)!;
 const presets = {
-  rest: ['陪你一会儿', '最近辛苦了。\n没什么要紧的事，只是想陪你歇一会儿。'],
+  rest: ['陪你歇一会儿', '最近辛苦了。\n没什么要紧的事，只是想陪你歇一会儿。'],
   thanks: ['想谢谢你', '你陪我说的那些话，我一直记得。\n谢谢你在。'],
   joy: ['分你一点开心', '今天遇到一件开心的小事，\n第一个就想告诉你。'],
 };
 let intent: keyof typeof presets = 'rest',
-  view = 'create',
+  view = 'home',
   note = presets.rest[1],
   echo = '',
   noteSaved = false,
   paused = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const audio = new GiftAudio();
+let soundLoading = false;
 const editor = get<HTMLTextAreaElement>('message');
 function save() {
   host
     ?.setWidgetState?.({
-      modelContent: { prototype: 'quiet-gift-v2', view, intent },
+      modelContent: { prototype: 'quiet-gift-v4', view, intent },
       privateContent: { note, echo, noteSaved },
     })
     ?.catch(() => {});
 }
 function restore(s?: WidgetState) {
-  if (s?.modelContent?.prototype !== 'quiet-gift-v2') return;
+  if (s?.modelContent?.prototype !== 'quiet-gift-v4') return;
   const m = s.modelContent,
     p = s.privateContent;
   if (m.intent && Object.hasOwn(presets, m.intent))
     intent = m.intent as keyof typeof presets;
-  if (m.view && ['create', 'receive'].includes(m.view)) view = m.view;
+  if (m.view && ['home', 'create', 'receive'].includes(m.view)) view = m.view;
   if (typeof p?.note === 'string') note = p.note.slice(0, 80);
   if (typeof p?.echo === 'string') echo = p.echo.slice(0, 80);
   noteSaved = p?.noteSaved === true;
@@ -52,19 +55,36 @@ function close() {
   get('change').setAttribute('aria-expanded', 'false');
 }
 function render() {
-  const receiving = view === 'receive';
+  const receiving = view === 'receive',
+    home = view === 'home';
+  root.dataset.view = view;
+  get('note').hidden = home;
+  get('next').hidden = receiving;
+  get('back').hidden = home;
+  get('back').textContent = receiving ? '返回编辑' : '回到陪伴';
+  get('sound').textContent = soundLoading
+    ? '正在开启…'
+    : audio.enabled
+      ? '关闭声音'
+      : '开启声音';
+  get<HTMLButtonElement>('sound').disabled = soundLoading || paused;
+  get('sound').setAttribute('aria-pressed', String(audio.enabled));
   get('title').textContent = receiving
     ? '这束光，\n是为你留下的。'
-    : '给一个人，\n留一点光。';
+    : home
+      ? '在这里，\n歇一会儿。'
+      : '给朋友，\n送一份心意。';
   get('copy').textContent = receiving
     ? note
-    : '有些心意，不必说很多。\n让小莹，陪你一起表达。';
-  get('mood').hidden = receiving;
+    : home
+      ? '让小莹，安静陪你一会儿。\n也可以给想起的人，送一点光。'
+      : '留一点光，也捎一句话。\n让朋友知道，你在惦记着。';
+  get('mood').hidden = receiving || home;
   get('intent-label').textContent = presets[intent][0];
   get('sub').textContent = receiving
     ? echo
       ? '回声已留在本页演示里。'
-      : '不必回应，歇一会儿就好。'
+      : '不用回复，也可以安静收下。'
     : '慢慢靠近，按你的节奏来。';
   get('note').textContent = receiving
     ? echo
@@ -74,7 +94,7 @@ function render() {
       ? '编辑留言'
       : '捎一句话';
   get('save').textContent = receiving ? '留下回声' : '保存留言';
-  get('next').textContent = receiving ? '安静收下' : '看看收到的样子 ↗';
+  get('next').textContent = home ? '送给朋友 ↗' : '预览这份心意 ↗';
   get('next').classList.toggle('q-primary', !receiving);
   get('pause').textContent = paused ? '播放' : '暂停';
   get('pause').setAttribute('aria-pressed', String(paused));
@@ -91,6 +111,8 @@ function render() {
   updateStatus();
 }
 function navigate(next: string) {
+  audio.disable();
+  get('sound-status').textContent = '';
   view = next;
   close();
   render();
@@ -143,15 +165,44 @@ get('cancel').onclick = () => {
   close();
   get('note').focus();
 };
-get('next').onclick = () => {
-  if (view === 'create') navigate('receive');
-  else {
-    close();
-    get('sub').textContent = '愿这点光，陪你走回自己的生活。';
+get('next').onclick = () => navigate(view === 'home' ? 'create' : 'receive');
+get('back').onclick = () => navigate(view === 'receive' ? 'create' : 'home');
+get('sound').onclick = async () => {
+  if (audio.enabled) {
+    audio.disable();
+    get('sound-status').textContent = '';
+    render();
+    return;
+  }
+  soundLoading = true;
+  render();
+  try {
+    await audio.enable();
+    get('sound-status').textContent = audio.enabled
+      ? '已开启，轻轻抚摸时会有回应。'
+      : '';
+  } catch {
+    audio.disable();
+    get('sound-status').textContent = '声音未能开启，可以再试一次。';
+  } finally {
+    soundLoading = false;
+    render();
   }
 };
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    audio.disable();
+    get('sound-status').textContent = '';
+    render();
+  }
+});
+window.addEventListener('pagehide', () => audio.disable());
 get('pause').onclick = () => {
   paused = !paused;
+  if (paused) {
+    audio.disable();
+    get('sound-status').textContent = '';
+  }
   render();
 };
 root.addEventListener('keydown', (e) => {
@@ -234,7 +285,10 @@ function frame(now: number) {
   if (document.hidden || (paused && !needsDraw)) return;
   needsDraw = false;
   if (now - lastMove > 1600) signal.seen = false;
-  if (!paused) creature.step(dt, signal);
+  if (!paused) {
+    creature.step(dt, signal);
+    audio.update(creature);
+  }
   updateStatus();
   creature.care = 800;
   ctx.fillStyle = '#000';

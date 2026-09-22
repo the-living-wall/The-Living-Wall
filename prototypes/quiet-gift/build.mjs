@@ -8,6 +8,22 @@ const result = await build({
   format: 'iife',
   minify: true,
   write: false,
+  define: {
+    GIFT_AUDIO: JSON.stringify(
+      Object.fromEntries(
+        await Promise.all(
+          ['touch', 'voice'].map(async (name) => [
+            name,
+            (
+              await readFile(
+                new URL(`../../public/audio/${name}.mp3`, import.meta.url),
+              )
+            ).toString('base64'),
+          ]),
+        ),
+      ),
+    ),
+  },
 });
 const fragment = await readFile(
   new URL('./fragment.html', import.meta.url),
