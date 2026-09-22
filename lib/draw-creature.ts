@@ -50,7 +50,9 @@ export class CreatureRenderer {
     const towardLength = Math.max(1, Math.hypot(towardX, towardY));
     const tipLength = Math.min(towardLength, base * 2.4) * c.feeler;
     for (const p of this.particles) {
-      if (p.i >= visual.particleLimit) continue;
+      // Scouts/feelers are interaction affordances, not growth fragments. Keep
+      // them visible at every growth stage even when the body is sparse.
+      if (p.i < 194 && p.i >= visual.particleLimit) continue;
       const isCore = p.i < 28,
         isScout = p.i >= 194;
       const phase = p.seed;

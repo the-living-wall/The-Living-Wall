@@ -1,0 +1,7 @@
+## 设计
+
+`CreatureAudio` 保留一个总体互动增益，所有互动 cue 共用该增益；背景音乐使用独立媒体音量。默认互动音量为 45%，背景音乐默认 12%。`SoundControls` 使用 `xiaoying-sound-volumes` localStorage 保存两个数值，读取失败或格式错误时回退默认值。面板下方以按钮展示九个声音名称，点击直接调用对应 cue 的 audition，不提供逐项滑块。
+
+可见性只挂起运行时：关闭并释放互动 AudioContext、暂停媒体元素，同时记录用户是否启用；恢复可见时重新加载并尝试播放。用户主动关闭后不自动恢复。`pointerleave` 不参与声音生命周期。
+
+映射：身体为鳞片/旋转/快速移动，心/口为呼吸与回应，手为好奇/接触/抚摸。实际事件仍由现有 Creature 和 SoundDirector 判定。

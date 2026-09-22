@@ -116,18 +116,22 @@ void test('wrapped angle, slow breathing turns and resumed frames do not rustle'
   assert.equal(d.update({ ...base, time: 2, heading: 0 }).cue, undefined);
   assert.equal(d.update({ ...base, time: 2.02, heading: 0.01 }).cue, undefined);
 });
-void test('a new fright during recovery preempts cooldown once', () => {
+void test('fright bookkeeping alone never replays startle during recovery', () => {
   const d = new SoundDirector();
   d.update(base);
   d.update({ ...base, time: 0.1, alarm: 0.8, frightCount: 1 });
-  assert.equal(
-    d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue,
-    'startle',
-  );
+  assert.equal(d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue, undefined);
   assert.deepEqual(
     d.update({ ...base, time: 0.52, alarm: 0.9, frightCount: 2 }),
     { stop: false },
   );
+});
+
+void test('material rotation ignores behaviour phase', () => {
+  const d = new SoundDirector();
+  d.update({ ...base, resting: true });
+  assert.equal(d.update({ ...base, time: 0.1, resting: true, heading: 0.08 }).cue, 'scales');
+  d.update({ ...base, time: 0.2, resting: true, heading: 0.08 });
 });
 
 void test('stationary contact acknowledges once without advancing enjoyment', () => {
@@ -161,19 +165,21 @@ void test('every fast turn onset speaks even during touch', () => {
   );
   d.update({ ...base, time: 0.2, heading: 0.4, touching: true, stroked: true });
   d.update({ ...base, time: 0.8, heading: 0.4, touching: true, stroked: true });
-  assert.equal(
-    d.update({ ...base, time: 0.9, heading: 1.1, touching: true, stroked: true }).cue,
-    'scales',
-  );
+  assert.equal(d.update({ ...base, time: 0.9, heading: 1.1, touching: true, stroked: true }).cue, undefined);
+  d.update({ ...base, time: 2, heading: 1.1, touching: true, stroked: true });
+  assert.equal(d.update({ ...base, time: 2.1, heading: 1.4, touching: true, stroked: true }).cue, 'scales');
 });
 
-void test('actual creature movement emits one short whoosh per movement burst', () => {
+void test('body movement does not reset the long-enjoyment clock', () => {
   const d = new SoundDirector();
   d.update(base);
-  assert.equal(d.update({ ...base, time: 0.1, motionSpeed: 0.3 }).cue, 'move');
-  assert.equal(d.update({ ...base, time: 0.2, motionSpeed: 0.4 }).cue, undefined);
-  d.update({ ...base, time: 0.8, motionSpeed: 0.05 });
-  assert.equal(d.update({ ...base, time: 0.9, motionSpeed: 0.3 }).cue, 'move');
+  d.update({ ...base, time: 0.1, stroked: true, enjoyment: 0.9 });
+  d.update({ ...base, time: 1.2, stroked: true, enjoyment: 0.9, motionSpeed: 0.3 });
+  d.update({ ...base, time: 1.3, stroked: true, enjoyment: 0.9, motionSpeed: 0.02 });
+  assert.equal(
+    d.update({ ...base, time: 4.2, stroked: true, enjoyment: 0.9, motionSpeed: 0.02 }).cue,
+    'purr',
+  );
 });
 
 void test('all petting cues respond within eight seconds without looping', () => {

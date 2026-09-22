@@ -433,9 +433,22 @@ canvas:focus-visible {
 .sound-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
 .sound-options { position:relative; font-size:13px; color:#c1c9c4; }
 .sound-options summary { cursor:pointer; padding:8px; }
-.sound-panel { position:absolute; right:0; bottom:100%; width:250px; padding:18px; background:#18221f; border:1px solid #46534c; border-radius:14px; }
-.sound-panel label { display:flex; justify-content:space-between; gap:8px; margin-bottom:12px; }
-.sound-panel input { width:115px; accent-color:#c4eab2; }
+.sound-panel { position:absolute; right:0; bottom:calc(100% + 10px); width:310px; padding:16px; background:linear-gradient(160deg,#1b2924,#111a18); border:1px solid #53695d; border-radius:18px; box-shadow:0 18px 45px #06100dcc; color:#d9e5dc; }
+.sound-panel label { display:grid; grid-template-columns:1fr auto; align-items:center; gap:4px 10px; margin-bottom:10px; font-size:13px; }
+.sound-panel input { grid-column:1 / -1; width:100%; accent-color:#bfe8aa; }
+.sound-panel output { color:#bfe8aa; font-variant-numeric:tabular-nums; }
+.sound-panel button { border:1px solid #5c7565; border-radius:999px; padding:4px 8px; color:#dcebdd; background:#26382f; font-size:11px; cursor:pointer; }
+.sound-mix { display:flex; align-items:flex-start; gap:10px; padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid #34473e; }
+.sound-mix label { flex:1; margin:0; }
+.sound-library { margin:4px 0 12px; padding:12px; border:1px solid #334a3e; border-radius:13px; background:#17231f; }
+.sound-library-title { display:flex; justify-content:space-between; margin-bottom:9px; font-size:12px; color:#edf8ee; }
+.sound-library-title span { color:#93ae9a; font-size:11px; }
+.sound-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.sound-panel .sound-tag { padding:6px 10px; border:1px solid transparent; border-radius:999px; background:#263b31; color:#c8dccb; font-size:11px; transition:background .16s ease,border-color .16s ease,transform .16s ease; }
+.sound-panel .sound-tag:hover,.sound-panel .sound-tag:focus-visible { background:#355143; border-color:#789984; color:#f0fff1; outline:none; }
+.sound-panel .sound-tag:active { transform:scale(.96); background:#41614f; }
+.sound-hint { color:#a9bdb0; line-height:1.55; }
+.sound-credits { color:#c4eab2; font-size:12px; }
 
 .showcase-page { min-height:100vh; background:#000; color:#dfe8e7; }
 .showcase-canvas { display:block; width:100%; height:66vh; min-height:420px; }
