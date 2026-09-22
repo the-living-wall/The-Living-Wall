@@ -5,6 +5,14 @@ import {
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
 const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move'] as const;
+const clipSources: Record<(typeof clips)[number], string> = {
+  purr: '/audio/purr.mp3',
+  voice: '/audio/voice.mp3',
+  touch: '/audio/touch.mp3',
+  scales: '/audio/scales.wav',
+  roll: '/audio/roll.mp3',
+  move: '/audio/move.wav',
+};
 export type SoundVolumeKey =
   | 'breathing'
   | 'heartMouth'
@@ -46,13 +54,17 @@ const settings = {
   settle: { rate: 1, seconds: 0.8, gain: 0.23, cutoff: 1400 },
   curiosity: { rate: 1, seconds: 0.78, gain: 0.28, cutoff: 2400 },
   // Candidate B whoosh: play only its first second as the movement gesture.
-  move: { rate: 1, seconds: 1, gain: 0.3, cutoff: 2400 },
+  // The user-provided B1 air recording is intentionally thin and quiet;
+  // normalize it in the mix instead of making the source louder destructively.
+  move: { rate: 1, seconds: 0.72, gain: 0.8, cutoff: 2800 },
   // The touch-response voice was masking the quieter body cues in the test
   // mix, so keep it at half its previous level while preserving its tone.
   voice: { rate: 0.88, seconds: 1.2, gain: 0.25, cutoff: 3200 },
   touch: { rate: 0.8, seconds: 0.4, gain: 0.22, cutoff: 1800 },
-  scales: { rate: 0.75, seconds: 0.35, gain: 0.16, cutoff: 2200 },
-  startle: { rate: 0.7, seconds: 0.65, gain: 0.24, cutoff: 2600 },
+  // The B1 scale recording is a low-level close mic capture; keep its short
+  // transient but lift it enough to remain audible beside the other cues.
+  scales: { rate: 0.75, seconds: 0.35, gain: 0.72, cutoff: 2600 },
+  startle: { rate: 0.7, seconds: 0.56, gain: 0.65, cutoff: 2800 },
   roll: { rate: 0.7, seconds: 2, gain: 0.4, cutoff: 3500 },
 };
 export class CreatureAudio {
@@ -89,7 +101,7 @@ export class CreatureAudio {
     try {
       await Promise.all(
         clips.map(async (name) => {
-          const response = await fetch(`/audio/${name}.mp3`, {
+          const response = await fetch(clipSources[name], {
             signal: this.request.signal,
           });
           if (!response.ok) throw new Error(`Audio ${response.status}`);
