@@ -36,7 +36,20 @@ export default function SoundControls({ creature }: { creature: RefObject<Creatu
     const [effects, musicResult] = await Promise.allSettled([next.start(), audio.play()]); if (generation.current !== token) return;
     const effectsReady = effects.status === 'fulfilled', musicReady = musicResult.status === 'fulfilled' && !audio.paused;
     if (!effectsReady && !musicReady) { next.close(); engine.current = null; audio.pause(); setSoundOn(false); setMessage('浏览器暂未允许自动播放，请点击“开启声音”一次。'); activationPending.current = true; }
-    else { enabledRef.current = true; setSoundOn(true); if (!effectsReady) next.close(); if (!musicReady) audio.pause(); if (!effectsReady || !musicReady) setMessage('部分声音暂不可用；点击声音按钮可再次尝试。'); activationPending.current = false; }
+    else {
+      enabledRef.current = true;
+      setSoundOn(true);
+      if (!effectsReady) {
+        // Music can be allowed independently from Web Audio on mobile. Keep
+        // the failed effects activation retryable instead of treating music
+        // playback as proof that interaction cues are ready.
+        next.close();
+        engine.current = null;
+      }
+      if (!musicReady) audio.pause();
+      if (!effectsReady || !musicReady) setMessage('部分声音暂不可用；点击声音按钮可再次尝试。');
+      activationPending.current = !effectsReady;
+    }
     setLoading(false);
   }, []);
   useEffect(() => { activateRef.current = activate; }, [activate]);
@@ -55,7 +68,7 @@ export default function SoundControls({ creature }: { creature: RefObject<Creatu
     // A failed autoplay attempt leaves the first activation in a loading
     // state. Treat the button tap as an explicit gesture and retry activation;
     // it must never be interpreted as a request to turn sound off.
-    if (loading) { enabledRef.current = true; void activate(); return; }
+    if (loading || !engine.current) { enabledRef.current = true; void activate(); return; }
     if (soundOn) deactivate();
     else { enabledRef.current = true; void activate(); }
   };
