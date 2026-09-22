@@ -1,8 +1,11 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useReducer } from 'react';
 import HandCamera from '../../app/hand-camera';
 import DepthInputPoller from '../../app/depth-input';
 import SoundControls from './SoundControls';
+import SharedExperience from './SharedExperience';
+import { sharedReducer, createSharedState } from './shared-state';
+import { drawTemperament, ORIGINAL, type StyleKey } from './temperaments';
 import { Button } from '@/components/ui/button';
 import {
   Creature,
@@ -59,7 +62,34 @@ export default function Companion() {
   };
   const [note, setNote] = useState(openings.rest);
   const [noteEdited, setNoteEdited] = useState(false);
-  const [echo, setEcho] = useState('');
+  const [shared, dispatchShared] = useReducer(
+    sharedReducer,
+    openings.rest,
+    createSharedState,
+  );
+  const [trial, setTrial] = useState<StyleKey | null>(null);
+  const shapingView = useRef({
+    enabled: false,
+    style: ORIGINAL as StyleKey,
+    startedAt: 0,
+  });
+  const reducedMotion = useRef(false);
+  useEffect(() => {
+    shapingView.current = {
+      enabled: giftView === 'receive',
+      style: trial ?? shared.active,
+      startedAt: performance.now(),
+    };
+  }, [giftView, trial, shared.active]);
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => {
+      reducedMotion.current = media.matches;
+    };
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState(false);
   const editorDialog = useRef<HTMLDialogElement>(null);
@@ -74,6 +104,8 @@ export default function Companion() {
     },
   });
   const go = (next: 'home' | 'create' | 'receive') => {
+    setTrial(null);
+    if (next === 'receive') dispatchShared({ type: 'greeting', text: note });
     setGiftView(next);
     setEditing(false);
     setMessage('');
@@ -302,6 +334,17 @@ export default function Companion() {
       const model = creature.current;
       model.step(dt, { x: p.x, y: p.y, speed: p.speed, seen });
       renderer.current.draw(ctx, w, h, dt, model, !pure.current);
+      const view = shapingView.current;
+      if (view.enabled)
+        drawTemperament(
+          ctx,
+          w,
+          h,
+          model,
+          view.style,
+          (now - view.startedAt) / 1000,
+          reducedMotion.current,
+        );
       if (now - lastUI > 200) {
         setPhase(model.phase);
         setGrowth(model.maturity);
@@ -479,30 +522,12 @@ export default function Companion() {
               : note}
           </p>
           {giftView === 'receive' && (
-            <div className="gift-reply">
-              {echo && (
-                <section className="gift-echo" aria-label="你留下的回声">
-                  <h3>你留下的回声</h3>
-                  <output>{echo}</output>
-                </section>
-              )}
-              <div className="gift-reply-actions">
-                <button
-                  className="gift-text"
-                  onClick={() => {
-                    setDraft(echo);
-                    setEditing(true);
-                  }}
-                >
-                  {echo ? '编辑回声' : '回一句给朋友'}
-                </button>
-                <span className="gift-receive-note">
-                  {echo
-                    ? '尚未发送，刷新后清空。'
-                    : '不用回复，也可以安静收下。'}
-                </span>
-              </div>
-            </div>
+            <SharedExperience
+              state={shared}
+              dispatch={dispatchShared}
+              trial={trial}
+              onTrial={setTrial}
+            />
           )}
           {giftView === 'create' && (
             <div className="gift-intent">
@@ -656,13 +681,9 @@ export default function Companion() {
           ref={editorDialog}
           onCancel={() => setEditing(false)}
           className="gift-editor"
-          aria-label={giftView === 'create' ? '编辑留言' : '编辑回声'}
+          aria-label="编辑留言"
         >
-          <label htmlFor="gift-message">
-            {giftView === 'create'
-              ? '捎一句话，也可以留白'
-              : '写一句给朋友的话（仅预览）'}
-          </label>
+          <label htmlFor="gift-message">捎一句话，也可以留白</label>
           <textarea
             id="gift-message"
             maxLength={80}
@@ -680,20 +701,20 @@ export default function Companion() {
             <button
               className="gift-save"
               onClick={() => {
-                if (giftView === 'create') {
-                  setNote(draft.trim());
-                  setNoteEdited(true);
-                } else setEcho(draft.trim());
+                setNote(draft.trim());
+                setNoteEdited(true);
                 setEditing(false);
               }}
             >
-              {giftView === 'create' ? '保存留言' : '保存回声'}
+              保存留言
             </button>
           </div>
         </dialog>
       )}
       {!projection && (
-        <div className="gift-preview-label">赠光预览 · 尚未生成分享链接</div>
+        <div className="gift-preview-label">
+          共同塑造预览 · 同机演示 · 刷新清空
+        </div>
       )}
       {camera && (
         <HandCamera

@@ -8,6 +8,6 @@ export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('../..', import.meta.url)) } },
   plugins: [react()],
   css: { postcss: { plugins: [tailwindcss()] } },
-  server: { host: '127.0.0.1', port: 4179, strictPort: true },
+  server: { host: '127.0.0.1', port: 4180, strictPort: true },
   build: { outDir: '../../output/gift-layout-preview', emptyOutDir: true },
 });
