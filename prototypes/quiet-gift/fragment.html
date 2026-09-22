@@ -1,0 +1,73 @@
+<style>
+#quiet-gift{background:#000;color:#edf2f1;color-scheme:dark;font-family:Arial,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.7;--gift-mint:#c6efbc;--gift-muted:#a6b0b3}
+#quiet-gift *{box-sizing:border-box}#quiet-gift [hidden]{display:none!important}
+#quiet-gift button,#quiet-gift textarea{font:inherit}#quiet-gift button{color:inherit}#quiet-gift button:focus-visible,#quiet-gift textarea:focus-visible{outline:2px solid #c6efbc;outline-offset:5px}
+#quiet-gift .q-world{position:relative;min-height:650px;isolation:isolate;overflow:hidden}
+#quiet-gift canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;z-index:0}
+#quiet-gift .q-mast{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 40px;pointer-events:none}
+#quiet-gift .q-brand{display:flex;align-items:center;gap:16px}#quiet-gift .q-mark{font-size:30px;font-weight:400;color:var(--gift-mint)}
+#quiet-gift h1{font-size:20px;font-weight:400;letter-spacing:7px;margin:0 0 4px;line-height:1.5}#quiet-gift .q-eyebrow{font-size:11px;letter-spacing:3px;color:var(--gift-muted)}
+#quiet-gift .q-edition{font-size:11px;letter-spacing:2px;color:#8f9a9e}
+#quiet-gift .q-guide{position:relative;z-index:1;margin:38px 40px 0;max-width:260px;pointer-events:none}
+#quiet-gift h2{font-size:26px;line-height:1.65;letter-spacing:2px;font-weight:400;margin:0 0 17px;white-space:pre-line}
+#quiet-gift .q-guide p{font-size:13px;color:var(--gift-muted);line-height:1.95;letter-spacing:.4px;white-space:pre-line;margin:0;overflow-wrap:anywhere}
+#quiet-gift .q-mood{position:absolute;z-index:2;right:40px;top:138px;text-align:right}
+#quiet-gift .q-mood span{display:block;font-size:11px;color:#8f9a9e;letter-spacing:2px}#quiet-gift .q-mood strong{display:block;font-size:17px;font-weight:400;letter-spacing:3px;margin:10px 0 3px}
+#quiet-gift .q-text{background:transparent;border:0;padding:8px 0;font-size:12px;color:var(--gift-muted);min-height:36px}
+#quiet-gift .q-mood .q-text{font-size:11px;color:var(--gift-mint)}
+#quiet-gift .q-bottom{position:absolute;z-index:2;bottom:30px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:end;gap:20px;pointer-events:none}
+#quiet-gift .q-help{font-size:12px;color:var(--gift-muted);line-height:1.95;letter-spacing:.5px;max-width:280px}
+#quiet-gift .q-help p{margin:0}#quiet-gift .q-help .q-sub{font-size:11px;color:#829093;margin-top:5px}
+#quiet-gift .q-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;pointer-events:auto}
+#quiet-gift .q-button{border:1px solid #303638;border-radius:7px;padding:10px 17px;min-height:44px;background:#070b0c;color:#d5dedd;font-size:12px;letter-spacing:1px}
+#quiet-gift .q-primary{border-color:#8bad84;background:#c6efbc;color:#142315}
+#quiet-gift .q-sheet{position:absolute;z-index:4;right:40px;bottom:95px;width:330px;padding:22px;background:#0b1011;border:1px solid #303638;border-radius:10px}
+#quiet-gift .q-sheet label,#quiet-gift .q-sheet legend{font-size:12px;letter-spacing:1px;color:#a6b0b3;display:block;margin-bottom:15px}
+#quiet-gift .q-sheet fieldset{border:0;padding:0;margin:0}#quiet-gift .q-choices{display:flex;flex-direction:column;align-items:stretch;gap:4px}
+#quiet-gift .q-choice{background:none;border:0;text-align:left;padding:10px 0;color:#a6b0b3;min-height:44px;font-size:14px;letter-spacing:1px}
+#quiet-gift .q-choice[aria-pressed=true]{color:#c6efbc}#quiet-gift .q-choice::before{content:'·';display:inline-block;width:22px;color:#778586}#quiet-gift .q-choice[aria-pressed=true]::before{content:'●';font-size:7px;color:#c6efbc;vertical-align:middle}
+#quiet-gift textarea{background:#0b1011;color:#edf2f1;border:0;border-bottom:1px solid #354143;border-radius:0;padding:0 0 12px;resize:vertical;width:100%;min-height:90px;font-size:16px;line-height:1.8}
+#quiet-gift .q-sheet-actions{display:flex;gap:18px;justify-content:flex-end;margin-top:15px}
+#quiet-gift .q-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;border-top:1px solid #1a2224;background:#080b0c;color:#95a3a5;font-size:11px}
+#quiet-gift .q-toolbar nav{display:flex;gap:20px}#quiet-gift .q-toolbar button{border:0;background:none;padding:5px 0;min-height:32px;font-size:12px;color:#91a0a2}#quiet-gift .q-toolbar button[aria-pressed=true]{color:#c6efbc}
+#quiet-gift .q-pause{pointer-events:auto;background:transparent;border:0;color:#8f9a9e;font-size:11px;padding:8px;min-height:36px}
+@media(max-width:680px){#quiet-gift .q-world{min-height:720px}#quiet-gift .q-mast{padding:24px}#quiet-gift .q-edition{display:none}#quiet-gift .q-guide{margin:28px 24px 0;max-width:230px}#quiet-gift h2{font-size:23px}#quiet-gift .q-mood{top:auto;bottom:135px;right:24px}#quiet-gift .q-mood span{display:none}#quiet-gift .q-mood strong{font-size:13px}#quiet-gift .q-bottom{left:24px;right:24px;bottom:24px;display:block}#quiet-gift .q-help{margin-bottom:16px;max-width:190px}#quiet-gift .q-help .q-sub{display:none}#quiet-gift .q-actions{justify-content:flex-end}#quiet-gift .q-sheet{right:20px;bottom:88px;width:calc(100% - 40px)}#quiet-gift .q-toolbar{padding:12px 20px;gap:6px}#quiet-gift .q-toolbar nav{gap:14px}}
+
+#quiet-gift .q-intent-button{display:block;text-align:left;padding:16px 20px;border:1px solid #35413c;border-radius:10px;background:#080d0b;min-width:206px}
+#quiet-gift .q-intent-button:hover{border-color:#839d7c;background:#0e1611}
+#quiet-gift .q-intent-button strong{margin:6px 0 8px;font-size:18px;letter-spacing:2px}
+#quiet-gift .q-intent-button .q-switch{display:flex;align-items:center;gap:10px;font-size:14px;color:#c6efbc;letter-spacing:1px}
+#quiet-gift #q-intents{top:290px;bottom:auto}
+#quiet-gift .q-sheet-actions{align-items:center}
+#quiet-gift #q-cancel{min-height:44px;padding:8px 12px}
+@media(max-width:680px){
+#quiet-gift .q-world{min-height:800px}
+#quiet-gift .q-mood{top:290px;bottom:auto;right:24px}
+#quiet-gift canvas{top:405px;bottom:auto;height:250px}
+#quiet-gift .q-intent-button{min-width:190px;padding:12px 16px}
+#quiet-gift .q-mood span{display:block}
+#quiet-gift .q-intent-button strong{font-size:16px}
+#quiet-gift #q-intents{top:440px;bottom:auto}
+#quiet-gift .q-help{max-width:none;margin-bottom:18px}
+#quiet-gift .q-help .q-sub{display:block}
+#quiet-gift .q-actions{justify-content:flex-start;gap:8px}
+#quiet-gift .q-button{padding:10px 12px;letter-spacing:0}
+#quiet-gift .q-toolbar button{min-height:44px}
+#quiet-gift .q-sheet{bottom:155px}
+}
+</style>
+<div id="quiet-gift" aria-label="小莹赠光视觉方向原型">
+  <main class="q-world">
+    <canvas id="q-canvas" role="img" aria-label="完整黑色空间中的小莹，缓慢呼吸，鼠标靠近时回应。"></canvas>
+    <header class="q-mast"><div class="q-brand"><span class="q-mark" aria-hidden="true">◌</span><div><h1>小莹</h1><div class="q-eyebrow">THE LIVING WALL</div></div></div><div class="q-actions"><span class="q-edition">把陪伴，长成光</span><button type="button" id="q-pause" class="q-pause cursor-interaction" aria-pressed="false">暂停</button></div></header>
+    <section class="q-guide"><h2 id="q-title">给一个人，
+留一点光。</h2><p id="q-copy">有些心意，不必说很多。
+让小莹，陪你一起表达。</p></section>
+    <aside class="q-mood" id="q-mood"><button type="button" id="q-change" class="q-intent-button cursor-interaction" aria-expanded="false" aria-controls="q-intents"><span>此刻的心意</span><strong id="q-intent-label">陪你一会儿</strong><span class="q-switch">换一种心意 <i data-lucide="chevron-down" aria-hidden="true"></i></span></button></aside>
+    <div class="q-bottom"><div class="q-help"><p id="q-hint" role="status" aria-live="polite">小莹 · 安静地呼吸着</p><p class="q-sub" id="q-sub">不用完成什么，按你的节奏来。</p></div><div class="q-actions"><button type="button" id="q-note" class="q-button cursor-interaction">捎一句话</button><button type="button" id="q-next" class="q-button q-primary cursor-interaction">看看收到的样子&nbsp; ↗</button></div></div>
+    <section class="q-sheet" id="q-intents" hidden><fieldset><legend>想把哪份心意交给对方？</legend><div class="q-choices"><button type="button" data-intent="rest" class="q-choice cursor-interaction" aria-pressed="true">陪你一会儿</button><button type="button" data-intent="thanks" class="q-choice cursor-interaction" aria-pressed="false">想谢谢你</button><button type="button" data-intent="joy" class="q-choice cursor-interaction" aria-pressed="false">分你一点开心</button></div></fieldset></section>
+    <section class="q-sheet" id="q-editor" hidden><label for="q-message" id="q-editor-label">捎一句话，也可以留白</label><textarea id="q-message" maxlength="80" rows="3">最近辛苦了。
+没什么要紧的事，只是想陪你歇一会儿。</textarea><div class="q-sheet-actions"><button type="button" id="q-cancel" class="q-text cursor-interaction">取消</button><button type="button" id="q-save" class="q-button q-primary cursor-interaction">保存留言</button></div></section>
+  </main>
+  <footer class="q-toolbar"><span>视觉原型 · 仅本页演示</span><nav aria-label="两张关键画面"><button type="button" data-view="create" aria-pressed="true" class="cursor-interaction">01　创作</button><button type="button" data-view="receive" aria-pressed="false" class="cursor-interaction">02　朋友收到</button></nav></footer>
+</div>
