@@ -82,6 +82,12 @@ export class CreatureAudio {
     gain: GainNode;
     nodes: AudioNode[];
   };
+  private purrBed?: {
+    cue: SoundCue;
+    source: AudioBufferSourceNode;
+    gain: GainNode;
+    nodes: AudioNode[];
+  };
   private closed = false;
   private ready = false;
   private cueVolumes = { ...DEFAULT_SOUND_VOLUMES };
@@ -133,22 +139,21 @@ export class CreatureAudio {
   }
   update(state: SoundState) {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
+    // The purr bed is a separate low-frequency channel, so it does not make
+    // the short-event director think the audio channel is busy.
     const event = this.director.update(state, !!this.active);
-    // Keep the long purr bed under low-priority morphology rustles. A burst of
-    // scales should not erase the sustained enjoyment state; major state exits
-    // (startle, leaving, roll transition) still call stop normally.
-    const purrBed = this.active?.cue === 'purr';
+    const purrBed = !!this.purrBed;
     if (event.stop && !(purrBed && (event.cue === 'scales' || event.cue === 'move')))
       this.stop();
     if ((event.cue === 'scales' || event.cue === 'move') && this.active) {
-      if (purrBed) return;
-      this.stop();
+      this.stopTransient();
     }
     if (event.cue) this.play(event.cue);
   }
   private play(cue: SoundCue) {
-    // Drop conflicting cues; no queue that could speak after the user leaves.
-    if (this.active) return;
+    // One sustained purr and one short event may coexist. Short events still
+    // serialize with each other so they cannot pile up into noise.
+    if (cue === 'purr' ? this.purrBed : this.active) return;
     const buffer = this.buffers.get(cue);
     if (!buffer) return;
     const c = this.context,
@@ -209,7 +214,8 @@ export class CreatureAudio {
       gain.gain.setValueAtTime(level, start + attack);
     }
     const active = { cue, source, gain, nodes };
-    this.active = active;
+    if (looping) this.purrBed = active;
+    else this.active = active;
     if (looping) source.start(start, offset);
     else source.start(start, offset, duration * config.rate);
     // The source ending precedes delay tails; disconnect only after tail completion.
@@ -217,7 +223,9 @@ export class CreatureAudio {
       setTimeout(
         () => {
           nodes.forEach((n) => n.disconnect());
-          if (this.active === active) this.active = undefined;
+          if (looping) {
+            if (this.purrBed === active) this.purrBed = undefined;
+          } else if (this.active === active) this.active = undefined;
         },
         tail * 1000 + 50,
       );
@@ -229,9 +237,22 @@ export class CreatureAudio {
     this.play(cue);
   }
   stop() {
+    this.stopTransient();
+    this.stopPurr();
+  }
+  private stopTransient() {
     const a = this.active;
     if (!a) return;
     this.active = undefined;
+    this.fadeOut(a);
+  }
+  private stopPurr() {
+    const a = this.purrBed;
+    if (!a) return;
+    this.purrBed = undefined;
+    this.fadeOut(a);
+  }
+  private fadeOut(a: NonNullable<CreatureAudio['active']>) {
     const now = this.context.currentTime;
     a.gain.gain.cancelScheduledValues(now);
     a.gain.gain.setTargetAtTime(0, now, 0.04);
