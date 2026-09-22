@@ -4,14 +4,13 @@ import {
   type SoundState,
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
-const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move', 'startle'] as const;
+const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'startle'] as const;
 const clipSources: Record<(typeof clips)[number], string> = {
   purr: '/audio/purr.mp3',
   voice: '/audio/voice.mp3',
   touch: '/audio/touch.mp3',
   scales: '/audio/scales.wav',
   roll: '/audio/roll.mp3',
-  move: '/audio/move.wav',
   startle: '/audio/startle.wav',
 };
 export type SoundVolumeKey =
@@ -22,7 +21,6 @@ export type SoundVolumeKey =
   | 'enjoyment'
   | 'scales'
   | 'rotation'
-  | 'movement'
   | 'startle';
 export const DEFAULT_SOUND_VOLUMES: Record<SoundVolumeKey, number> = {
   breathing: 1,
@@ -32,7 +30,6 @@ export const DEFAULT_SOUND_VOLUMES: Record<SoundVolumeKey, number> = {
   enjoyment: 1,
   scales: 1,
   rotation: 1,
-  movement: 1,
   startle: 1,
 };
 const cueVolumeKey: Record<SoundCue, SoundVolumeKey> = {
@@ -44,7 +41,6 @@ const cueVolumeKey: Record<SoundCue, SoundVolumeKey> = {
   purr: 'enjoyment',
   roll: 'rotation',
   scales: 'scales',
-  move: 'movement',
   startle: 'startle',
 };
 const settings = {
@@ -56,10 +52,6 @@ const settings = {
   rest: { rate: 1, seconds: 2.4, gain: 0.2, cutoff: 900 },
   settle: { rate: 1, seconds: 0.8, gain: 0.23, cutoff: 1400 },
   curiosity: { rate: 1, seconds: 0.78, gain: 0.28, cutoff: 2400 },
-  // Candidate B whoosh: play only its first second as the movement gesture.
-  // The user-provided B1 air recording is intentionally thin and quiet;
-  // normalize it in the mix instead of making the source louder destructively.
-  move: { rate: 1, seconds: 0.72, gain: 0.8, cutoff: 2800 },
   // The touch-response voice was masking the quieter body cues in the test
   // mix, so keep it at half its previous level while preserving its tone.
   voice: { rate: 0.88, seconds: 1.2, gain: 0.25, cutoff: 3200 },
@@ -143,9 +135,9 @@ export class CreatureAudio {
     // the short-event director think the audio channel is busy.
     const event = this.director.update(state, !!this.active);
     const purrBed = !!this.purrBed;
-    if (event.stop && !(purrBed && (event.cue === 'scales' || event.cue === 'move')))
+    if (event.stop && !(purrBed && event.cue === 'scales'))
       this.stop();
-    if ((event.cue === 'scales' || event.cue === 'move') && this.active) {
+    if (event.cue === 'scales' && this.active) {
       this.stopTransient();
     }
     if (event.cue) this.play(event.cue);

@@ -127,14 +127,11 @@ void test('fright bookkeeping alone never replays startle during recovery', () =
   );
 });
 
-void test('material rotation and movement cues ignore behaviour phase', () => {
+void test('material rotation ignores behaviour phase', () => {
   const d = new SoundDirector();
   d.update({ ...base, resting: true });
   assert.equal(d.update({ ...base, time: 0.1, resting: true, heading: 0.08 }).cue, 'scales');
   d.update({ ...base, time: 0.2, resting: true, heading: 0.08 });
-  assert.equal(d.update({ ...base, time: 0.3, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, undefined);
-  d.update({ ...base, time: 2, resting: true, heading: 0.08, motionSpeed: 0.02 });
-  assert.equal(d.update({ ...base, time: 2.1, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, 'move');
 });
 
 void test('stationary contact acknowledges once without advancing enjoyment', () => {
@@ -173,18 +170,7 @@ void test('every fast turn onset speaks even during touch', () => {
   assert.equal(d.update({ ...base, time: 2.1, heading: 1.4, touching: true, stroked: true }).cue, 'scales');
 });
 
-void test('actual creature movement emits one short whoosh per movement burst', () => {
-  const d = new SoundDirector();
-  d.update(base);
-  assert.equal(d.update({ ...base, time: 0.1, motionSpeed: 0.3 }).cue, 'move');
-  assert.equal(d.update({ ...base, time: 0.2, motionSpeed: 0.4 }).cue, undefined);
-  d.update({ ...base, time: 0.8, motionSpeed: 0.05 });
-  assert.equal(d.update({ ...base, time: 0.9, motionSpeed: 0.3 }).cue, undefined);
-  d.update({ ...base, time: 2, motionSpeed: 0.05 });
-  assert.equal(d.update({ ...base, time: 2.1, motionSpeed: 0.3 }).cue, 'move');
-});
-
-void test('movement overlays do not reset the long-enjoyment clock', () => {
+void test('body movement does not reset the long-enjoyment clock', () => {
   const d = new SoundDirector();
   d.update(base);
   d.update({ ...base, time: 0.1, stroked: true, enjoyment: 0.9 });

@@ -1,5 +1,5 @@
 /** Discrete cues, never a looping soundtrack. Time is Creature simulation time. */
-export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'move' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
+export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
 export type SoundState = {
   time: number;
   phase: string;
@@ -87,12 +87,6 @@ export class SoundDirector {
       this.nextTurnCue = s.time + 1.4;
       this.nextBodyCue = s.time + 1.8;
       return { stop: true, cue: 'scales' };
-    }
-    const wasMoving = this.moving;
-    this.moving = s.motionSpeed >= (wasMoving ? 0.06 : 0.1);
-    if (this.moving && !wasMoving && s.time >= this.nextBodyCue) {
-      this.nextBodyCue = s.time + 1.8;
-      return { stop: true, cue: 'move' };
     }
     const endedMotion = this.motionSound;
     this.motionSound = false;
