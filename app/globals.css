@@ -383,7 +383,7 @@ canvas:focus-visible {
   }
   .guide {
     left: 22px;
-    top: 105px;
+    top: 84px;
     max-width: 210px;
   }
   .guide h2 {
@@ -451,15 +451,17 @@ canvas:focus-visible {
   .camera-preview {
     left: auto;
     right: 22px;
-    top: 55%;
-    bottom: auto;
+    top: auto;
+    bottom: 220px;
     width: 104px;
     height: 78px;
   }
   .message {
-    left: 22px;
+    left: auto;
     right: 22px;
-    bottom: 165px;
+    bottom: 150px;
+    max-width: 220px;
+    text-align: right;
   }
   .controls button {
     padding: 10px 12px;
@@ -537,5 +539,6 @@ canvas:focus-visible {
   .controls button { padding:8px 9px; font-size:12px; white-space:nowrap; }
 }
 .sound-controls { position:relative; pointer-events:auto; }
+.control-stack > .message { width:min(220px, calc(100vw - 44px)); max-width:220px; line-height:1.5; margin-bottom:2px; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
 @media(max-width:700px) { .sound-controls { position:absolute; right:0; top:70px; } }
