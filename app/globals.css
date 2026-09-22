@@ -128,6 +128,15 @@ canvas:focus-visible {
   letter-spacing: 2px;
   color: #a6b0b3;
 }
+.status .trust-state {
+  display: block;
+  max-width: 210px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c6efbc;
+  font-style: normal;
+  letter-spacing: 1px;
+}
 .status strong {
   display: block;
   font-size: 21px;
@@ -380,6 +389,11 @@ canvas:focus-visible {
   }
   .status strong {
     font-size: 17px;
+  }
+  .status .trust-state {
+    max-width: 125px;
+    font-size: 11px;
+    letter-spacing: 0;
   }
   .bottom {
     left: 22px;
