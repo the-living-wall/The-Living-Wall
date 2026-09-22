@@ -5,6 +5,39 @@ import {
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
 const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move'] as const;
+export type SoundVolumeKey =
+  | 'breathing'
+  | 'heartMouth'
+  | 'curiosityHand'
+  | 'touch'
+  | 'enjoyment'
+  | 'scales'
+  | 'rotation'
+  | 'movement'
+  | 'startle';
+export const DEFAULT_SOUND_VOLUMES: Record<SoundVolumeKey, number> = {
+  breathing: 1,
+  heartMouth: 1,
+  curiosityHand: 1,
+  touch: 1,
+  enjoyment: 1,
+  scales: 1,
+  rotation: 1,
+  movement: 1,
+  startle: 1,
+};
+const cueVolumeKey: Record<SoundCue, SoundVolumeKey> = {
+  rest: 'breathing',
+  settle: 'enjoyment',
+  voice: 'heartMouth',
+  curiosity: 'curiosityHand',
+  touch: 'touch',
+  purr: 'enjoyment',
+  roll: 'rotation',
+  scales: 'scales',
+  move: 'movement',
+  startle: 'startle',
+};
 const settings = {
   // The source purr is about 10 dB louder than the other clips. Keep it as
   // an intimate response instead of letting it dominate the interaction mix.
@@ -35,6 +68,7 @@ export class CreatureAudio {
   };
   private closed = false;
   private ready = false;
+  private cueVolumes = { ...DEFAULT_SOUND_VOLUMES };
   constructor(volume: number) {
     this.context = new AudioContext();
     this.master = this.context.createGain();
@@ -77,6 +111,9 @@ export class CreatureAudio {
   volume(value: number) {
     if (!this.closed)
       this.master.gain.setTargetAtTime(value, this.context.currentTime, 0.08);
+  }
+  setCueVolume(key: SoundVolumeKey, value: number) {
+    if (!this.closed) this.cueVolumes[key] = Math.max(0, Math.min(1, value));
   }
   update(state: SoundState) {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
@@ -130,9 +167,10 @@ export class CreatureAudio {
     const tail = cue === 'voice' ? 0.8 : 0;
     gain.gain.setValueAtTime(0, start);
     const attack = Math.min(0.08, duration / 4);
-    gain.gain.linearRampToValueAtTime(config.gain, start + attack);
+    const level = config.gain * this.cueVolumes[cueVolumeKey[cue]];
+    gain.gain.linearRampToValueAtTime(level, start + attack);
     gain.gain.setValueAtTime(
-      config.gain,
+      level,
       start + Math.max(attack, duration + tail - Math.min(0.5, duration / 2)),
     );
     gain.gain.linearRampToValueAtTime(0, start + duration + tail);
