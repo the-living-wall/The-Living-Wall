@@ -1,0 +1,176 @@
+{
+  "startedAt": "2026-09-22T10:59:44.882Z",
+  "target": "http://127.0.0.1:4180/",
+  "applicationCommit": "b7edcbd8ea1b61656d673b983d20a8d59cbdd6bf",
+  "workingTree": "?? prototypes/live-gift/qa-scenarios.mjs",
+  "viewport": {
+    "width": 1280,
+    "height": 850
+  },
+  "scenarios": [
+    {
+      "id": "quiet",
+      "name": "安静陪伴",
+      "style": "沉静",
+      "lines": [
+        "今天有点累，不太想说话。",
+        "那就安静待一会儿，不用急着回复。"
+      ],
+      "reason": "记住这次不用勉强说话的陪伴。",
+      "status": "passed",
+      "steps": [
+        {
+          "name": "进入朋友视角；当前原样，接收默认静音",
+          "startedAt": "2026-09-22T10:59:45.339Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:45.767Z"
+        },
+        {
+          "name": "两个模拟身份来回留言；对话本身不改变性情",
+          "startedAt": "2026-09-22T10:59:45.767Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:45.995Z"
+        },
+        {
+          "name": "手动选双方原话和理由；主题不自动识别",
+          "startedAt": "2026-09-22T10:59:45.995Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:46.260Z"
+        },
+        {
+          "name": "试看和返回不代表同意",
+          "startedAt": "2026-09-22T10:59:46.260Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:48.162Z"
+        },
+        {
+          "name": "单方提出仍是原样；不能确认自己的提议",
+          "startedAt": "2026-09-22T10:59:48.162Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:48.280Z"
+        },
+        {
+          "name": "另一身份明确确认；结果保留双方原文与理由",
+          "startedAt": "2026-09-22T10:59:48.280Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:48.413Z"
+        },
+        {
+          "name": "没有页面脚本错误",
+          "startedAt": "2026-09-22T10:59:48.413Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:48.413Z"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "playful",
+      "name": "轻松打趣",
+      "style": "俏皮",
+      "lines": [
+        "今天又把钥匙忘在家里了，我真是金鱼记忆。",
+        "给金鱼配个钥匙挂绳，下次一起出门。"
+      ],
+      "reason": "我们喜欢这样轻轻开个玩笑。",
+      "status": "passed",
+      "steps": [
+        {
+          "name": "进入朋友视角；当前原样，接收默认静音",
+          "startedAt": "2026-09-22T10:59:48.607Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:48.842Z"
+        },
+        {
+          "name": "两个模拟身份来回留言；对话本身不改变性情",
+          "startedAt": "2026-09-22T10:59:48.842Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:49.037Z"
+        },
+        {
+          "name": "手动选双方原话和理由；主题不自动识别",
+          "startedAt": "2026-09-22T10:59:49.037Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:49.170Z"
+        },
+        {
+          "name": "试看和返回不代表同意",
+          "startedAt": "2026-09-22T10:59:49.170Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.073Z"
+        },
+        {
+          "name": "单方提出仍是原样；不能确认自己的提议",
+          "startedAt": "2026-09-22T10:59:51.073Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.190Z"
+        },
+        {
+          "name": "另一身份明确确认；结果保留双方原文与理由",
+          "startedAt": "2026-09-22T10:59:51.190Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.329Z"
+        },
+        {
+          "name": "没有页面脚本错误",
+          "startedAt": "2026-09-22T10:59:51.329Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.329Z"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "promise",
+      "name": "共同约定",
+      "style": null,
+      "lines": [
+        "周末如果有空，我们去海边散步吧。",
+        "好呀，到时候再确认天气和时间。"
+      ],
+      "reason": "一个还没发生的散步约定，先把邀请留下。",
+      "status": "passed",
+      "steps": [
+        {
+          "name": "进入朋友视角；当前原样，接收默认静音",
+          "startedAt": "2026-09-22T10:59:51.521Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.758Z"
+        },
+        {
+          "name": "两个模拟身份来回留言；对话本身不改变性情",
+          "startedAt": "2026-09-22T10:59:51.758Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:51.953Z"
+        },
+        {
+          "name": "手动选双方原话和理由；主题不自动识别",
+          "startedAt": "2026-09-22T10:59:51.953Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:52.057Z"
+        },
+        {
+          "name": "单方提出仍是原样；不能确认自己的提议",
+          "startedAt": "2026-09-22T10:59:52.057Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:52.156Z"
+        },
+        {
+          "name": "另一身份明确确认；结果保留双方原文与理由",
+          "startedAt": "2026-09-22T10:59:52.156Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:52.289Z"
+        },
+        {
+          "name": "没有页面脚本错误",
+          "startedAt": "2026-09-22T10:59:52.289Z",
+          "status": "passed",
+          "finishedAt": "2026-09-22T10:59:52.289Z"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "browser": "153.0.8010.53",
+  "finishedAt": "2026-09-22T10:59:52.417Z"
+}

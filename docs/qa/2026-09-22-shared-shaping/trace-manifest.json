@@ -1,0 +1,20 @@
+[
+  {
+    "scenario": "quiet",
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-22-scenarios/quiet/trace.zip",
+    "bytes": 4334198,
+    "sha256": "457e54f4fdb0a67a2fc18a81f513ab22c217bd9b4bb3655c2c0761345eb4b1d2"
+  },
+  {
+    "scenario": "playful",
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-22-scenarios/playful/trace.zip",
+    "bytes": 4219661,
+    "sha256": "29016cb3e7ed7499d06257207f1c1a9dd704905de25bb1502fbea73b1c0ae4d2"
+  },
+  {
+    "scenario": "promise",
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-22-scenarios/promise/trace.zip",
+    "bytes": 3664189,
+    "sha256": "02804b5849bfcac6d4affa840f910d32df37b9d3a6eef79ac4def221e4e2401a"
+  }
+]
