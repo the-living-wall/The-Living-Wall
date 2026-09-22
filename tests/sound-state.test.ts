@@ -132,7 +132,9 @@ void test('material rotation and movement cues ignore behaviour phase', () => {
   d.update({ ...base, resting: true });
   assert.equal(d.update({ ...base, time: 0.1, resting: true, heading: 0.08 }).cue, 'scales');
   d.update({ ...base, time: 0.2, resting: true, heading: 0.08 });
-  assert.equal(d.update({ ...base, time: 0.3, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, 'move');
+  assert.equal(d.update({ ...base, time: 0.3, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, undefined);
+  d.update({ ...base, time: 2, resting: true, heading: 0.08, motionSpeed: 0.02 });
+  assert.equal(d.update({ ...base, time: 2.1, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, 'move');
 });
 
 void test('stationary contact acknowledges once without advancing enjoyment', () => {
@@ -177,7 +179,9 @@ void test('actual creature movement emits one short whoosh per movement burst', 
   assert.equal(d.update({ ...base, time: 0.1, motionSpeed: 0.3 }).cue, 'move');
   assert.equal(d.update({ ...base, time: 0.2, motionSpeed: 0.4 }).cue, undefined);
   d.update({ ...base, time: 0.8, motionSpeed: 0.05 });
-  assert.equal(d.update({ ...base, time: 0.9, motionSpeed: 0.3 }).cue, 'move');
+  assert.equal(d.update({ ...base, time: 0.9, motionSpeed: 0.3 }).cue, undefined);
+  d.update({ ...base, time: 2, motionSpeed: 0.05 });
+  assert.equal(d.update({ ...base, time: 2.1, motionSpeed: 0.3 }).cue, 'move');
 });
 
 void test('all petting cues respond within eight seconds without looping', () => {

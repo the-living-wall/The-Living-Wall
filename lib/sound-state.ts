@@ -25,6 +25,7 @@ export class SoundDirector {
   private shockUntil = 0;
   private nextTouch = 0;
   private nextTurnCue = 0;
+  private nextBodyCue = 0;
   reset() {
     this.previous = undefined;
     this.lastStroke = -Infinity;
@@ -36,6 +37,7 @@ export class SoundDirector {
     this.shockUntil = 0;
     this.nextTouch = 0;
     this.nextTurnCue = 0;
+    this.nextBodyCue = 0;
   }
   update(s: SoundState, busy = false): { stop: boolean; cue?: SoundCue } {
     const p = this.previous;
@@ -79,15 +81,17 @@ export class SoundDirector {
       return { stop: false };
     }
     const fastTurnOnset = this.turning && !wasTurning;
-    if (fastTurnOnset && s.time >= this.nextTurnCue) {
+    if (fastTurnOnset && s.time >= this.nextTurnCue && s.time >= this.nextBodyCue) {
       // A visible rapid rotation is itself a body event. Emit it before the
       // petting sequence so contact cannot swallow the material cue.
       this.nextTurnCue = s.time + 1.4;
+      this.nextBodyCue = s.time + 1.8;
       return { stop: true, cue: 'scales' };
     }
     const wasMoving = this.moving;
     this.moving = s.motionSpeed >= (wasMoving ? 0.06 : 0.1);
-    if (this.moving && !wasMoving) {
+    if (this.moving && !wasMoving && s.time >= this.nextBodyCue) {
+      this.nextBodyCue = s.time + 1.8;
       return { stop: true, cue: 'move' };
     }
     const endedMotion = this.motionSound;
