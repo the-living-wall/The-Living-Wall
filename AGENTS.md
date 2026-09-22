@@ -9,6 +9,10 @@
 - 合并会改变用户可见行为或业务规则的 PR，须在同一 PR 内更新 `docs/PRD.md`（或写明「无行为变化，文档未改」）。
 - 屏幕重合、鼠标抚摸不等于真实墙面接触；未经验证不得声称深度接触、毫米级精度或现场投影已完成。
 
+## GitHub 操作入口
+
+操作前阅读 [GitHub 访问与 CLI 排查](docs/github-access.md)。连接器与本机 CLI 使用不同授权；连接器返回 403 或 `command -v gh` 无结果，不代表所有 GitHub 操作都不可用。先检查 PATH，再检查项目 `.runtime/gh-*/bin/gh` 与已配置的 Git credential helper 所指的 CLI 路径；只调用已登录 CLI 的正常命令，不输出或提取令牌。当前规范仓库名为 `the-living-wall/The-Living-Wall`，操作时明确指定仓库。
+
 ## 开发流程
 
 统一采用：**查看已有 Issue → 新建或认领 Issue → 同步代码 → 创建分支 → 开发与验证 → PR → 合并 → 按需发布**。
