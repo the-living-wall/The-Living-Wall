@@ -4,7 +4,7 @@ import {
   type SoundState,
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
-const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move'] as const;
+const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'move', 'startle'] as const;
 const clipSources: Record<(typeof clips)[number], string> = {
   purr: '/audio/purr.mp3',
   voice: '/audio/voice.mp3',
@@ -12,6 +12,7 @@ const clipSources: Record<(typeof clips)[number], string> = {
   scales: '/audio/scales.wav',
   roll: '/audio/roll.mp3',
   move: '/audio/move.wav',
+  startle: '/audio/startle.wav',
 };
 export type SoundVolumeKey =
   | 'breathing'
@@ -64,7 +65,7 @@ const settings = {
   // The B1 scale recording is a low-level close mic capture; keep its short
   // transient but lift it enough to remain audible beside the other cues.
   scales: { rate: 0.75, seconds: 0.35, gain: 0.72, cutoff: 2600 },
-  startle: { rate: 0.7, seconds: 0.56, gain: 0.65, cutoff: 2800 },
+  startle: { rate: 1, seconds: 0.82, gain: 0.55, cutoff: 3600 },
   roll: { rate: 0.7, seconds: 2, gain: 0.4, cutoff: 3500 },
 };
 export class CreatureAudio {
@@ -138,7 +139,7 @@ export class CreatureAudio {
   private play(cue: SoundCue) {
     // Drop conflicting cues; no queue that could speak after the user leaves.
     if (this.active) return;
-    const buffer = this.buffers.get(cue === 'startle' ? 'scales' : cue);
+    const buffer = this.buffers.get(cue);
     if (!buffer) return;
     const c = this.context,
       config = settings[cue],
