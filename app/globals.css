@@ -176,13 +176,9 @@ canvas:focus-visible {
   line-height: 1.9;
 }
 .growth-summary {
-  width: min(330px, 42vw);
+  width: min(310px, 42vw);
   margin-top: 8px;
-  padding: 12px 14px;
-  border: 1px solid #303a3c;
-  border-radius: 10px;
-  background: #0c1113b8;
-  backdrop-filter: blur(8px);
+  padding: 8px 0 0;
 }
 .growth-summary-heading {
   display: flex;
@@ -241,6 +237,22 @@ canvas:focus-visible {
   font-size: 11px;
   font-style: normal;
   white-space: nowrap;
+}
+.growth-signal {
+  display: flex;
+  gap: 4px;
+  margin-top: 9px;
+}
+.growth-signal i {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: #273032;
+}
+.growth-signal i.on {
+  background: #c6efbc;
+  box-shadow: 0 0 7px rgba(198, 239, 188, .45);
 }
 .help-note {
   margin-top: 8px;
@@ -408,8 +420,33 @@ canvas:focus-visible {
   .help {
     font-size: 13px;
   }
+  .help-instruction,
+  .help-note,
+  .help-shortcuts {
+    display: none;
+  }
   .growth-summary {
-    width: min(330px, calc(100vw - 44px));
+    width: min(300px, calc(100vw - 44px));
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+  .growth-summary p {
+    max-width: 220px;
+    margin-bottom: 3px;
+  }
+  .growth-meter {
+    display: flex;
+    gap: 7px;
+    margin-top: 2px;
+  }
+  .growth-meter progress {
+    display: none;
+  }
+  .growth-meter em {
+    font-size: 11px;
+  }
+  .growth-signal {
+    margin-top: 7px;
   }
   .camera-preview {
     left: 22px;

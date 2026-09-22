@@ -442,11 +442,13 @@ export default function Home() {
       </aside>
       <footer className="bottom">
         <div className="help">
-          {depth
-            ? '本地近墙区域实验 · 不等于手部识别或物理触碰'
-            : camera
-              ? '手部互动 · 不录制、不上传'
-              : '鼠标 / 触摸 / 方向键'}
+          <span className="help-instruction">
+            {depth
+              ? '本地近墙区域实验 · 不等于手部识别或物理触碰'
+              : camera
+                ? '手部互动 · 不录制、不上传'
+                : '鼠标 / 触摸 / 方向键'}
+          </span>
           <div className="growth-summary" aria-label="小莹的成长与亲密度">
             <div className="growth-summary-heading">
               <strong>{growthInfo.name}</strong>
@@ -468,12 +470,16 @@ export default function Home() {
                 max={1}
                 aria-label={`亲密度 ${affectionPercent}%`}
               />
-              <em>{intimacyCopy(affection)}</em>
+              <em>{affectionPercent}% · {intimacyCopy(affection)}</em>
+            </div>
+            <div className="growth-signal" aria-label={`成长阶段 ${growthStage + 1} / 5`}>
+              {[0, 1, 2, 3, 4].map((step) => (
+                <i key={step} className={step <= growthStage ? 'on' : ''} />
+              ))}
             </div>
           </div>
           <div className="help-note">成长保存在本机浏览器 · 不识别身份</div>
-          <br />
-          <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
+          <div className="help-shortcuts"><kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面</div>
         </div>
         <div className="control-stack">
           {message && !projection && (
