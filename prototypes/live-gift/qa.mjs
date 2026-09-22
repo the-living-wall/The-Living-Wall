@@ -60,6 +60,7 @@ try {
   await enter();
   await active('原来的样子');
   assert.ok(await button('开启声音').isVisible());
+  assert.ok(await page.locator('.status .trust-state').isVisible());
   await say('今天有点累，但看到你的话就松了一口气。');
   await role('sender');
   await say('不用着急回，周末有空我们去散散步。');

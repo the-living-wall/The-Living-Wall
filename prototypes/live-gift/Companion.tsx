@@ -16,6 +16,7 @@ import {
   type GrowthStage,
 } from '@/lib/creature';
 import { CreatureRenderer } from '@/lib/draw-creature';
+import { trustCopy } from '@/lib/trust-copy';
 import type { DepthPoint } from '@/lib/depth-input';
 import {
   normalArchiveKey,
@@ -50,7 +51,8 @@ export default function Companion() {
     [feeling, setFeeling] = useState(''),
     [growth, setGrowth] = useState(0),
     [growthStage, setGrowthStage] = useState<GrowthStage>(0),
-    [affection, setAffection] = useState(0);
+    [affection, setAffection] = useState(0),
+    [trust, setTrust] = useState(0);
   const [giftView, setGiftView] = useState<'home' | 'create' | 'receive'>(
     'home',
   );
@@ -150,6 +152,7 @@ export default function Companion() {
     setGrowth(next.maturity);
     setGrowthStage(next.growthStage);
     setAffection(next.affection);
+    setTrust(next.trust);
     setPhase('alone');
   }, []);
   const sample = useCallback((x: number, y: number, active: boolean) => {
@@ -185,6 +188,7 @@ export default function Companion() {
     setGrowth(c.maturity);
     setGrowthStage(c.growthStage);
     setAffection(c.affection);
+    setTrust(c.trust);
     setPhase('alone');
   }, []);
   const failure = useCallback((text: string) => {
@@ -350,6 +354,7 @@ export default function Companion() {
         setGrowth(model.maturity);
         setGrowthStage(model.growthStage);
         setAffection(model.affection);
+        setTrust(model.trust);
         setFeeling(
           model.alarm > 0.1
             ? ''
@@ -450,6 +455,7 @@ export default function Companion() {
   const growthInfo = getGrowthStageInfo(growthStage);
   const growthPercent = Math.round(growth * 100);
   const affectionPercent = Math.round(affection * 100);
+  const trustLabel = trustCopy(trust, phase, feeling === '休息一下');
   return (
     <main
       data-gift-view={giftView}
@@ -564,6 +570,7 @@ export default function Companion() {
                 ? '先摸摸外围，让它慢慢熟悉你。'
                 : phaseCopy[phase][1]}
         </p>
+        <em className="trust-state">{trustLabel}</em>
       </aside>
       <footer className="bottom">
         <div className="help">
