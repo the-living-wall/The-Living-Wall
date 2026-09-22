@@ -92,6 +92,7 @@ MediaPipe 是预训练的手部视觉模型；小莹的行为是可测试的规�
 
 - [项目动态（机器人自动更新）](项目动态.md)
 - [产品需求文档（PRD）](docs/PRD.md)
+- [赠光、表达辅助与双方向体验需求（规划，Issue #65）](docs/decisions/2026-09-22-human-connection.md)
 - [协作约定（AGENTS）](AGENTS.md)
 - [灯光录制批次与 OpenSpec 工作流](docs/recording-batches.md)
 - [呈现与需求](docs/03-呼吸与陪伴.md)
