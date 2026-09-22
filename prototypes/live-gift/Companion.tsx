@@ -478,6 +478,32 @@ export default function Companion() {
               ? '留一点光，也捎一句话。让朋友知道，你在惦记着。'
               : note}
           </p>
+          {giftView === 'receive' && (
+            <div className="gift-reply">
+              {echo && (
+                <section className="gift-echo" aria-label="你留下的回声">
+                  <h3>你留下的回声</h3>
+                  <output>{echo}</output>
+                </section>
+              )}
+              <div className="gift-reply-actions">
+                <button
+                  className="gift-text"
+                  onClick={() => {
+                    setDraft(echo);
+                    setEditing(true);
+                  }}
+                >
+                  {echo ? '编辑回声' : '回一句给朋友'}
+                </button>
+                <span className="gift-receive-note">
+                  {echo
+                    ? '尚未发送，刷新后清空。'
+                    : '不用回复，也可以安静收下。'}
+                </span>
+              </div>
+            </div>
+          )}
           {giftView === 'create' && (
             <div className="gift-intent">
               <label htmlFor="gift-intent">你想对朋友说什么？</label>
@@ -553,55 +579,36 @@ export default function Companion() {
           {message && !projection && (
             <output className="message">{message}</output>
           )}
-          {giftView === 'receive' && echo && (
-            <section className="gift-echo" aria-label="你留下的回声">
-              <h3>你留下的回声</h3>
-              <output>{echo}</output>
-            </section>
-          )}
-          <div className="gift-actions">
-            {giftView === 'home' ? (
-              <button
-                className="gift-text gift-send"
-                onClick={() => go('create')}
-              >
-                送给朋友 ↗
-              </button>
-            ) : (
-              <>
-                {giftView === 'receive' && (
-                  <span className="gift-receive-note">
-                    {echo
-                      ? '尚未发送，刷新后清空。'
-                      : '不用回复，也可以安静收下。'}
-                  </span>
-                )}
+          {giftView !== 'receive' && (
+            <div className="gift-actions">
+              {giftView === 'home' ? (
                 <button
-                  className="gift-text"
-                  onClick={() => {
-                    setDraft(giftView === 'create' ? note : echo);
-                    setEditing(true);
-                  }}
+                  className="gift-text gift-send"
+                  onClick={() => go('create')}
                 >
-                  {giftView === 'create'
-                    ? noteEdited
-                      ? '编辑留言'
-                      : '捎一句话'
-                    : echo
-                      ? '编辑回声'
-                      : '留一点回声'}
+                  送给朋友 ↗
                 </button>
-                {giftView === 'create' && (
+              ) : (
+                <>
+                  <button
+                    className="gift-text"
+                    onClick={() => {
+                      setDraft(note);
+                      setEditing(true);
+                    }}
+                  >
+                    {noteEdited ? '编辑留言' : '捎一句话'}
+                  </button>
                   <button
                     className="gift-text gift-send"
                     onClick={() => go('receive')}
                   >
                     预览这份心意 ↗
                   </button>
-                )}
-              </>
-            )}
-          </div>
+                </>
+              )}
+            </div>
+          )}
           <SoundControls
             key={giftView}
             creature={creature}
@@ -654,7 +661,7 @@ export default function Companion() {
           <label htmlFor="gift-message">
             {giftView === 'create'
               ? '捎一句话，也可以留白'
-              : '只在你想回应的时候'}
+              : '写一句给朋友的话（仅预览）'}
           </label>
           <textarea
             id="gift-message"
@@ -680,7 +687,7 @@ export default function Companion() {
                 setEditing(false);
               }}
             >
-              {giftView === 'create' ? '保存留言' : '留下回声'}
+              {giftView === 'create' ? '保存留言' : '保存回声'}
             </button>
           </div>
         </dialog>
