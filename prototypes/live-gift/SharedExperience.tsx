@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type Dispatch } from 'react';
 import {
   ACTOR_NAMES,
+  getProposalSources,
   type Actor,
   type Proposal,
   type SharedAction,
@@ -19,7 +20,7 @@ type Props = {
   trial: StyleKey | null;
   onTrial: (key: StyleKey | null) => void;
 };
-type Mode = 'reply' | 'memory' | 'style';
+type Mode = 'reply' | 'memory' | 'style' | 'watch';
 export default function SharedExperience({
   state,
   dispatch,
@@ -35,6 +36,7 @@ export default function SharedExperience({
   const [expected, setExpected] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const pending = state.pending;
+  const availableSources = getProposalSources(state, expected);
   const replies = state.messages.filter((m) => m.id !== 1);
   useEffect(() => {
     if (mode) dialog.current?.showModal();
@@ -61,6 +63,7 @@ export default function SharedExperience({
     setActor(next);
   };
   const submit = () => {
+    if (!mode || mode === 'watch') return;
     if (mode === 'reply') dispatch({ type: 'message', actor, text });
     else
       dispatch({
@@ -164,8 +167,10 @@ export default function SharedExperience({
             <button
               className="gift-text"
               onClick={() => {
-                if (pending.choice.kind === 'style')
-                  onTrial(pending.choice.style);
+                if (pending.choice.kind !== 'style') return;
+                open('watch', pending);
+                setWatching(true);
+                onTrial(pending.choice.style);
               }}
             >
               看看这个样子
@@ -205,7 +210,9 @@ export default function SharedExperience({
                     onTrial(null);
                   }}
                 >
-                  就这样，一起留下
+                  {pending.choice.kind === 'remove-memory'
+                    ? '确认取消这条纪念'
+                    : '就这样，一起留下'}
                 </button>
                 <button
                   className="gift-text"
@@ -321,9 +328,11 @@ export default function SharedExperience({
           aria-label={
             mode === 'reply'
               ? '回一句给朋友'
-              : mode === 'style'
-                ? '一起塑造小莹'
-                : '留下这一刻'
+              : mode === 'watch'
+                ? '看看这个样子'
+                : mode === 'style'
+                  ? '一起塑造小莹'
+                  : '留下这一刻'
           }
           onCancel={(e) => {
             e.preventDefault();
@@ -334,26 +343,39 @@ export default function SharedExperience({
             <h3>
               {mode === 'reply'
                 ? '回一句给朋友'
-                : mode === 'style'
-                  ? '一起塑造小莹'
-                  : '留下这一刻'}
+                : mode === 'watch'
+                  ? '看看这个样子'
+                  : mode === 'style'
+                    ? '一起塑造小莹'
+                    : '留下这一刻'}
             </h3>
-            <button className="gift-text" onClick={close} aria-label="关闭编辑">
+            <button
+              className="gift-text"
+              onClick={close}
+              aria-label={mode === 'watch' ? '关闭试看' : '关闭编辑'}
+            >
               关闭
             </button>
           </div>
           {watching && (
             <div className="shared-watch-copy">
               <p>正在试看：{TEMPERAMENTS[style].name}</p>
-              <small>共同选择尚未改变，返回后可以继续选择。</small>
+              <small>
+                {mode === 'watch'
+                  ? '试看不代表同意，返回提议后再作决定。'
+                  : '共同选择尚未改变，返回后可以继续选择。'}
+              </small>
               <button
                 className="gift-text gift-send"
                 onClick={() => {
-                  onTrial(null);
-                  setWatching(false);
+                  if (mode === 'watch') close();
+                  else {
+                    onTrial(null);
+                    setWatching(false);
+                  }
                 }}
               >
-                返回选择
+                {mode === 'watch' ? '返回提议' : '返回选择'}
               </button>
             </div>
           )}
@@ -366,10 +388,15 @@ export default function SharedExperience({
             {mode !== 'reply' && (
               <fieldset className="shared-sources">
                 <legend>从你们的话里，选一段来由</legend>
-                {state.messages.length === 0 && (
+                {expected !== null && (
+                  <p className="shared-muted">
+                    保留提议时的原文，也可以选后来留下的话。
+                  </p>
+                )}
+                {availableSources.length === 0 && (
                   <p>先回一句话，再留下这一刻。</p>
                 )}
-                {state.messages.map((m) => (
+                {availableSources.map((m) => (
                   <label key={m.id}>
                     <input
                       type="checkbox"
@@ -447,7 +474,11 @@ export default function SharedExperience({
               <button
                 className="gift-save"
                 disabled={
-                  mode === 'reply' ? !text.trim() : sources.length === 0
+                  mode === 'reply'
+                    ? !text.trim()
+                    : !availableSources.some((source) =>
+                        sources.includes(source.id),
+                      )
                 }
                 onClick={submit}
               >

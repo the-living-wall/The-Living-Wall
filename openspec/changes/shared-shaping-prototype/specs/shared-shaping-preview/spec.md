@@ -31,6 +31,10 @@
 - **WHEN** 用户预览另一性情后取消
 - **THEN** 画面恢复已生效方案，不增加历史或确认
 
+#### Scenario: Preview a received proposal
+- **WHEN** 用户在待确认提议中选择看看这个样子
+- **THEN** 打开独立试看视图以免窄屏阅读内容遮挡小莹；返回提议、关闭或 Escape 均清除试看，保留待确认状态，不提交任何选择
+
 ### Requirement: Both roles approve the exact proposal version
 原型 SHALL 只保留一项待确认提议；提出者的提交记录自己的选择，只有另一体验身份明确确认同一版本才能生效。修改内容或方案 SHALL 生成新版本、撤销旧确认并把修改者视为新提出者。旧版本操作与重复确认不得再次生效。
 
@@ -63,6 +67,10 @@
 #### Scenario: Cancel a shared memory
 - **WHEN** 双方确认取消某条现有纪念
 - **THEN** 该纪念不再展示为当前共同纪念，原对话不被冒充已删除，性情保持不变
+
+#### Scenario: Revise a restoration after editing the original greeting
+- **WHEN** 最初赠言已修改或清空，用户从历史提出恢复后继续改选
+- **THEN** 编辑层与提交处理均以待确认提议的原片段快照为来源，可额外选取后来留言；不悄悄替换为新赠言，改选后仍由另一身份确认新版本
 
 ### Requirement: Presentation is isolated and accessible
 共同性情 SHALL 只作用于朋友视角的展示，不修改普通成长、亲密度、触摸判定、生产音频或真实成长存档。受惊、恢复、休息时暂停附加动作；减少动态偏好下不播放附加位移/闪动。保留原声音入口，支持键盘、可关闭编辑层和窄屏滚动，不让长内容遮挡操作。

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Creature } from '../lib/creature.ts';
 import {
   createSharedState,
+  getProposalSources,
   sharedReducer as reduce,
   type SharedState,
   type SharedAction,
@@ -199,6 +200,59 @@ void test('invalid input and competing proposals cannot fabricate a choice', () 
   assert.equal(competing.pending, first.pending);
   assert.ok(Object.isFrozen(TEMPERAMENTS));
   assert.ok(Object.values(TEMPERAMENTS).every(Object.isFrozen));
+});
+
+void test('counterproposals keep historical excerpts even when the current greeting was removed or replaced', () => {
+  for (const greeting of ['', '现在的新留言']) {
+    let state = accept(propose(createSharedState('当时的原文')));
+    const history = state.history[0];
+    state = reduce(state, { type: 'greeting', text: greeting });
+    state = reduce(state, {
+      type: 'propose',
+      actor: 'friend',
+      expected: null,
+      choice: { kind: 'style', style: history.previous },
+      historyVersion: history.version,
+      sourceIds: [],
+      reason: '想恢复',
+    });
+    const originalVersion = state.pending!.version;
+    const available = getProposalSources(state, originalVersion);
+    assert.equal(available[0].text, '当时的原文');
+    assert.equal(available.filter((message) => message.id === 1).length, 1);
+    const revised = propose(state, 'curious/v1', 'sender');
+    assert.equal(revised.pending!.sources[0].text, '当时的原文');
+    assert.equal(revised.active, 'calm/v1');
+    assert.equal(accept(revised, 'sender').history.length, 1);
+    assert.equal(accept(revised, 'friend').active, 'curious/v1');
+    assert.equal(getProposalSources(state, null)[0]?.text ?? '', greeting);
+  }
+});
+
+void test('a counterproposal can explicitly combine the retained excerpt and a new reply', () => {
+  let state = propose(createSharedState('一起慢慢来'));
+  state = reduce(state, {
+    type: 'message',
+    actor: 'friend',
+    text: '我们可以试着好奇一点',
+  });
+  const reply = state.messages.at(-1)!;
+  const version = state.pending!.version;
+  assert.deepEqual(
+    getProposalSources(state, version).map((message) => message.text),
+    ['一起慢慢来', reply.text],
+  );
+  state = reduce(state, {
+    type: 'propose',
+    actor: 'friend',
+    expected: version,
+    choice: { kind: 'style', style: 'curious/v1' },
+    sourceIds: [1, reply.id],
+    reason: '',
+  });
+  assert.equal(state.pending!.sources.length, 2);
+  assert.equal(state.active, ORIGINAL);
+  assert.equal(accept(state, 'sender').active, 'curious/v1');
 });
 
 void test('presentation respects reduced motion, rest, alarm and recovery', () => {

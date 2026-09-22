@@ -93,6 +93,9 @@ try {
   await active('原来的样子');
   await role('friend');
   await button('看看这个样子').click();
+  assert.equal(await dialog().getAttribute('aria-label'), '看看这个样子');
+  await active('原来的样子');
+  await button('返回提议').click();
   await role('sender');
   assert.equal(await page.locator('.shared-trial').count(), 0);
   await role('friend');
@@ -124,7 +127,7 @@ try {
   await active('原来的样子');
   await button('提议取消这条纪念').click();
   await role('friend');
-  await button('就这样，一起留下').click();
+  await button('确认取消这条纪念').click();
   await active('原来的样子');
   assert.ok(
     await page
@@ -206,6 +209,39 @@ try {
   await active('原来的样子');
   assert.equal(await page.locator('.shared-message').count(), 0);
   assert.equal(await page.locator('.shared-traces').count(), 0);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await button('一起塑造小莹').click();
+  await dialog().getByRole('checkbox').first().check();
+  await dialog().getByRole('radio', { name: '沉静', exact: true }).check();
+  await button('提出这个选择').click();
+  await role('sender');
+  await button('就这样，一起留下').click();
+  await button('返回编辑').click();
+  await button('捎一句话').click();
+  await page.locator('#gift-message').fill('');
+  await button('保存留言').click();
+  await page.getByRole('button', { name: /预览这份心意/ }).click();
+  await page.locator('.shared-traces > summary').click();
+  await button('提议恢复此前的样子').click();
+  await role('sender');
+  await button('看看这个样子').click();
+  await screenshot('watch-pending-mobile');
+  assert.equal(await dialog().getAttribute('aria-label'), '看看这个样子');
+  await page.keyboard.press('Escape');
+  await active('沉静');
+  assert.equal(await page.locator('.shared-pending').count(), 1);
+  await button('换一种试试').click();
+  assert.equal(await dialog().getByRole('checkbox').count(), 1);
+  assert.ok(await dialog().getByRole('checkbox').first().isChecked());
+  await dialog().getByRole('radio', { name: '好奇', exact: true }).check();
+  await button('提出修改后的选择').click();
+  await active('沉静');
+  await role('friend');
+  await button('就这样，一起留下').click();
+  await active('好奇');
+  results.push(
+    '清空原留言后，历史恢复仍可改选并保留原片段；待确认提议独立试看，返回/Escape 均不确认',
+  );
   assert.deepEqual(errors, []);
   results.push(
     '原声音开关保留、回个人页无共同表现、真实成长键未改变、刷新清空、无页面脚本错误',

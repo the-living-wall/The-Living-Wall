@@ -61,6 +61,21 @@ export function createSharedState(greeting: string): SharedState {
     feedback: '',
   };
 }
+// A counterproposal keeps the exact excerpts shown in the pending revision.
+// Greeting id 1 can be edited or removed; its current text is not historical evidence.
+export function getProposalSources(
+  state: SharedState,
+  expected: number | null,
+): Message[] {
+  if (!state.pending || state.pending.version !== expected)
+    return state.messages;
+  const snapshots = state.pending.sources;
+  const ids = new Set(snapshots.map((message) => message.id));
+  return [
+    ...snapshots,
+    ...state.messages.filter((message) => !ids.has(message.id)),
+  ];
+}
 const fail = (state: SharedState, feedback: string): SharedState => ({
   ...state,
   feedback,
@@ -124,7 +139,9 @@ export function sharedReducer(
     const sources =
       memory?.sources ??
       historical?.sources ??
-      state.messages.filter((m) => action.sourceIds.includes(m.id));
+      getProposalSources(state, action.expected).filter((m) =>
+        action.sourceIds.includes(m.id),
+      );
     if (!sources.length) return fail(state, '先选一段你们想留下的话。');
     return {
       ...state,
