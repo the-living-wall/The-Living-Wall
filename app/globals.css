@@ -426,7 +426,7 @@ canvas:focus-visible {
     display: none;
   }
   .growth-summary {
-    width: min(300px, calc(100vw - 44px));
+    width: min(210px, calc(100vw - 44px));
     padding-top: 6px;
     margin-top: 4px;
   }
@@ -449,10 +449,12 @@ canvas:focus-visible {
     margin-top: 7px;
   }
   .camera-preview {
-    left: 22px;
-    bottom: 170px;
-    width: 120px;
-    height: 90px;
+    left: auto;
+    right: 22px;
+    top: 55%;
+    bottom: auto;
+    width: 104px;
+    height: 78px;
   }
   .message {
     left: 22px;
@@ -522,10 +524,11 @@ canvas:focus-visible {
 @media(max-width:700px) {
   .control-stack { align-items:flex-end; }
   .sound-controls { position:absolute; right:0; top:70px; display:flex; justify-content:flex-end; }
+  .sound-controls { flex-direction:column; align-items:flex-end; }
   .sound-row { gap:6px; justify-content:flex-end; }
   .sound-row button { font-size:12px; padding:8px 10px; }
-  .sound-options,
-  .sound-message { display:none; }
+  .sound-options { display:none; }
+  .sound-message { display:block; max-width:220px; text-align:right; }
   .sound-panel { right:auto; left:0; }
   .depth-toggle,
   .depth-option,

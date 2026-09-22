@@ -51,7 +51,14 @@ export default function SoundControls({ creature }: { creature: RefObject<Creatu
   }, [creature]);
 
   const deactivate = () => { generation.current++; activationPending.current = false; enabledRef.current = false; engine.current?.close(); engine.current = null; music.current?.pause(); setSoundOn(false); setLoading(false); setMessage('声音已关闭。'); };
-  const toggleSound = () => { if (loading || soundOn) deactivate(); else { enabledRef.current = true; void activate(); } };
+  const toggleSound = () => {
+    // A failed autoplay attempt leaves the first activation in a loading
+    // state. Treat the button tap as an explicit gesture and retry activation;
+    // it must never be interpreted as a request to turn sound off.
+    if (loading) { enabledRef.current = true; void activate(); return; }
+    if (soundOn) deactivate();
+    else { enabledRef.current = true; void activate(); }
+  };
   useEffect(() => { const timer = window.setTimeout(() => void activate(), 0); const retry = () => { if (activationPending.current) void activate(); }; window.addEventListener('pointerdown', retry, { once: true }); return () => { window.clearTimeout(timer); window.removeEventListener('pointerdown', retry); }; }, [activate]);
   const setInteractionVolume = (value: number) => {
     volumeRef.current = value;
