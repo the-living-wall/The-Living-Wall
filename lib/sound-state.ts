@@ -58,9 +58,12 @@ export class SoundDirector {
           ) / dt
         : 0;
     const wasTurning = this.turning;
-    this.turning = speed >= (this.turning ? 0.65 : 1.2);
-    const shock =
-      (s.alarm >= 0.1 && p.alarm < 0.1) || s.frightCount > p.frightCount;
+    // Rotation and displacement are material events, not behaviour phases.
+    // Use hysteresis so a single shape turn makes one cue, not one per frame.
+    this.turning = speed >= (this.turning ? 0.3 : 0.65);
+    // Startle is exclusively an alarm transition. Internal fright bookkeeping
+    // must never make the cue audible in an otherwise calm state.
+    const shock = s.alarm >= 0.1 && p.alarm < 0.1;
     if (shock) this.shockUntil = s.time + 1.2;
     if (shock || s.time < this.shockUntil) {
       this.stage = 0;
@@ -73,15 +76,15 @@ export class SoundDirector {
       // Don't stop the shock cue on every frame while alarm remains high.
       return { stop: false };
     }
-    const fastTurnOnset = this.turning && !wasTurning && !s.resting;
+    const fastTurnOnset = this.turning && !wasTurning;
     if (fastTurnOnset) {
       // A visible rapid rotation is itself a body event. Emit it before the
       // petting sequence so contact cannot swallow the material cue.
       return { stop: true, cue: 'scales' };
     }
     const wasMoving = this.moving;
-    this.moving = s.motionSpeed >= (wasMoving ? 0.12 : 0.22);
-    if (this.moving && !wasMoving && !s.resting) {
+    this.moving = s.motionSpeed >= (wasMoving ? 0.06 : 0.1);
+    if (this.moving && !wasMoving) {
       return { stop: true, cue: 'move' };
     }
     const endedMotion = this.motionSound;

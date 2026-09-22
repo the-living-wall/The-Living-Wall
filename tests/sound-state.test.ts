@@ -116,18 +116,23 @@ void test('wrapped angle, slow breathing turns and resumed frames do not rustle'
   assert.equal(d.update({ ...base, time: 2, heading: 0 }).cue, undefined);
   assert.equal(d.update({ ...base, time: 2.02, heading: 0.01 }).cue, undefined);
 });
-void test('a new fright during recovery preempts cooldown once', () => {
+void test('fright bookkeeping alone never replays startle during recovery', () => {
   const d = new SoundDirector();
   d.update(base);
   d.update({ ...base, time: 0.1, alarm: 0.8, frightCount: 1 });
-  assert.equal(
-    d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue,
-    'startle',
-  );
+  assert.equal(d.update({ ...base, time: 0.5, alarm: 0.9, frightCount: 2 }).cue, undefined);
   assert.deepEqual(
     d.update({ ...base, time: 0.52, alarm: 0.9, frightCount: 2 }),
     { stop: false },
   );
+});
+
+void test('material rotation and movement cues ignore behaviour phase', () => {
+  const d = new SoundDirector();
+  d.update({ ...base, resting: true });
+  assert.equal(d.update({ ...base, time: 0.1, resting: true, heading: 0.08 }).cue, 'scales');
+  d.update({ ...base, time: 0.2, resting: true, heading: 0.08 });
+  assert.equal(d.update({ ...base, time: 0.3, resting: true, heading: 0.08, motionSpeed: 0.12 }).cue, 'move');
 });
 
 void test('stationary contact acknowledges once without advancing enjoyment', () => {
