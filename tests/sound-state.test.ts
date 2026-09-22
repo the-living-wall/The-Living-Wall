@@ -184,6 +184,18 @@ void test('actual creature movement emits one short whoosh per movement burst', 
   assert.equal(d.update({ ...base, time: 2.1, motionSpeed: 0.3 }).cue, 'move');
 });
 
+void test('movement overlays do not reset the long-enjoyment clock', () => {
+  const d = new SoundDirector();
+  d.update(base);
+  d.update({ ...base, time: 0.1, stroked: true, enjoyment: 0.9 });
+  d.update({ ...base, time: 1.2, stroked: true, enjoyment: 0.9, motionSpeed: 0.3 });
+  d.update({ ...base, time: 1.3, stroked: true, enjoyment: 0.9, motionSpeed: 0.02 });
+  assert.equal(
+    d.update({ ...base, time: 4.2, stroked: true, enjoyment: 0.9, motionSpeed: 0.02 }).cue,
+    'purr',
+  );
+});
+
 void test('all petting cues respond within eight seconds without looping', () => {
   const d = new SoundDirector();
   d.update(base);

@@ -106,8 +106,10 @@ export class SoundDirector {
       (p.stroked && !s.stroked && !continued) ||
       (p.resting && !s.resting);
     if (endedMotion) {
-      this.since = s.time;
-      this.next = s.time + 0.2;
+      // A body whoosh is an overlay event, not a new stroking interaction.
+      // Do not restart the enjoyment clock or purr will never become reachable
+      // while the creature is gently repositioning itself.
+      this.next = Math.max(this.next, s.time + 0.2);
     }
     if (s.alarm >= 0.1) {
       this.stage = 0;
