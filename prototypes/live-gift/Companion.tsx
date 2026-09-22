@@ -553,6 +553,12 @@ export default function Companion() {
           {message && !projection && (
             <output className="message">{message}</output>
           )}
+          {giftView === 'receive' && echo && (
+            <section className="gift-echo" aria-label="你留下的回声">
+              <h3>你留下的回声</h3>
+              <output>{echo}</output>
+            </section>
+          )}
           <div className="gift-actions">
             {giftView === 'home' ? (
               <button
@@ -566,7 +572,7 @@ export default function Companion() {
                 {giftView === 'receive' && (
                   <span className="gift-receive-note">
                     {echo
-                      ? '回声已留在本页演示里。'
+                      ? '尚未发送，刷新后清空。'
                       : '不用回复，也可以安静收下。'}
                   </span>
                 )}
