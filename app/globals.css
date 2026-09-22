@@ -521,12 +521,18 @@ canvas:focus-visible {
 .sound-panel p,.sound-message { font-size:12px; max-width:360px; }
 @media(max-width:700px) {
   .control-stack { align-items:flex-end; }
-  .sound-controls { display:flex; justify-content:flex-end; }
+  .sound-controls { position:absolute; right:0; top:70px; display:flex; justify-content:flex-end; }
   .sound-row { gap:6px; justify-content:flex-end; }
   .sound-row button { font-size:12px; padding:8px 10px; }
   .sound-options,
   .sound-message { display:none; }
   .sound-panel { right:auto; left:0; }
+  .depth-toggle,
+  .depth-option,
+  .depth-lab-link { display:none; }
+  .controls { flex-wrap:nowrap; gap:5px; margin-top:15px; }
+  .controls button { padding:8px 9px; font-size:12px; white-space:nowrap; }
 }
 .sound-controls { position:relative; pointer-events:auto; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
+@media(max-width:700px) { .sound-controls { position:absolute; right:0; top:70px; } }

@@ -491,7 +491,7 @@ export default function Home() {
               {camera ? '关闭摄像头' : '启用摄像头'}
             </Button>
             {import.meta.env.DEV && (
-              <Button onClick={toggleDepth}>
+              <Button className="depth-toggle" onClick={toggleDepth}>
                 {depth ? '关闭深度实验' : '启用深度实验'}
               </Button>
             )}
