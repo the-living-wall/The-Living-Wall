@@ -77,6 +77,7 @@ export class CreatureAudio {
   private director = new SoundDirector();
   private request = new AbortController();
   private active?: {
+    cue: SoundCue;
     source: AudioBufferSourceNode;
     gain: GainNode;
     nodes: AudioNode[];
@@ -133,9 +134,16 @@ export class CreatureAudio {
   update(state: SoundState) {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
     const event = this.director.update(state, !!this.active);
-    if (event.stop) this.stop();
-    if ((event.cue === 'scales' || event.cue === 'move') && this.active)
+    // Keep the long purr bed under low-priority morphology rustles. A burst of
+    // scales should not erase the sustained enjoyment state; major state exits
+    // (startle, leaving, roll transition) still call stop normally.
+    const purrBed = this.active?.cue === 'purr';
+    if (event.stop && !(purrBed && (event.cue === 'scales' || event.cue === 'move')))
       this.stop();
+    if ((event.cue === 'scales' || event.cue === 'move') && this.active) {
+      if (purrBed) return;
+      this.stop();
+    }
     if (event.cue) this.play(event.cue);
   }
   private play(cue: SoundCue) {
@@ -200,7 +208,7 @@ export class CreatureAudio {
     } else {
       gain.gain.setValueAtTime(level, start + attack);
     }
-    const active = { source, gain, nodes };
+    const active = { cue, source, gain, nodes };
     this.active = active;
     if (looping) source.start(start, offset);
     else source.start(start, offset, duration * config.rate);

@@ -166,10 +166,9 @@ void test('every fast turn onset speaks even during touch', () => {
   );
   d.update({ ...base, time: 0.2, heading: 0.4, touching: true, stroked: true });
   d.update({ ...base, time: 0.8, heading: 0.4, touching: true, stroked: true });
-  assert.equal(
-    d.update({ ...base, time: 0.9, heading: 1.1, touching: true, stroked: true }).cue,
-    'scales',
-  );
+  assert.equal(d.update({ ...base, time: 0.9, heading: 1.1, touching: true, stroked: true }).cue, undefined);
+  d.update({ ...base, time: 2, heading: 1.1, touching: true, stroked: true });
+  assert.equal(d.update({ ...base, time: 2.1, heading: 1.4, touching: true, stroked: true }).cue, 'scales');
 });
 
 void test('actual creature movement emits one short whoosh per movement burst', () => {
