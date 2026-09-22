@@ -2,11 +2,13 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import type { Creature } from '@/lib/creature';
 import { CreatureAudio, DEFAULT_SOUND_VOLUMES, type SoundVolumeKey } from '@/lib/creature-audio';
+import type { SoundCue } from '@/lib/sound-state';
 import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'xiaoying-sound-volumes';
 const labels: Record<SoundVolumeKey, string> = { breathing: '呼吸', heartMouth: '心 / 口部回应', curiosityHand: '好奇伸手', touch: '接触回应', enjoyment: '抚摸享受', scales: '鳞片碎响', rotation: '快速旋转', movement: '快速移动', startle: '受惊 / 转场' };
 const keys = Object.keys(DEFAULT_SOUND_VOLUMES) as SoundVolumeKey[];
+const previewCues: Record<SoundVolumeKey, SoundCue> = { breathing: 'rest', heartMouth: 'voice', curiosityHand: 'curiosity', touch: 'touch', enjoyment: 'purr', scales: 'scales', rotation: 'roll', movement: 'move', startle: 'startle' };
 type SavedVolumes = Record<SoundVolumeKey, number> & { music: number };
 const readVolumes = (): SavedVolumes => {
   const next: SavedVolumes = { ...DEFAULT_SOUND_VOLUMES, music: 0.12 };
@@ -59,10 +61,17 @@ export default function SoundControls({ creature }: { creature: RefObject<Creatu
     engine.current?.volume(value);
     for (const key of keys) engine.current?.setCueVolume(key, 1);
   };
+  const preview = async (key: SoundVolumeKey) => {
+    if (loading || !engine.current || !soundOn) {
+      enabledRef.current = true;
+      await activate();
+    }
+    engine.current?.audition(previewCues[key]);
+  };
   return <div className="sound-controls"><div className="sound-row"><Button onClick={toggleSound} aria-pressed={soundOn || loading}>{loading || soundOn ? '关闭声音' : '开启声音'}</Button><details className="sound-options"><summary>声音设置</summary><div className="sound-panel">
     <div className="sound-mix"><label><span>互动音量</span><output>{Math.round(volume * 100)}%</output><input aria-label="互动音量" type="range" min="0" max="1" step="0.01" value={volume} onChange={(e) => setInteractionVolume(+e.target.value)} /></label><button type="button" onClick={() => setInteractionVolume(0.45)}>恢复默认</button></div>
     <div className="sound-mix"><label><span>背景音乐</span><output>{Math.round(volumes.music * 100)}%</output><input aria-label="背景音乐音量" type="range" min="0" max="0.5" step="0.01" value={volumes.music} onChange={(e) => { const n = +e.target.value; const next = { ...volumesRef.current, music: n }; persist(next); if (music.current) music.current.volume = n; }} /></label><button type="button" onClick={() => { const next = { ...volumesRef.current, music: 0.12 }; persist(next); if (music.current) music.current.volume = 0.12; }}>恢复默认</button></div>
-    <div className="sound-library"><div className="sound-library-title">互动声音 <span>共用互动音量</span></div><div className="sound-tags">{keys.map((key) => <span className="sound-tag" key={key}>{labels[key]}</span>)}</div></div>
+    <div className="sound-library"><div className="sound-library-title">互动声音 <span>点击试听 · 共用互动音量</span></div><div className="sound-tags">{keys.map((key) => <button className="sound-tag" type="button" key={key} onClick={() => void preview(key)} aria-label={`试听${labels[key]}`}>{labels[key]}</button>)}</div></div>
     <p className="sound-hint">身体声：鳞片、旋转、快速移动；心 / 口声：呼吸与回应；手声：接触、抚摸和好奇伸手。呼吸保持低存在感，不因鼠标移动持续触发。</p><a className="sound-credits" href="/audio/credits.html" target="_blank" rel="noreferrer">声音来源与署名 ↗</a>
   </div></details></div>{message && <output className="sound-message">{message}</output>}</div>;
 }

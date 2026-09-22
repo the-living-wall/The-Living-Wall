@@ -430,7 +430,9 @@ canvas:focus-visible {
 .sound-library-title { display:flex; justify-content:space-between; margin-bottom:9px; font-size:12px; color:#edf8ee; }
 .sound-library-title span { color:#93ae9a; font-size:11px; }
 .sound-tags { display:flex; flex-wrap:wrap; gap:6px; }
-.sound-tag { padding:5px 8px; border-radius:999px; background:#263b31; color:#c8dccb; font-size:11px; }
+.sound-panel .sound-tag { padding:6px 10px; border:1px solid transparent; border-radius:999px; background:#263b31; color:#c8dccb; font-size:11px; transition:background .16s ease,border-color .16s ease,transform .16s ease; }
+.sound-panel .sound-tag:hover,.sound-panel .sound-tag:focus-visible { background:#355143; border-color:#789984; color:#f0fff1; outline:none; }
+.sound-panel .sound-tag:active { transform:scale(.96); background:#41614f; }
 .sound-hint { color:#a9bdb0; line-height:1.55; }
 .sound-credits { color:#c4eab2; font-size:12px; }
 
