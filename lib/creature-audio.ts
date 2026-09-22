@@ -50,7 +50,9 @@ const cueVolumeKey: Record<SoundCue, SoundVolumeKey> = {
 const settings = {
   // The source purr is about 10 dB louder than the other clips. Keep it as
   // an intimate response instead of letting it dominate the interaction mix.
-  purr: { rate: 0.7, seconds: 2.8, gain: 0.17, cutoff: 850 },
+  // Purring is a low-frequency bed: loop the long source for as long as the
+  // creature remains in the deeply-enjoying stroking state.
+  purr: { rate: 0.7, seconds: 2.8, gain: 0.17, cutoff: 850, loop: true },
   rest: { rate: 1, seconds: 2.4, gain: 0.2, cutoff: 900 },
   settle: { rate: 1, seconds: 0.8, gain: 0.23, cutoff: 1400 },
   curiosity: { rate: 1, seconds: 0.78, gain: 0.28, cutoff: 2400 },
@@ -145,6 +147,7 @@ export class CreatureAudio {
       config = settings[cue],
       start = c.currentTime;
     const offset = cue === 'roll' ? 0.5 : 0;
+    const looping = cue === 'purr';
     const duration = Math.min(
       config.seconds,
       (buffer.duration - offset) / config.rate,
@@ -154,6 +157,11 @@ export class CreatureAudio {
       filter = c.createBiquadFilter();
     source.buffer = buffer;
     source.playbackRate.value = config.rate;
+    if (looping) {
+      source.loop = true;
+      source.loopStart = offset;
+      source.loopEnd = buffer.duration;
+    }
     filter.type = 'lowpass';
     filter.frequency.value = config.cutoff;
     source.connect(filter);
@@ -178,18 +186,24 @@ export class CreatureAudio {
       }
     }
     const tail = cue === 'voice' ? 0.8 : 0;
+    const end = looping ? Number.POSITIVE_INFINITY : start + duration + tail;
     gain.gain.setValueAtTime(0, start);
     const attack = Math.min(0.08, duration / 4);
     const level = config.gain * this.cueVolumes[cueVolumeKey[cue]];
     gain.gain.linearRampToValueAtTime(level, start + attack);
-    gain.gain.setValueAtTime(
-      level,
-      start + Math.max(attack, duration + tail - Math.min(0.5, duration / 2)),
-    );
-    gain.gain.linearRampToValueAtTime(0, start + duration + tail);
+    if (!looping) {
+      gain.gain.setValueAtTime(
+        level,
+        start + Math.max(attack, duration + tail - Math.min(0.5, duration / 2)),
+      );
+      gain.gain.linearRampToValueAtTime(0, end);
+    } else {
+      gain.gain.setValueAtTime(level, start + attack);
+    }
     const active = { source, gain, nodes };
     this.active = active;
-    source.start(start, offset, duration * config.rate);
+    if (looping) source.start(start, offset);
+    else source.start(start, offset, duration * config.rate);
     // The source ending precedes delay tails; disconnect only after tail completion.
     source.onended = () => {
       setTimeout(

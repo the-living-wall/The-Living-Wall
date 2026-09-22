@@ -167,6 +167,8 @@ export class SoundDirector {
     // the hysteresis above prevents repeated cues during one continuous turn.
     if (cue)
       this.next = s.time + (cue === 'purr' ? 3.3 : cue === 'voice' ? 2.2 : 1.1);
-    return { stop, cue };
+    // Deep enjoyment transitions from the sustained purr bed to the short
+    // roll cue; stop the bed before that one-shot event starts.
+    return { stop: stop || cue === 'roll', cue };
   }
 }
