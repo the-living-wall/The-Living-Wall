@@ -1,6 +1,10 @@
 /* oxlint-disable typescript/no-require-imports -- CloudBase ordinary functions load a CommonJS index.main entry. */
 const cloudbase = require('@cloudbase/node-sdk');
-const { CloudGiftStore, createHandler } = require('./service.cjs');
+const {
+  CloudGiftStore,
+  createHandler,
+  createSdkHandler,
+} = require('./service.cjs');
 
 let store, handler;
 function getStore() {
@@ -19,4 +23,18 @@ exports.main = async (event) => {
 exports.cleanup = async (event) => {
   if (event.Type !== 'Timer') throw new Error('Timer trigger required');
   return { removed: await getStore().purge() };
+};
+// Separate ordinary function (index.sdk), no HTTP route. Not enabled by deploying
+// the existing main/cleanup bundle. Platform policy must restrict this function.
+exports.sdk = async (event, context) => {
+  if (process.env.GIFT_SDK_ENABLED !== 'true')
+    return { status: 503, value: { error: '连接配置尚未完成，请稍后重试。' } };
+  let uid;
+  try {
+    const parsed = cloudbase.parseContext(context);
+    uid = (parsed.environment || parsed.environ || {}).TCB_UUID;
+  } catch {
+    /* Missing/malformed platform context fails closed. */
+  }
+  return createSdkHandler(getStore())(event, uid);
 };

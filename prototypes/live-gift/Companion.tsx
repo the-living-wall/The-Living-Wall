@@ -70,12 +70,17 @@ export default function Companion({
     thanks: '谢谢你一直以来的陪伴。',
     joy: '遇到一件开心的小事，第一个就想告诉你。',
   };
-  const [note, setNote] = useState(openings.rest);
-  const [noteEdited, setNoteEdited] = useState(false);
+  const [note, setNote] = useState(
+    connection?.creationDraft?.text ?? openings.rest,
+  );
+  const [noteEdited, setNoteEdited] = useState(!!connection?.creationDraft);
   const [localShared, dispatchLocal] = useReducer(
     sharedReducer,
-    openings.rest,
-    createSharedState,
+    connection?.creationDraft,
+    (draft) => ({
+      ...createSharedState(draft?.text ?? openings.rest),
+      ...(draft ? { names: draft.names } : {}),
+    }),
   );
   const shared = connection?.view?.state ?? localShared;
   const dispatchShared = connection?.view ? connection.send : dispatchLocal;
@@ -573,6 +578,7 @@ export default function Companion({
               {noteEdited && note !== openings[intent] && (
                 <button
                   className="gift-text"
+                  disabled={connection?.creationPending}
                   onClick={() => {
                     setNote(openings[intent]);
                     setNoteEdited(false);

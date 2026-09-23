@@ -1,0 +1,59 @@
+{
+  "source": "cece90cabce458e7537fa3b4899ea799e49f5c59",
+  "workingTree": "M docs/PRD.md\n M openspec/changes/cross-device-gifts/design.md\n M openspec/changes/cross-device-gifts/proposal.md\n M openspec/changes/cross-device-gifts/specs/cross-device-gifts/spec.md\n M openspec/changes/cross-device-gifts/tasks.md\n M package-lock.json\n M package.json\n M prototypes/live-gift/OnlineApp.tsx\n M prototypes/live-gift/vite.config.mts\n M services/gifts/cloud-bundle.ts\n M services/gifts/cloudbase/index.cjs\n M tests/gifts-cloudbase.test.ts\n?? docs/qa/2026-09-23-cross-device/sdk-validation-v1/\n?? prototypes/live-gift/cloudbase-client.ts\n?? prototypes/live-gift/gift-api.ts\n?? prototypes/live-gift/gift-transport.ts\n?? services/gifts/sdk-handler.ts\n?? tests/gifts-transport.test.ts",
+  "started": "2026-09-23T13:21:38.591Z",
+  "origin": "http://127.0.0.1:4191",
+  "mode": "local-sqlite",
+  "physicalDevices": false,
+  "selectedScenario": "all",
+  "defaultDomainWarmup": false,
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "offlineRetry": true,
+      "serverRestart": true,
+      "browserReload": true,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": true,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": true,
+      "soundActivationMovementPreviewAndStop": true
+    },
+    {
+      "name": "轻松打趣",
+      "status": "passed",
+      "active": "俏皮",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false,
+      "soundActivationMovementPreviewAndStop": false
+    },
+    {
+      "name": "共同约定",
+      "status": "passed",
+      "active": "原来的样子",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false,
+      "soundActivationMovementPreviewAndStop": false
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}

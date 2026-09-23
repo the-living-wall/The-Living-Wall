@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Companion from './Companion';
+import { api, ApiError } from './gift-api';
 import type { GiftView } from '../../services/gifts/store';
 import type { SharedAction, SharedState } from './shared-state';
 
@@ -26,6 +27,7 @@ export type Connection = {
   retry: () => Promise<boolean>;
   hasPending: boolean;
   creationPending: boolean;
+  creationDraft: { text: string; names: SharedState['names'] } | null;
 };
 function random() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) =>
@@ -41,34 +43,6 @@ function read<T>(key: string, fallback: T): T {
 }
 function write(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value));
-}
-class ApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
-async function api(
-  path: string,
-  method = 'GET',
-  body?: unknown,
-  token?: string,
-): Promise<GiftView> {
-  const response = await fetch('/api/gifts' + path, {
-    method,
-    cache: 'no-store',
-    signal: AbortSignal.timeout(12000),
-    headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
-  const value = (await response.json()) as GiftView & { error?: string };
-  if (!response.ok)
-    throw new ApiError(response.status, value.error || '暂时无法保存。');
-  return value;
 }
 export default function OnlineApp() {
   const [selected, setSelected] = useState(
@@ -191,8 +165,7 @@ export default function OnlineApp() {
       try {
         result = await api('', 'POST', pending);
       } catch (e) {
-        if (e instanceof ApiError && e.status < 500)
-          localStorage.removeItem(key);
+        if (e instanceof ApiError && !e.retryable) localStorage.removeItem(key);
         throw e;
       }
       saveAccess({
@@ -245,7 +218,7 @@ export default function OnlineApp() {
       setHasPending(false);
       if (generation === epoch.current) merge(result);
     } catch (e) {
-      if (e instanceof ApiError && e.status < 500) {
+      if (e instanceof ApiError && !e.retryable) {
         localStorage.removeItem(key);
         setHasPending(false);
         if (e.status === 409) {
@@ -320,6 +293,10 @@ export default function OnlineApp() {
         </button>
       </main>
     );
+  const creation = read<Record<string, string> | null>(
+    'gift-create-pending',
+    null,
+  );
   const connection: Connection = {
     view,
     busy,
@@ -330,11 +307,17 @@ export default function OnlineApp() {
     remove,
     retry,
     hasPending,
-    creationPending: !!read('gift-create-pending', null),
+    creationPending: !!creation,
+    creationDraft: creation
+      ? {
+          text: creation.text,
+          names: { sender: creation.sender, friend: creation.friend },
+        }
+      : null,
     open,
     exit: () => open(''),
     invitation: access?.invite
-      ? `${location.origin}/?gift=${selected}#invite=${access.invite}`
+      ? `${location.origin}${location.pathname}?gift=${selected}#invite=${access.invite}`
       : '',
   };
   return <Companion key={selected || 'new'} connection={connection} />;

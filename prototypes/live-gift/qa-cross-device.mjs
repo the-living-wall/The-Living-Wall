@@ -101,6 +101,28 @@ try {
     await a.getByLabel('写给朋友的话，也可以留白').fill(first);
     await a.getByLabel('给谁（可选）').fill('小满');
     await a.getByLabel('你的落款（可选）').fill('阿禾');
+    if (index === 0 && !remote) {
+      await sender.setOffline(true);
+      await a.getByRole('button', { name: /生成分享链接/ }).click();
+      await appears(
+        a.getByText('连接暂时中断，请稍后重试；未发送的内容仍保留。', {
+          exact: true,
+        }),
+      );
+      await sender.setOffline(false);
+      await a.reload();
+      await a.getByRole('button', { name: /送给朋友/ }).click();
+      assert.equal(
+        await a.getByLabel('写给朋友的话，也可以留白').inputValue(),
+        first,
+      );
+      assert.equal(await a.getByLabel('给谁（可选）').inputValue(), '小满');
+      assert.equal(await a.getByLabel('你的落款（可选）').inputValue(), '阿禾');
+      await a.screenshot({
+        path: join(folder, 'creation-recovered.png'),
+        fullPage: true,
+      });
+    }
     await a.getByRole('button', { name: /生成分享链接/ }).click();
     const copyButton = btn(a, '复制邀请链接 ↗');
     await appears(copyButton);
@@ -200,8 +222,14 @@ try {
       await appears(btn(b, '关闭声音'));
       await b.getByText('声音设置', { exact: true }).click();
       await btn(b, '试听快速移动').click();
-      assert.equal(await b.getByRole('slider', { name: '互动音量' }).count(), 1);
-      await b.screenshot({ path: join(folder, 'sound-settings.png'), fullPage: true });
+      assert.equal(
+        await b.getByRole('slider', { name: '互动音量' }).count(),
+        1,
+      );
+      await b.screenshot({
+        path: join(folder, 'sound-settings.png'),
+        fullPage: true,
+      });
       await b.getByText('声音设置', { exact: true }).click();
       await btn(b, '关闭声音').click();
       await appears(btn(b, '开启声音'));
@@ -306,6 +334,7 @@ try {
       status: 'passed',
       active,
       offlineRetry: index === 0,
+      creationRefreshPreserved: index === 0 && !remote,
       serverRestart: index === 0 && !remote,
       browserReload: index === 0,
       visibleCopyAndClipboard: true,

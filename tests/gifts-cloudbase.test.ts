@@ -246,3 +246,183 @@ void test('CloudBase HTTP: origin, base64 body, auth, no secrets and no SDK invo
   );
   assert.equal(result.headers['Cache-Control'], 'no-store');
 });
+
+void test('SDK boundary: no event-supplied identity, narrow routes, size limit and secret redaction', async () => {
+  const { createSdkHandler } = await import('../services/gifts/sdk-handler.ts');
+  const handler = createSdkHandler(new CloudGiftStore(database()));
+  const data = input();
+  const event = {
+    protocol: 'gifts/1',
+    request: { path: '', method: 'POST', body: data },
+  };
+  for (const uid of [undefined, '', {}, ' '.repeat(2)]) {
+    assert.equal(
+      (await handler({ ...event, uid: 'fake', userInfo: { uid: 'fake' } }, uid))
+        .status,
+      401,
+    );
+  }
+  const created = await handler(event, 'visitor-a');
+  assert.equal(created.status, 201);
+  assert.ok(!JSON.stringify(created).includes(data.owner));
+  assert.ok(!JSON.stringify(created).includes('visitor-a'));
+  assert.equal(
+    (await handler({ ...event, protocol: 'gifts/2' }, 'visitor-a')).status,
+    400,
+  );
+  assert.equal(
+    (
+      await handler(
+        { ...event, request: { method: 'GET', path: '/api/cleanup' } },
+        'visitor-a',
+      )
+    ).status,
+    404,
+  );
+  assert.equal(
+    (
+      await handler(
+        {
+          ...event,
+          request: {
+            method: 'POST',
+            path: '',
+            body: { text: '光'.repeat(3000) },
+          },
+        },
+        'visitor-a',
+      )
+    ).status,
+    413,
+  );
+});
+
+for (const [name, first, reply, choice, active] of [
+  [
+    '安静陪伴',
+    '今天有点累。',
+    '那就安静待一会儿。',
+    { kind: 'style', style: 'calm/v2' },
+    'calm/v2',
+  ],
+  [
+    '轻松打趣',
+    '又把钥匙忘家里了。',
+    '给金鱼配个挂绳。',
+    { kind: 'style', style: 'playful/v2' },
+    'playful/v2',
+  ],
+  [
+    '共同约定',
+    '周末去海边好吗？',
+    '到时再确认天气。',
+    { kind: 'memory' },
+    'original/v1',
+  ],
+] as const) {
+  void test(`SDK contract: ${name}, two credentials, concurrent writes, snapshots and retry`, async () => {
+    const { createSdkHandler } =
+      await import('../services/gifts/sdk-handler.ts');
+    const handler = createSdkHandler(new CloudGiftStore(database()));
+    const data = { ...input(), text: first },
+      friend = secret();
+    const call = (
+      method: string,
+      path: string,
+      body?: unknown,
+      token?: string,
+      uid = 'visitor',
+    ) =>
+      handler(
+        { protocol: 'gifts/1', request: { method, path, body, token } },
+        uid,
+      );
+    const created = await call('POST', '', data);
+    const initial =
+      created.value as import('../services/gifts/common.ts').GiftView;
+    const id = '/' + initial.id;
+    assert.equal(
+      ((await call('POST', '', data)).value as typeof initial).id,
+      initial.id,
+    );
+    assert.equal(
+      (await call('POST', id + '/claim', { invite: data.invite, friend }))
+        .status,
+      200,
+    );
+    assert.equal(
+      (
+        await call('POST', id + '/claim', {
+          invite: data.invite,
+          friend: secret(),
+        })
+      ).status,
+      409,
+    );
+    assert.equal((await call('GET', id, undefined, secret())).status, 403);
+    // Platform UID deliberately identical: only business credentials determine the actor.
+    const write = {
+      revision: 0,
+      op: secret(),
+      action: { type: 'message', actor: 'sender', text: reply },
+    };
+    const responses = await Promise.all([
+      call('POST', id + '/actions', write, friend),
+      call('POST', id + '/actions', { ...write, op: secret() }, data.owner),
+    ]);
+    assert.deepEqual(
+      responses.map((r) => r.status).sort((a, b) => a - b),
+      [200, 409],
+    );
+    const winner = responses[0].status === 200 ? friend : data.owner;
+    const after = (await call('GET', id, undefined, data.owner))
+      .value as typeof initial;
+    assert.equal(after.state.active, 'original/v1');
+    if (winner === friend) {
+      assert.equal(after.state.messages[1].actor, 'friend');
+      assert.equal(
+        (await call('POST', id + '/actions', write, friend)).status,
+        200,
+      );
+    }
+    const proposed = (
+      await call(
+        'POST',
+        id + '/actions',
+        {
+          revision: after.revision,
+          op: secret(),
+          action: {
+            type: 'propose',
+            expected: null,
+            sourceIds: [1, 2],
+            reason: name,
+            choice,
+          },
+        },
+        data.owner,
+      )
+    ).value as typeof initial;
+    const accept = {
+      revision: proposed.revision,
+      op: secret(),
+      action: { type: 'accept', version: proposed.state.pending!.version },
+    };
+    assert.equal(
+      (await call('POST', id + '/actions', accept, data.owner)).status,
+      409,
+    );
+    const accepted = (await call('POST', id + '/actions', accept, friend))
+      .value as typeof initial;
+    assert.equal(accepted.state.memories.length, 1);
+    assert.equal(accepted.state.active, active);
+    assert.equal(accepted.expires, initial.expires);
+    assert.equal(
+      (await call('POST', id + '/actions', accept, friend)).status,
+      200,
+    );
+    assert.equal((await call('DELETE', id, undefined, friend)).status, 403);
+    assert.equal((await call('DELETE', id, undefined, data.owner)).status, 200);
+    assert.equal((await call('GET', id, undefined, friend)).status, 404);
+  });
+}

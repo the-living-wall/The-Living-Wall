@@ -1,0 +1,5 @@
+
+> sites-project@0.1.0 typecheck
+> tsc --noEmit
+
+prototypes/live-gift/cloudbase-client.ts(10,49): error TS2353: Object literal may only specify known properties, and 'detectSessionInUrl' does not exist in type '{ persistence: Persistence; }'.

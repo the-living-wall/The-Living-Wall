@@ -1,0 +1,144 @@
+
+> sites-project@0.1.0 test
+> node --experimental-strip-types --test tests/creature.test.ts tests/recording-batch.test.mjs tests/depth-bridge.test.ts tests/depth-input.test.ts tests/creature-archive.test.ts tests/sound-state.test.ts tests/visual-stage.test.ts tests/trust-copy.test.ts tests/shared-shaping.test.ts tests/gifts.test.ts tests/gifts-cloudbase.test.ts tests/gifts-transport.test.ts
+
+✔ depth experiment writes only its archive and restores normal growth (0.422041ms)
+✔ legacy version one archive derives the shared stage without migration (0.334833ms)
+✔ growth maturity maps to the shared five-stage boundaries (0.540083ms)
+✔ growth stage metadata and progress are stable (0.155333ms)
+✔ creature exposes stage as a read-only maturity projection (0.11625ms)
+✔ first encounter observes and probes before approaching and bonding (4.043125ms)
+✔ short occlusion holds engagement; a departure searches then rests (3.02375ms)
+✔ repeated shocks accumulate caution and extend recovery (2.533ms)
+✔ standing still invites; a gentle answer ends invitation (2.51925ms)
+✔ new encounter inherits trust but still observes before moving (2.709875ms)
+✔ recovery geometry stays continuous at all phase boundaries (2.919709ms)
+✔ gentle body strokes bring pleasure with a lingering afterglow; idle cannot grow (3.393167ms)
+✔ growth survives restore, is capped daily and never decays through absence (3.253083ms)
+✔ breathing remains continuous and becomes slower with pleasure (0.502375ms)
+✔ fatigue causes sustained rest instead of rapidly toggling at the threshold (3.002375ms)
+✔ explicit hover can attract attention but cannot count as a wall stroke (1.859417ms)
+✔ a sudden scare interrupts pleasure promptly (0.701917ms)
+✔ valid strokes spawn decaying ripples; fast swipes and idle do not (0.639167ms)
+✔ continuous stroking keeps concurrent ripples within the cap (0.438458ms)
+✔ startle clears new ripple spawning without freezing breath recovery path (0.3425ms)
+✔ gentle strokes raise local disturbance near contact more than far (0.240375ms)
+✔ after leaving, local disturbance settles without long residual shake (0.215208ms)
+✔ local disturbance coexists with ripples and stays bounded (0.462042ms)
+✔ fast swipe does not drive local disturbance; startle still works (0.34225ms)
+✔ disturbFalloff is near-strong and far-weak within the influence radius (0.053708ms)
+✔ horizontal vs vertical strokes stretch in distinguishable directions (1.71525ms)
+✔ after stop, stretch rebounds while enjoyment afterglow remains (1.104208ms)
+✔ directional stretch coexists with ripples and local disturbance (1.494542ms)
+✔ fast swipe does not drive stretch; startle still works (0.680291ms)
+✔ audio stroke signal obeys the existing physical contact gate (0.28875ms)
+✔ same-origin reads state without image (19.995833ms)
+✔ rejects remote host, cross-origin, unknown path and writes (0.348625ms)
+✔ reports upstream failure and timeout (0.349958ms)
+✔ chooses largest true-camera region and mirrors both axes (0.793333ms)
+✔ rejects simulation, stale and malformed frames (0.119416ms)
+✔ calibration message takes priority and absent region clears input (0.063917ms)
+✔ CloudBase: creation/claim retries and concurrent claims preserve separate credentials (2.155208ms)
+✔ CloudBase: two writers, idempotency and exact-version joint confirmation (1.244875ms)
+✔ CloudBase: expiry and cleanup remove dialogue, credentials and operation summaries (0.58575ms)
+✔ CloudBase: distributed rate limit survives creating another function instance (2.473542ms)
+✔ CloudBase HTTP: origin, base64 body, auth, no secrets and no SDK invocation bypass (0.886542ms)
+✔ SDK boundary: no event-supplied identity, narrow routes, size limit and secret redaction (1.403375ms)
+✔ SDK contract: 安静陪伴, two credentials, concurrent writes, snapshots and retry (1.124541ms)
+✔ SDK contract: 轻松打趣, two credentials, concurrent writes, snapshots and retry (1.852375ms)
+✔ SDK contract: 共同约定, two credentials, concurrent writes, snapshots and retry (0.620458ms)
+✔ SDK transport: lazy load, shared login, fixed function payload, refresh rechecks session (7.367542ms)
+✔ SDK transport: failed import/login retries without fallback or invoking while unauthenticated (0.730542ms)
+✔ SDK transport: platform errors are sanitized, business conflict is distinct, malformed responses reject (0.767208ms)
+✔ SDK transport: timeout preserves identical request for idempotent retry, late response is ignored (10.983208ms)
+✔ HTTP transport: non-JSON 429 and 403 are recoverable, errors cannot leak platform body (12.079875ms)
+✔ SDK runtime entry: disabled by default, per-invocation context only, no residual identity (1.41075ms)
+✔ SDK transport: timed-out login does not later submit; a new attempt can recover (13.757125ms)
+✖ HTTP rate limits and no-origin writes do not create or disclose gifts (14.018542ms)
+✔ creation and explicit claim are idempotent; tokens are separate and hashed (2.862166ms)
+✔ roles and timestamps come from authentication, not submitted actor; stale and duplicate writes are safe (3.816333ms)
+✔ state survives reopening; names preserve snapshots; deleting memory preserves shape and original dialogue (4.308959ms)
+✔ expiry is fixed from creation; deletion cascades and recipient cannot delete (3.709917ms)
+✔ input and per-conversation capacity are bounded (35.564667ms)
+✖ HTTP rejects wrong origins, malformed payloads, unauthenticated reads and traversal; concurrent writes conflict (3.485584ms)
+✔ second recording cannot change first batch artifacts or manifest (36.654458ms)
+✔ parallel recordings at an identical timestamp remain isolated (8.448916ms)
+✔ directory collision and duplicate artifacts preserve existing bytes (3.389166ms)
+✔ failed file write never permits a passed manifest (2.229542ms)
+✔ interrupted running batch remains incomplete and is not resumed (2.275334ms)
+✔ hashes and required artifacts are checked before completion (2.366458ms)
+✔ unexpected directories and path traversal cannot become artifacts (0.873917ms)
+✔ custom URLs never inherit recorder source provenance (0.099ms)
+✔ custom output root is excluded but real source changes remain detectable (163.591167ms)
+✔ a proposal needs the other identity; duplicate confirmation cannot apply twice (0.953542ms)
+✔ counterproposal discards earlier agreement and rejects all stale operations (0.177167ms)
+✔ withdrawal belongs to proposer, refusal belongs to the other identity (0.125875ms)
+✔ memory and cancelling memory both require agreement without changing temperament or chat (0.141709ms)
+✔ source edits invalidate pending proposals but preserve accepted evidence and restore its exact version (0.130209ms)
+✔ invalid input and competing proposals cannot fabricate a choice (0.121167ms)
+✔ counterproposals keep historical excerpts even when the current greeting was removed or replaced (0.13475ms)
+✔ a counterproposal can explicitly combine the retained excerpt and a new reply (0.103959ms)
+✔ presentation respects reduced motion, rest, alarm and recovery (0.098167ms)
+✔ three presentation recipes draw distinct marks without mutating the creature (0.33075ms)
+✔ names are bounded, fall back and keep proposal signatures immutable across renaming (0.127958ms)
+✔ new style also keeps a moment; cancelling it does not undo appearance, chat or original history (0.09925ms)
+✔ v2 marks are visible immediately, throughout a cycle and ordinary interaction without changing creature state (0.686291ms)
+✔ v2 keeps identical static marks during reduced motion and exceptional states, then resumes motion (0.611625ms)
+✔ real unattended Creature breathes without initial heading rustle (7.893584ms)
+✔ idle breath is sparse, gated by actual quiet, and does not require fatigue (0.137ms)
+✔ busy channel postpones idle breath instead of consuming it (0.076ms)
+✔ stationary touch acknowledges once and never earns enjoyment (0.122167ms)
+✔ enjoyment begins with the visible threshold even while core is busy (0.069416ms)
+✔ brief reversals preserve purr; long pause and lost contact release it (0.065667ms)
+✔ core response retries after busy playback without replaying its sequence (0.06775ms)
+✔ contact and curiosity at the same moment do not lose curiosity (0.053ms)
+✔ stale curiosity never plays after leaving the phase or expiry (0.072375ms)
+✔ real fast rotation starts scales then roll without stroking (0.27725ms)
+✔ wrapped angles, slow breath drift and resumed frames stay quiet (0.068833ms)
+✔ simultaneous displacement and rotation survive without stealing enjoyment (0.078041ms)
+✔ displacement needs a new onset and cooldown; slow movement is silent (0.052667ms)
+✔ startle preempts once, removes enjoyment and never repeats on bookkeeping (0.045708ms)
+✔ rest transition preempts once and new encounter resets all pending sounds (0.039375ms)
+✔ a real retreat during alarm has a movement overlay without restarting startle (0.037ms)
+✔ real Creature gentle input reaches audible enjoyment at the UI threshold (5.395542ms)
+✔ trust copy respects boundaries without exposing a score (0.336959ms)
+✔ immediate boundaries take precedence over high trust (0.063625ms)
+✔ visual stage parameters cover the five growth stages (0.380666ms)
+✔ visual expression grows from sparse white light to a fuller coloured body (0.107208ms)
+✔ stage colour variation stays within the restrained palette envelope (0.059667ms)
+ℹ tests 104
+ℹ suites 0
+ℹ pass 102
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 269.372666
+
+✖ failing tests:
+
+test at tests/gifts.test.ts:9:6
+✖ HTTP rate limits and no-origin writes do not create or disclose gifts (14.018542ms)
+  Error: listen EPERM: operation not permitted 127.0.0.1
+      at Server.setupListenHandle [as _listen2] (node:net:2306:21)
+      at listenInCluster (node:net:2437:12)
+      at node:net:2666:7
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '127.0.0.1'
+  }
+
+test at tests/gifts.test.ts:245:6
+✖ HTTP rejects wrong origins, malformed payloads, unauthenticated reads and traversal; concurrent writes conflict (3.485584ms)
+  Error: listen EPERM: operation not permitted 127.0.0.1
+      at Server.setupListenHandle [as _listen2] (node:net:2306:21)
+      at listenInCluster (node:net:2437:12)
+      at node:net:2666:7
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+    code: 'EPERM',
+    errno: -1,
+    syscall: 'listen',
+    address: '127.0.0.1'
+  }

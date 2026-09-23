@@ -233,3 +233,5 @@ UI-01～03 原型进度（Refs #69）：独立原型源码见 `prototypes/quiet-
 2026-09-23 正式域名前置核验：腾讯云账号备案页显示主域尚未备案；现有 CloudBase 可作为备案资源，但剩余有效期及固定 IP 条件未满足。仅查询和读取续费报价，未购买、申请备案或切换生产；见 [域名第三版](qa/2026-09-23-cross-device/domain-prep-v3/README.md)。无应用行为变化。
 
 2026-09-23 部署方向纠正（Refs #88）：用户要求在已有 thelivingwall.cn 主站增加朋友互动，复用已购 CloudBase。控制台确认主站为 EdgeOne Makers 全球可用区（不含中国大陆）；优先验证官方 SDK 接入现有业务函数，不再将 CloudBase 备案资源的六个月有效期和固定 IP 当作通用前提。具体接入及权限尚未实现或变更，生产保持原状；见 [核验与下一步](qa/2026-09-23-cross-device/existing-site-integration-v1/README.md)。无应用行为变化。
+
+2026-09-23 SDK 接入验证范围（Refs #88）：增加显式选择的官方 SDK 调用方式，免注册体验下使用平台匿名会话取得调用资格，双方访问权限仍由独立邀请/参与者凭证决定。匿名会话不作为真实身份，不写入共同成长。本地契约和原 HTTP 三场景已通过；待确认创建在刷新后恢复原文与称呼，避免显示默认文案却重发旧内容。当前不调整生产、旧 HTTP 测试站或数据库可见性；真实匿名授权、最终来源及费用/数据边界未完成前不宣称正式可用。见 [SDK 第一版验证](qa/2026-09-23-cross-device/sdk-validation-v1/README.md) 及 [权限与回退](../services/gifts/cloudbase/SDK-VALIDATION.md)。
