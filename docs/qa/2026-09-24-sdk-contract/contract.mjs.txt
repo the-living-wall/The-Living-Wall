@@ -1,0 +1,35 @@
+import cloudbase from '@cloudbase/js-sdk/app';
+import {registerAuth} from '@cloudbase/js-sdk/auth';
+import {registerFunctions} from '@cloudbase/js-sdk/functions';
+registerAuth(cloudbase); registerFunctions(cloudbase);
+const app=cloudbase.init({env:'env-d1g2bv5sn355fc36e',region:'ap-shanghai',endPointMode:'GATEWAY',auth:{detectSessionInUrl:false}});
+const auth=app.auth({persistence:'local'});
+const report={started:new Date().toISOString(),checks:[],calls:[]};
+const show=()=>document.querySelector('pre').textContent=JSON.stringify(report,null,2);
+const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,'0')).join('');
+const check=(name,condition)=>{report.checks.push({name,passed:!!condition});show();if(!condition)throw Error(name);};
+async function req(path,method='GET',body,token){const r=await app.callFunction({name:'xiaoying-gifts-sdk-probe',data:{protocol:'gifts/1',request:{path,method,body,token}}});report.calls.push({status:r.result.status,requestId:r.requestId});show();return r.result;}
+document.querySelector('button').onclick=async()=>{
+ document.querySelector('button').disabled=true;
+ try{
+ if(!await auth.getLoginState()){const s=await auth.signInAnonymously();if(s.error)throw Error(s.error.code);}
+ const owner=token(),invite=token(),friend=token(),other=token();
+ const payload={owner,invite,text:'SDK契约合成检查',sender:'合成甲',friend:'合成乙'};
+ const c=await req('','POST',payload);check('create',c.status===201);const id=c.value.id;report.syntheticGiftId=id;
+ const retry=await req('','POST',payload);check('lost-create-response-retry-same-id',retry.status===201&&retry.value.id===id);
+ const claims=await Promise.all([req('/'+id+'/claim','POST',{invite,friend}),req('/'+id+'/claim','POST',{invite,friend:other})]);
+ check('concurrent-claim-one-winner',claims.map(x=>x.status).sort().join(',')==='200,409');const recipient=claims[0].status===200?friend:other;
+ check('claim-retry',(await req('/'+id+'/claim','POST',{invite,friend:recipient})).status===200);
+ check('invite-cannot-read',(await req('/'+id,'GET',undefined,invite)).status===403);
+ check('foreign-token-cannot-read',(await req('/'+id,'GET',undefined,token())).status===403);
+ const msg={revision:0,op:token(),action:{type:'message',text:'响应丢失后的同请求重试',actor:'friend'}};
+ const first=await req('/'+id+'/actions','POST',msg,owner);check('actor-from-credential',first.status===200&&first.value.state.messages.at(-1).actor==='sender');
+ const again=await req('/'+id+'/actions','POST',msg,owner);check('message-retry-no-duplicate',again.status===200&&again.value.state.messages.length===2&&again.value.revision===first.value.revision);
+ check('same-op-different-payload-rejected',(await req('/'+id+'/actions','POST',{...msg,action:{type:'message',text:'不同正文'}},owner)).status===409);
+ const writes=await Promise.all([req('/'+id+'/actions','POST',{revision:again.value.revision,op:token(),action:{type:'message',text:'并发甲'}},owner),req('/'+id+'/actions','POST',{revision:again.value.revision,op:token(),action:{type:'message',text:'并发乙'}},recipient)]);
+ check('concurrent-revision-one-winner',writes.map(x=>x.status).sort().join(',')==='200,409');
+ const after=await req('/'+id,'GET',undefined,owner);check('conflict-preserves-state-and-expiry',after.value.state.messages.length===3&&after.value.expires===c.value.expires);
+ check('recipient-delete-denied',(await req('/'+id,'DELETE',undefined,recipient)).status===403);
+ report.status='passed';report.note='Synthetic record left for normal seven-day expiry; no user acceptance record touched.';
+ }catch(e){report.status='failed';report.error=String(e.message||e);}finally{report.finished=new Date().toISOString();show();}
+};show();

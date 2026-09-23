@@ -1,0 +1,94 @@
+{
+  "started": "2026-09-23T10:18:21.761Z",
+  "env": "env-d1g2bv5sn355fc36e",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "checks": [],
+  "probes": [
+    {
+      "label": "before-minute",
+      "id": "6ef69a1d58e8b8c900bd0a1b428c0081",
+      "observations": [
+        {
+          "started": 1790158803704,
+          "ended": 1790158808624,
+          "exists": false
+        }
+      ],
+      "expires": 1790158795000,
+      "beforeExpiryStatus": 200,
+      "afterExpiry": {
+        "status": 404,
+        "started": 1790158799546,
+        "ended": 1790158803704,
+        "serverDate": "Wed, 23 Sep 2026 10:20:03 GMT"
+      },
+      "firstMissing": {
+        "started": 1790158803704,
+        "ended": 1790158808624,
+        "exists": false
+      },
+      "deletionUpperBoundMs": 13624
+    },
+    {
+      "label": "after-minute",
+      "id": "7a14bcb381d7f0de12739b7f4d203c82",
+      "observations": [
+        {
+          "started": 1790158810244,
+          "ended": 1790158815472,
+          "exists": true
+        },
+        {
+          "started": 1790158819474,
+          "ended": 1790158824414,
+          "exists": true
+        },
+        {
+          "started": 1790158828415,
+          "ended": 1790158833335,
+          "exists": true
+        },
+        {
+          "started": 1790158837336,
+          "ended": 1790158842354,
+          "exists": true
+        },
+        {
+          "started": 1790158846354,
+          "ended": 1790158852144,
+          "exists": true
+        },
+        {
+          "started": 1790158856146,
+          "ended": 1790158862643,
+          "exists": false
+        }
+      ],
+      "expires": 1790158805000,
+      "beforeExpiryStatus": 200,
+      "afterExpiry": {
+        "status": 404,
+        "started": 1790158808624,
+        "ended": 1790158810244,
+        "serverDate": "Wed, 23 Sep 2026 10:20:10 GMT"
+      },
+      "lastPresent": {
+        "started": 1790158846354,
+        "ended": 1790158852144,
+        "exists": true
+      },
+      "firstMissing": {
+        "started": 1790158856146,
+        "ended": 1790158862643,
+        "exists": false
+      },
+      "deletionUpperBoundMs": 57643
+    }
+  ],
+  "limitations": [
+    "Two measured timer boundaries, not a worst-case SLA or backup-erasure proof.",
+    "Times measured on client; API Date and request timing retained."
+  ],
+  "status": "passed",
+  "finished": "2026-09-23T10:21:25.236Z"
+}

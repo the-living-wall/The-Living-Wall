@@ -1,0 +1,9 @@
+{
+  "function": "xiaoying-gifts-sdk-probe",
+  "ignoreSysLog": false,
+  "logType": "normal",
+  "logFormat": "tcb-default",
+  "clsLogsetId": "",
+  "clsTopicId": "",
+  "requestId": "d5781315-eef2-4651-90d1-2b970894c9c5"
+}

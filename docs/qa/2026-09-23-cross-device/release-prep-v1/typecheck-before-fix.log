@@ -1,0 +1,6 @@
+
+> sites-project@0.1.0 typecheck
+> tsc --noEmit
+
+prototypes/live-gift/SoundControls.tsx(19,7): error TS2741: Property 'movement' is missing in type '{ breathing: string; heartMouth: string; curiosityHand: string; touch: string; enjoyment: string; scales: string; rotation: string; startle: string; }' but required in type 'Record<SoundVolumeKey, string>'.
+prototypes/live-gift/SoundControls.tsx(30,7): error TS2741: Property 'movement' is missing in type '{ breathing: "rest"; heartMouth: "voice"; curiosityHand: "curiosity"; touch: "touch"; enjoyment: "purr"; scales: "scales"; rotation: "roll"; startle: "startle"; }' but required in type 'Record<SoundVolumeKey, SoundCue>'.

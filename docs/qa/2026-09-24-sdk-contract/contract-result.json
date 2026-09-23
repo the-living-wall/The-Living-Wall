@@ -1,0 +1,11 @@
+{
+  "source": "Real Chrome Web SDK GATEWAY; DOM report captured through CUA",
+  "started": "2026-09-23T20:05:53.807Z",
+  "finished": "2026-09-23T20:06:19.905Z",
+  "status": "passed",
+  "syntheticGiftId": "8c8d4809de2bd7c536d5d2fc12c94ae5",
+  "passedChecks": ["create", "lost-create-response-retry-same-id", "concurrent-claim-one-winner", "claim-retry", "invite-cannot-read", "foreign-token-cannot-read", "actor-from-credential", "message-retry-no-duplicate", "same-op-different-payload-rejected", "concurrent-revision-one-winner", "conflict-preserves-state-and-expiry", "recipient-delete-denied"],
+  "responseStatusSequence": [201,201,200,409,200,403,403,200,200,409,200,409,200,403],
+  "requestIds": ["4616fa55-c415-4c65-ba90-d8df3bf25db4", "42bcfa98-618e-4d70-86b3-4fc5fcfc8012", "25c2c738-b1cb-44f4-b680-e369dc8660e0", "33dde897-7008-40a9-c911-37b95ee8d6ba", "faa3af1f-da52-4609-d53c-46fd67b0e43f", "dc8133c1-c684-4198-811b-cd7f6caa4f1b", "e8fd26a7-44d5-4a9e-bc02-65b2c916a547", "fabdf057-e0c9-4076-ac9f-26fa6eff12ff", "9e92af9a-b152-451a-cb9d-b27beae43741", "a79196ef-d9b7-4a0e-a4bf-b34d2f624867", "fa8f8b34-b10b-4f7c-c40c-0141c1bbdf9d", "cfa3160a-4f35-4a3e-d9b0-dae3af6d816c", "0ae5f235-656a-4452-e1fc-4dc0f0c4d6db", "e0782599-3f5e-46b1-ba9d-e8eae48bde25"],
+  "limits": "Same synthetic requests were deliberately replayed after a successful response; no actual network timeout was injected. Record left for seven-day expiry; manual acceptance gift untouched."
+}

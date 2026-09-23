@@ -1,0 +1,40 @@
+{
+  "sdk": "3.10.1",
+  "mode": "browser-no-login",
+  "id": "release-permission-v2-20260923",
+  "checks": [
+    {
+      "name": "xiaoying_gifts read probe",
+      "status": "rejected",
+      "code": null,
+      "message": "credentials not found"
+    },
+    {
+      "name": "xiaoying_gifts write probe",
+      "status": "rejected",
+      "code": null,
+      "message": "credentials not found"
+    },
+    {
+      "name": "xiaoying_limits read probe",
+      "status": "rejected",
+      "code": null,
+      "message": "credentials not found"
+    },
+    {
+      "name": "xiaoying_limits write probe",
+      "status": "rejected",
+      "code": null,
+      "message": "credentials not found"
+    },
+    {
+      "name": "cleanup non-Timer invoke",
+      "status": "rejected",
+      "code": null,
+      "message": "credentials not found"
+    }
+  ],
+  "finished": "2026-09-23T11:03:10.306Z",
+  "evidenceSource": "CUA rendered page text",
+  "conclusion": "inconclusive for deployed ACL: SDK rejected missing credentials"
+}

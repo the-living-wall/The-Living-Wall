@@ -1,0 +1,56 @@
+Running typecheck
+Running lint
+Running build
+
+  vinext build  (Vite 8.0.13)
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 226 modules transformed.
+rendering chunks...
+✓ built in 306ms
+[2/5] analyze server references...
+[2Ktransforming...✓ 176 modules transformed.
+rendering chunks...
+✓ built in 137ms
+[3/5] build rsc environment...
+[2Ktransforming...✓ 223 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 213ms
+[4/5] build client environment...
+[2Ktransforming...✓ 184 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 321ms
+[5/5] build ssr environment...
+[2Ktransforming...✓ 178 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 220ms
+[0m
+  Route (app)
+  ┌ ? /        
+  └ ? /showcase
+
+  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+
+Running spec
+- Validating...
+✓ change/add-growth-stage-interface
+✓ change/add-xiaoying-sound
+✓ change/audio-controls
+✓ change/cross-device-gifts
+✓ change/growth-trust-display
+✓ change/local-sound-events
+  ℹ [INFO] creature-audio/spec.md: Archive would refuse this delta: creature-audio: target spec does not exist; only ADDED requirements are allowed for new specs. MODIFIED and RENAMED operations require an existing spec.
+✓ change/main-depth-input
+✓ spec/recording-batches
+✓ change/shared-shaping-prototype
+✓ change/showcase-interaction
+Totals: 10 passed, 0 failed (10 items)

@@ -1,0 +1,143 @@
+Running test
+✔ depth experiment writes only its archive and restores normal growth (0.415625ms)
+✔ legacy version one archive derives the shared stage without migration (0.5265ms)
+✔ growth maturity maps to the shared five-stage boundaries (0.430041ms)
+✔ growth stage metadata and progress are stable (0.166208ms)
+✔ creature exposes stage as a read-only maturity projection (0.559458ms)
+✔ first encounter observes and probes before approaching and bonding (4.004458ms)
+✔ short occlusion holds engagement; a departure searches then rests (2.873333ms)
+✔ repeated shocks accumulate caution and extend recovery (2.504708ms)
+✔ standing still invites; a gentle answer ends invitation (2.622291ms)
+✔ new encounter inherits trust but still observes before moving (3.027834ms)
+✔ recovery geometry stays continuous at all phase boundaries (2.361166ms)
+✔ gentle body strokes bring pleasure with a lingering afterglow; idle cannot grow (4.14775ms)
+✔ growth survives restore, is capped daily and never decays through absence (2.807083ms)
+✔ breathing remains continuous and becomes slower with pleasure (0.6145ms)
+✔ fatigue causes sustained rest instead of rapidly toggling at the threshold (2.392791ms)
+✔ explicit hover can attract attention but cannot count as a wall stroke (1.387417ms)
+✔ a sudden scare interrupts pleasure promptly (0.38475ms)
+✔ valid strokes spawn decaying ripples; fast swipes and idle do not (0.524875ms)
+✔ continuous stroking keeps concurrent ripples within the cap (0.498584ms)
+✔ startle clears new ripple spawning without freezing breath recovery path (0.236416ms)
+✔ gentle strokes raise local disturbance near contact more than far (0.277875ms)
+✔ after leaving, local disturbance settles without long residual shake (0.259459ms)
+✔ local disturbance coexists with ripples and stays bounded (0.486041ms)
+✔ fast swipe does not drive local disturbance; startle still works (0.341875ms)
+✔ disturbFalloff is near-strong and far-weak within the influence radius (0.04675ms)
+✔ horizontal vs vertical strokes stretch in distinguishable directions (1.605709ms)
+✔ after stop, stretch rebounds while enjoyment afterglow remains (1.358333ms)
+✔ directional stretch coexists with ripples and local disturbance (1.644875ms)
+✔ fast swipe does not drive stretch; startle still works (0.416ms)
+✔ audio stroke signal obeys the existing physical contact gate (0.275125ms)
+✔ same-origin reads state without image (15.900333ms)
+✔ rejects remote host, cross-origin, unknown path and writes (0.200584ms)
+✔ reports upstream failure and timeout (0.408375ms)
+✔ chooses largest true-camera region and mirrors both axes (0.791875ms)
+✔ rejects simulation, stale and malformed frames (0.127708ms)
+✔ calibration message takes priority and absent region clears input (0.059625ms)
+✔ CloudBase: creation/claim retries and concurrent claims preserve separate credentials (2.508125ms)
+✔ CloudBase: two writers, idempotency and exact-version joint confirmation (1.66225ms)
+✔ CloudBase: expiry and cleanup remove dialogue, credentials and operation summaries (0.626375ms)
+✔ CloudBase: distributed rate limit survives creating another function instance (1.761333ms)
+✔ CloudBase HTTP: origin, base64 body, auth, no secrets and no SDK invocation bypass (0.947292ms)
+✔ SDK boundary: no event-supplied identity, narrow routes, size limit and secret redaction (1.369709ms)
+✔ SDK contract: 安静陪伴, two credentials, concurrent writes, snapshots and retry (1.258041ms)
+✔ SDK contract: 轻松打趣, two credentials, concurrent writes, snapshots and retry (1.251542ms)
+✔ SDK contract: 共同约定, two credentials, concurrent writes, snapshots and retry (0.780375ms)
+✔ CloudBase quota: aborted conflicts retry once per committed count across a minute boundary (72.897542ms)
+✔ CloudBase quota: bounded contention is busy, not a business version conflict (123.768083ms)
+✔ CloudBase quota: ambiguous failures are not retried (0.175583ms)
+✔ SDK transport: lazy load, shared login, fixed function payload, refresh rechecks session (9.368667ms)
+✔ SDK transport: failed import/login retries without fallback or invoking while unauthenticated (0.78075ms)
+✔ SDK transport: platform errors are sanitized, business conflict is distinct, malformed responses reject (0.679667ms)
+✔ SDK transport: timeout preserves identical request for idempotent retry, late response is ignored (11.977ms)
+✔ HTTP transport: non-JSON 429 and 403 are recoverable, errors cannot leak platform body (11.34725ms)
+✔ SDK runtime entry: disabled by default, per-invocation context only, no residual identity (2.143208ms)
+✔ SDK transport: timed-out login does not later submit; a new attempt can recover (13.757167ms)
+✔ SDK runtime diagnostics exclude messages, credentials, context and unexpected errors (1.119959ms)
+✔ HTTP rate limits and no-origin writes do not create or disclose gifts (27.837208ms)
+✔ creation and explicit claim are idempotent; tokens are separate and hashed (3.431708ms)
+✔ roles and timestamps come from authentication, not submitted actor; stale and duplicate writes are safe (3.99325ms)
+✔ state survives reopening; names preserve snapshots; deleting memory preserves shape and original dialogue (3.454875ms)
+✔ expiry is fixed from creation; deletion cascades and recipient cannot delete (4.634541ms)
+✔ input and per-conversation capacity are bounded (33.825083ms)
+✔ HTTP rejects wrong origins, malformed payloads, unauthenticated reads and traversal; concurrent writes conflict (18.171667ms)
+✔ second recording cannot change first batch artifacts or manifest (31.892667ms)
+✔ parallel recordings at an identical timestamp remain isolated (20.496167ms)
+✔ directory collision and duplicate artifacts preserve existing bytes (4.988084ms)
+✔ failed file write never permits a passed manifest (2.669833ms)
+✔ interrupted running batch remains incomplete and is not resumed (2.968833ms)
+✔ hashes and required artifacts are checked before completion (2.771917ms)
+✔ unexpected directories and path traversal cannot become artifacts (1.386542ms)
+✔ custom URLs never inherit recorder source provenance (0.097958ms)
+✔ custom output root is excluded but real source changes remain detectable (168.645667ms)
+✔ a proposal needs the other identity; duplicate confirmation cannot apply twice (1.014708ms)
+✔ counterproposal discards earlier agreement and rejects all stale operations (0.144708ms)
+✔ withdrawal belongs to proposer, refusal belongs to the other identity (0.103083ms)
+✔ memory and cancelling memory both require agreement without changing temperament or chat (0.140709ms)
+✔ source edits invalidate pending proposals but preserve accepted evidence and restore its exact version (0.128042ms)
+✔ invalid input and competing proposals cannot fabricate a choice (0.112458ms)
+✔ counterproposals keep historical excerpts even when the current greeting was removed or replaced (0.11775ms)
+✔ a counterproposal can explicitly combine the retained excerpt and a new reply (0.084375ms)
+✔ presentation respects reduced motion, rest, alarm and recovery (0.0735ms)
+✔ three presentation recipes draw distinct marks without mutating the creature (0.287167ms)
+✔ names are bounded, fall back and keep proposal signatures immutable across renaming (0.118166ms)
+✔ new style also keeps a moment; cancelling it does not undo appearance, chat or original history (0.098667ms)
+✔ v2 marks are visible immediately, throughout a cycle and ordinary interaction without changing creature state (0.766791ms)
+✔ v2 keeps identical static marks during reduced motion and exceptional states, then resumes motion (0.756ms)
+✔ real unattended Creature breathes without initial heading rustle (6.33025ms)
+✔ idle breath is sparse, gated by actual quiet, and does not require fatigue (0.128625ms)
+✔ busy channel postpones idle breath instead of consuming it (0.075ms)
+✔ stationary touch acknowledges once and never earns enjoyment (0.151875ms)
+✔ enjoyment begins with the visible threshold even while core is busy (0.116083ms)
+✔ brief reversals preserve purr; long pause and lost contact release it (0.075083ms)
+✔ core response retries after busy playback without replaying its sequence (0.061042ms)
+✔ contact and curiosity at the same moment do not lose curiosity (0.046875ms)
+✔ stale curiosity never plays after leaving the phase or expiry (0.0485ms)
+✔ real fast rotation starts scales then roll without stroking (0.212333ms)
+✔ wrapped angles, slow breath drift and resumed frames stay quiet (0.057333ms)
+✔ simultaneous displacement and rotation survive without stealing enjoyment (0.070667ms)
+✔ displacement needs a new onset and cooldown; slow movement is silent (0.045417ms)
+✔ startle preempts once, removes enjoyment and never repeats on bookkeeping (0.05625ms)
+✔ rest transition preempts once and new encounter resets all pending sounds (0.045167ms)
+✔ a real retreat during alarm has a movement overlay without restarting startle (0.03175ms)
+✔ real Creature gentle input reaches audible enjoyment at the UI threshold (5.700875ms)
+✔ trust copy respects boundaries without exposing a score (0.394833ms)
+✔ immediate boundaries take precedence over high trust (0.081334ms)
+✔ visual stage parameters cover the five growth stages (0.442583ms)
+✔ visual expression grows from sparse white light to a fuller coloured body (0.126834ms)
+✔ stage colour variation stays within the restrained palette envelope (0.059833ms)
+ℹ tests 108
+ℹ suites 0
+ℹ pass 108
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 311.35375
+Running typecheck
+/bin/sh: tsc: command not found
+node:child_process:1017
+    throw err;
+    ^
+
+Error: Command failed: tsc --noEmit
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:942:11)
+    at execSync (node:child_process:1014:15)
+    at [eval]:1:127
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30) {
+  status: 127,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 87620,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.19.0

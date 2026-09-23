@@ -1,0 +1,11 @@
+{
+  "source": "96cb15dc651ef10289a46ac8f758e4fa80db1d8e",
+  "workingTree": "",
+  "builtAt": "2026-09-23T21:41:55.826Z",
+  "hashes": {
+    "index.js": "382e72312a4e56edc6b9c043d3422105bc4aa27343ec4d0b438fc6a2b35f93fa",
+    "service.cjs": "b8cee8c7b7eadb45e79b4b5c7f91a48fe035f035aaf2d4a0310df7ce88058b00",
+    "package.json": "7bb599cafe050f8ded75eebe9b0a688ad88b9d5f1c0a164de25c48394bc3b292",
+    "package-lock.json": "0ab981c83bd17e569073f8838b9f58c9f0883da6fb006afe21c30614933aaa24"
+  }
+}

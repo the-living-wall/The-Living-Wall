@@ -1,0 +1,16 @@
+
+> sites-project@0.1.0 spec:validate
+> openspec validate --all --strict
+
+✓ change/add-growth-stage-interface
+✓ change/add-xiaoying-sound
+✓ change/audio-controls
+✓ change/cross-device-gifts
+✓ change/growth-trust-display
+✓ change/local-sound-events
+✓ change/main-depth-input
+✓ spec/recording-batches
+✓ change/shared-shaping-prototype
+Totals: 9 passed, 0 failed (9 items)
+- Validating...
+  ℹ [INFO] creature-audio/spec.md: Archive would refuse this delta: creature-audio: target spec does not exist; only ADDED requirements are allowed for new specs. MODIFIED and RENAMED operations require an existing spec.

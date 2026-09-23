@@ -1,0 +1,7 @@
+{
+  "time": "2026-09-23T06:33:01.715Z",
+  "method": "GET",
+  "status": 429,
+  "statusText": "Too Many Requests",
+  "source": "Playwright recipient network trace; URL and credentials omitted"
+}

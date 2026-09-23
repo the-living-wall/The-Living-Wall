@@ -1,0 +1,40 @@
+{
+  "started": "2026-09-23T10:26:57.995Z",
+  "sdkVersion": "3.10.1",
+  "runtime": "Node entry of official JS SDK, no supplied login or administrative credentials",
+  "env": "env-d1g2bv5sn355fc36e",
+  "id": "release-permission-a8c0c560-0a07-4f55-af02-493b6796e5e0",
+  "checks": [
+    {
+      "name": "xiaoying_gifts read exact nonexistent probe",
+      "status": "rejected",
+      "code": "MISSING_CREDENTIALS",
+      "message": "Credentials missing. For more information, please refer to https://docs.cloudbase.net/en/error-code/service/MISSING_CREDENTIALS"
+    },
+    {
+      "name": "xiaoying_gifts write synthetic probe",
+      "status": "rejected",
+      "code": "MISSING_CREDENTIALS",
+      "message": "Credentials missing. For more information, please refer to https://docs.cloudbase.net/en/error-code/service/MISSING_CREDENTIALS"
+    },
+    {
+      "name": "xiaoying_limits read exact nonexistent probe",
+      "status": "rejected",
+      "code": "MISSING_CREDENTIALS",
+      "message": "Credentials missing. For more information, please refer to https://docs.cloudbase.net/en/error-code/service/MISSING_CREDENTIALS"
+    },
+    {
+      "name": "xiaoying_limits write synthetic probe",
+      "status": "rejected",
+      "code": "MISSING_CREDENTIALS",
+      "message": "Credentials missing. For more information, please refer to https://docs.cloudbase.net/en/error-code/service/MISSING_CREDENTIALS"
+    },
+    {
+      "name": "cleanup direct client call without Timer payload",
+      "status": "rejected",
+      "code": "MISSING_CREDENTIALS",
+      "message": "Credentials missing. For more information, please refer to https://docs.cloudbase.net/en/error-code/service/MISSING_CREDENTIALS"
+    }
+  ],
+  "finished": "2026-09-23T10:27:05.199Z"
+}

@@ -1,0 +1,13 @@
+ℹ Using command line specified directory: /private/tmp/xiaoying-sdk-probe-upload
+[xiaoying-gifts-sdk-probe] 部署方式: ZIP base64 上传
+{
+  "data": {
+    "success": true,
+    "results": [
+      {
+        "status": "success",
+        "name": "xiaoying-gifts-sdk-probe"
+      }
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+prototypes/live-gift/Companion.tsx:490:11: error next(no-html-link-for-pages): Do not use `<a>` elements to navigate between Next.js pages. help: Use `<Link />` from `next/link` instead for internal navigation. See https://nextjs.org/docs/messages/no-html-link-for-pages
+app/page.tsx:486:13: error next(no-html-link-for-pages): Do not use `<a>` elements to navigate between Next.js pages. help: Use `<Link />` from `next/link` instead for internal navigation. See https://nextjs.org/docs/messages/no-html-link-for-pages

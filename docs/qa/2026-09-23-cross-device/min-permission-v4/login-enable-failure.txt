@@ -1,0 +1,3 @@
+ℹ → TCB.ModifyLoginConfig
+{"error":{"name":"CloudBaseError","code":"MissingParameter","message":"[ModifyLoginConfig] The request is missing the required parameter `EmailLogin`.","exit_code":1,"requestId":"9c0f33f5-3f9a-4c46-afa0-ef612ce1f47e"}}
+

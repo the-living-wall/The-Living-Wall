@@ -1,0 +1,43 @@
+{
+  "started": "2026-09-23T10:25:37.593Z",
+  "env": "env-d1g2bv5sn355fc36e",
+  "qualifier": "1",
+  "checks": [
+    "immutable-version-reads-same-confirmed-state",
+    "version-write-visible-through-existing-public-route",
+    "cross-version-idempotency-and-memory-preserved"
+  ],
+  "invocations": [
+    {
+      "requestId": "3d095d8b-9573-4f44-b916-3a54e58d6b08",
+      "invokeResult": 0,
+      "errMsg": "",
+      "duration": 317,
+      "platformLog": [
+        "Init Report RequestId: 3d095d8b-9573-4f44-b916-3a54e58d6b08 Coldstart: 677ms (InitRuntime: 11ms InitFunction: 666ms) Memory: 256MB MemUsage: 20.62MB",
+        "START RequestId: 3d095d8b-9573-4f44-b916-3a54e58d6b08",
+        "END RequestId: 3d095d8b-9573-4f44-b916-3a54e58d6b08",
+        "Report RequestId: 3d095d8b-9573-4f44-b916-3a54e58d6b08 Duration: 317ms Memory: 256MB MemUsage: 22.312500MB"
+      ],
+      "coldstartObserved": true,
+      "responseWasInTail": true
+    },
+    {
+      "requestId": "eb22a0f3-7a73-4d0e-a3df-c22189f05e4e",
+      "invokeResult": 0,
+      "errMsg": "",
+      "duration": 425,
+      "platformLog": [
+        "START RequestId: eb22a0f3-7a73-4d0e-a3df-c22189f05e4e",
+        "END RequestId: eb22a0f3-7a73-4d0e-a3df-c22189f05e4e",
+        "Report RequestId: eb22a0f3-7a73-4d0e-a3df-c22189f05e4e Duration: 425ms Memory: 256MB MemUsage: 21.835938MB"
+      ],
+      "coldstartObserved": false,
+      "responseWasInTail": true
+    }
+  ],
+  "coldstartObserved": true,
+  "status": "passed",
+  "syntheticCleanupStatus": 200,
+  "finished": "2026-09-23T10:26:17.660Z"
+}

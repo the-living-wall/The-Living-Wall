@@ -1,0 +1,8 @@
+{
+  "name": "xiaoying-gifts-cloudbase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "main": "index.js",
+  "dependencies": { "@cloudbase/node-sdk": "3.18.3" }
+}

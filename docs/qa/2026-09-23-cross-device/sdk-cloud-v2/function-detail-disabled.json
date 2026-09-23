@@ -1,0 +1,27 @@
+{
+  "data": {
+    "Environment": {
+      "Variables": [
+        {
+          "Key": "GIFT_ENV_ID",
+          "Value": "env-d1g2bv5sn355fc36e"
+        },
+        {
+          "Key": "GIFT_SDK_ENABLED",
+          "Value": "false"
+        }
+      ]
+    },
+    "FunctionId": "lam-e0vj88sn",
+    "FunctionName": "xiaoying-gifts-sdk-probe",
+    "Handler": "index.sdk",
+    "InstallDependency": "TRUE",
+    "MemorySize": 256,
+    "Namespace": "env-d1g2bv5sn355fc36e",
+    "RequestId": "79d166d9-ce6f-4e20-86a4-fb63a576cedf",
+    "Runtime": "Nodejs20.19",
+    "Status": "Active",
+    "Timeout": 15,
+    "Type": "Event"
+  }
+}

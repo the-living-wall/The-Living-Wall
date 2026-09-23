@@ -1,0 +1,20 @@
+{
+  "source": "Chrome real Web SDK GATEWAY DOM observation",
+  "sourceCommit": "3abddff",
+  "started": "2026-09-23T20:26:00.503Z",
+  "limitedAt": "2026-09-23T20:26:40.577Z",
+  "finished": "2026-09-23T20:27:03.361Z",
+  "status": "passed",
+  "beforeRecovery": {
+    "404": 120,
+    "429": 6,
+    "409": 0,
+    "503": 0
+  },
+  "first429RequestId": "e0983ee9-ac18-4fb2-e0bd-bda6dd922572",
+  "recovery": {
+    "status": 404,
+    "requestId": "f3c386a9-8405-492a-ec55-b281e4ca4c2a"
+  },
+  "application": "During limit: 访问较频繁; after minute reset and reload: sender, both messages, playful style, one shared memory restored."
+}

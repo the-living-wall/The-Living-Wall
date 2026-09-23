@@ -1,0 +1,12 @@
+{
+  "source": "7e30d0bed878bcd570d538dd79484f15e3a4f75e",
+  "workingTree": "M prototypes/live-gift/qa-cross-device.mjs",
+  "started": "2026-09-23T04:53:11.334Z",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "mode": "cloud-isolated-browser-contexts",
+  "physicalDevices": false,
+  "scenarios": [],
+  "errors": [],
+  "status": "failed",
+  "error": "TimeoutError: locator.click: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '接受这份心意', exact: true })\u001b[22m\n"
+}

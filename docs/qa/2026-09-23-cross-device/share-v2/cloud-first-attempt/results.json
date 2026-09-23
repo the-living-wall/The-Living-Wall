@@ -1,0 +1,25 @@
+{
+  "source": "92578e62c4e4260a779b978e332a88478fe0072a",
+  "workingTree": "",
+  "started": "2026-09-23T06:31:39.083Z",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "mode": "cloud-isolated-browser-contexts",
+  "physicalDevices": false,
+  "defaultDomainWarmup": true,
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "offlineRetry": true,
+      "serverRestart": false,
+      "browserReload": true,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": true,
+      "replyStatusFromMessage": true
+    }
+  ],
+  "errors": [],
+  "status": "failed",
+  "error": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /删除|到期/. Input:\n\n'暂时无法保存。'\n"
+}

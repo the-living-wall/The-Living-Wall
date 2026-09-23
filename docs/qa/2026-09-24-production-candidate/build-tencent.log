@@ -1,0 +1,53 @@
+
+  vinext build  (Vite 8.0.13)
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 226 modules transformed.
+rendering chunks...
+✓ built in 263ms
+[2/5] analyze server references...
+[2Ktransforming...✓ 176 modules transformed.
+rendering chunks...
+✓ built in 120ms
+[3/5] build rsc environment...
+[2Ktransforming...✓ 223 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 197ms
+[4/5] build client environment...
+[2Ktransforming...✓ 184 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 280ms
+[5/5] build ssr environment...
+[2Ktransforming...✓ 178 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 175ms
+[0m  Pre-rendering all routes (output: 'export')...
+[vinext] Production server for prerendering running at http://127.0.0.1:56028
+  Prerendered 3 routes (0 skipped).
+  Discovered 2 CDN warmup path(s).
+[0m
+  Route (app)
+  ┌ ○ /        
+  └ ○ /showcase
+
+  ○ Static
+
+  ○ Routes marked static were confirmed by speculative prerender (attempted render
+    succeeded without dynamic API usage).
+
+  Build complete. Run `vinext start` to start the production server.
+
+vite v8.0.13 building client environment for production...
+[2Ktransforming...✓ 79 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/client/friends/index.html                             0.43 kB │ gzip:   0.32 kB
+dist/client/friends/assets/index-C0t7oTdA.css            204.87 kB │ gzip:  32.22 kB
+dist/client/friends/assets/vision_bundle-BFQ1pYnD.js     135.27 kB │ gzip:  39.86 kB
+dist/client/friends/assets/index-Cy-DJWEh.js             307.01 kB │ gzip: 101.18 kB
+dist/client/friends/assets/cloudbase-client-D48ow90a.js  390.66 kB │ gzip:  97.39 kB
+
+✓ built in 204ms

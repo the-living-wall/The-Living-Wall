@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-09-23T15:52:17.509Z",
+  "RequestId": "c970ceb1-12d7-4fae-a30f-c94b75345e19",
+  "Data": {
+    "SystemRoles": [
+      {
+        "RoleName": "匿名用户",
+        "Description": "使用匿名登录的用户",
+        "Policies": [],
+        "RoleIdentity": "anonymousUser",
+        "RoleId": "2102603300676202498",
+        "Members": []
+      }
+    ],
+    "CustomRoles": [],
+    "TotalCount": 1,
+    "CustomTotalCount": 0
+  }
+}

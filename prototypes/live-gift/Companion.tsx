@@ -4,6 +4,7 @@ import HandCamera from '../../app/hand-camera';
 import DepthInputPoller from '../../app/depth-input';
 import SoundControls from './SoundControls';
 import SharedExperience from './SharedExperience';
+import { ConnectionPanel, type Connection } from './OnlineApp';
 import {
   cleanName,
   actorName,
@@ -37,7 +38,9 @@ const intimacyCopy = (affection: number) =>
       : affection >= 0.2
         ? '开始熟悉'
         : '初次相遇';
-export default function Companion() {
+export default function Companion({
+  connection,
+}: { connection?: Connection } = {}) {
   const canvas = useRef<HTMLCanvasElement>(null),
     creature = useRef(new Creature()),
     renderer = useRef(new CreatureRenderer());
@@ -59,7 +62,7 @@ export default function Companion() {
     [affection, setAffection] = useState(0),
     [trust, setTrust] = useState(0);
   const [giftView, setGiftView] = useState<'home' | 'create' | 'receive'>(
-    'home',
+    connection?.view ? 'receive' : 'home',
   );
   const [intent, setIntent] = useState('rest');
   const openings: Record<string, string> = {
@@ -67,13 +70,20 @@ export default function Companion() {
     thanks: '谢谢你一直以来的陪伴。',
     joy: '遇到一件开心的小事，第一个就想告诉你。',
   };
-  const [note, setNote] = useState(openings.rest);
-  const [noteEdited, setNoteEdited] = useState(false);
-  const [shared, dispatchShared] = useReducer(
-    sharedReducer,
-    openings.rest,
-    createSharedState,
+  const [note, setNote] = useState(
+    connection?.creationDraft?.text ?? openings.rest,
   );
+  const [noteEdited, setNoteEdited] = useState(!!connection?.creationDraft);
+  const [localShared, dispatchLocal] = useReducer(
+    sharedReducer,
+    connection?.creationDraft,
+    (draft) => ({
+      ...createSharedState(draft?.text ?? openings.rest),
+      ...(draft ? { names: draft.names } : {}),
+    }),
+  );
+  const shared = connection?.view?.state ?? localShared;
+  const dispatchShared = connection?.view ? connection.send : dispatchLocal;
   const [trial, setTrial] = useState<StyleKey | null>(null);
   const shapingView = useRef({
     enabled: false,
@@ -476,7 +486,14 @@ export default function Companion() {
             <div className="eyebrow">THE LIVING WALL</div>
           </div>
         </div>
-        <span className="edition">小莹 · 把陪伴长成光</span>
+        {connection && import.meta.env.BASE_URL === '/friends/' ? (
+          // oxlint-disable-next-line next/no-html-link-for-pages -- Leave the standalone bundle with a full page navigation.
+          <a className="edition" href="/">
+            回到个人陪伴
+          </a>
+        ) : (
+          <span className="edition">小莹 · 把陪伴长成光</span>
+        )}
       </header>
       {giftView === 'home' ? (
         <section className="guide">
@@ -496,14 +513,25 @@ export default function Companion() {
             <br />
             停下来，看看它会不会靠过来。
           </p>
+          {connection && (
+            <ConnectionPanel connection={connection} mode="home" />
+          )}
         </section>
       ) : (
         <section className="guide gift-guide">
           <button
             className="gift-text"
-            onClick={() => go(giftView === 'receive' ? 'create' : 'home')}
+            onClick={() =>
+              connection?.view
+                ? connection.exit()
+                : go(giftView === 'receive' ? 'create' : 'home')
+            }
           >
-            {giftView === 'receive' ? '返回编辑' : '回到陪伴'}
+            {connection?.view
+              ? '回到小莹'
+              : giftView === 'receive'
+                ? '返回编辑'
+                : '回到陪伴'}
           </button>
           <h2>
             {giftView === 'create' ? (
@@ -526,13 +554,12 @@ export default function Companion() {
               {actorName(shared.names, 'sender')}
             </div>
           )}
-          <p>
-            {giftView === 'create'
-              ? '留一点光，也捎一句话。让朋友知道，你在惦记着。'
-              : note}
-          </p>
+          {giftView === 'create' && (
+            <p>留一点光，也捎一句话。让朋友知道，你在惦记着。</p>
+          )}
           {giftView === 'receive' && (
             <SharedExperience
+              connection={connection}
               state={shared}
               dispatch={dispatchShared}
               trial={trial}
@@ -543,6 +570,7 @@ export default function Companion() {
             <div className="gift-intent">
               <label htmlFor="gift-intent">你想对朋友说什么？</label>
               <select
+                disabled={connection?.creationPending}
                 id="gift-intent"
                 value={intent}
                 onChange={(e) => {
@@ -557,6 +585,7 @@ export default function Companion() {
               {noteEdited && note !== openings[intent] && (
                 <button
                   className="gift-text"
+                  disabled={connection?.creationPending}
                   onClick={() => {
                     setNote(openings[intent]);
                     setNoteEdited(false);
@@ -570,6 +599,7 @@ export default function Companion() {
                 id="gift-message"
                 rows={3}
                 maxLength={80}
+                readOnly={connection?.creationPending}
                 value={note}
                 onChange={(e) => {
                   setNote(e.target.value);
@@ -581,6 +611,7 @@ export default function Companion() {
                   给谁（可选）
                   <input
                     aria-label="给谁（可选）"
+                    disabled={connection?.creationPending}
                     defaultValue={shared.names.friend}
                     onBlur={(e) => {
                       e.target.value = cleanName(e.target.value);
@@ -597,6 +628,7 @@ export default function Companion() {
                   你的落款（可选）
                   <input
                     aria-label="你的落款（可选）"
+                    disabled={connection?.creationPending}
                     defaultValue={shared.names.sender}
                     onBlur={(e) => {
                       e.target.value = cleanName(e.target.value);
@@ -671,6 +703,9 @@ export default function Companion() {
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
         <div className="control-stack">
+          {connection && giftView !== 'home' && (
+            <ConnectionPanel connection={connection} mode={giftView} />
+          )}
           {message && !projection && (
             <output className="message">{message}</output>
           )}
@@ -687,9 +722,18 @@ export default function Companion() {
                 <>
                   <button
                     className="gift-text gift-send"
-                    onClick={() => go('receive')}
+                    disabled={connection?.busy}
+                    onClick={() =>
+                      connection
+                        ? connection.create(note, shared.names)
+                        : go('receive')
+                    }
                   >
-                    预览这份心意 ↗
+                    {connection
+                      ? connection.busy
+                        ? '正在生成…'
+                        : '生成分享链接 ↗'
+                      : '预览这份心意 ↗'}
                   </button>
                 </>
               )}
@@ -739,7 +783,9 @@ export default function Companion() {
       </footer>
       {!projection && (
         <div className="gift-preview-label">
-          共同塑造预览 · 同机演示 · 刷新清空
+          {connection
+            ? '朋友互动 · 七天到期 · 无站外通知'
+            : '共同塑造预览 · 同机演示 · 刷新清空'}
         </div>
       )}
       {camera && (

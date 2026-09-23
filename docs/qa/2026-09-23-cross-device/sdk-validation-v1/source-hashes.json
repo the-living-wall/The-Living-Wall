@@ -1,0 +1,17 @@
+{
+  "package.json": "fd3745360e65ba5ca730f5097065cb867fc988428f9b5a7111967ad6e78eea29",
+  "package-lock.json": "e0295bbb0ab3653ac8d7ee7796b2fe1a1f7d9dee0a52df8926d268a39ab9241c",
+  "prototypes/live-gift/Companion.tsx": "83faf708d93e63168a01c98939f1fa4b3206e847b9585b430239431d75181e78",
+  "prototypes/live-gift/OnlineApp.tsx": "047fe73fba580fa9f87b493878ae3281e3aa25df2ec974cf81fb2697e22f1ec3",
+  "prototypes/live-gift/gift-api.ts": "fea474973e2d62a9ac9767a3d164b3cfcddbe504aba4f38024bea8495d126d6c",
+  "prototypes/live-gift/gift-transport.ts": "f5b5ac984fea91c53079f49c88cf7c380d315f9b34de715dca71c1b7a1d3bf65",
+  "prototypes/live-gift/cloudbase-client.ts": "6025d061980ada7ce8d97894d6a6d0d9a0347fd06b01fddd17245aac11bce37a",
+  "prototypes/live-gift/vite.config.mts": "855b89042cddd50e83751423bd25e2a798e6e0d413ec1f0c8a131056301a6bcc",
+  "prototypes/live-gift/qa-cross-device.mjs": "3121dfb4cc825ed6a7e659dadf6c0ee05516ff404c6f989adce288cba1cacdec",
+  "services/gifts/sdk-handler.ts": "bfef5a2af532b4a8b1b2c76d09c7bbc4cf3c9b27f451cde32bb5983369a70602",
+  "services/gifts/cloud-bundle.ts": "b2169e4a3b688c6368b41cf7eb41d4802734bde6b98dfc97e6dcdeb298ce5e32",
+  "services/gifts/cloudbase/index.cjs": "e9eeda8d4bed97aa32d7f4b09ef63d58b057649edb2ac5746aa2dcf5ed578e04",
+  "services/gifts/cloudbase/sdk-probe-policy.rego": "8888d36a1d8123e6f46c277ffd9d8e743646e4eaf40d29271de464dbb8c5a1cb",
+  "tests/gifts-cloudbase.test.ts": "088d3400b2193a4ebb8f70f351c2b58ee905c85ba4ff1bac9701793d201220fc",
+  "tests/gifts-transport.test.ts": "645df6702e4c2e0efb84cbcdb391f6b6db9aeb1f904c16dfe801088a3e027b87"
+}

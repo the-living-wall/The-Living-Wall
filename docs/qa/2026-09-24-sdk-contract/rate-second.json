@@ -1,0 +1,13 @@
+{
+  "started": "2026-09-23T20:09:00.502Z",
+  "finished": "2026-09-23T20:09:41.856Z",
+  "status": "failed",
+  "calls": 144,
+  "counts": {
+    "404": 108,
+    "409": 36
+  },
+  "error": "Limit not reached within bounded probe",
+  "diagnosis": "Six concurrent requests contend on global quota transaction; 409 requests do not consume count.",
+  "conflictRequestId": "89b76324-4137-48e9-f2b2-be356563bf48"
+}

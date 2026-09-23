@@ -1,0 +1,13 @@
+{
+  "started": "2026-09-23T05:08:10.476Z",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "checks": [
+    {
+      "name": "create-idempotency",
+      "status": "passed"
+    }
+  ],
+  "status": "failed",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    200,\n+   429\n-   409\n  ]\n",
+  "finished": "2026-09-23T05:08:17.112Z"
+}

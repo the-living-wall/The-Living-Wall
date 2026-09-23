@@ -1,0 +1,8 @@
+
+> sites-project@0.1.0 lint
+> oxlint
+
+tests/gifts-transport.test.ts:135:8: error eslint(no-unsafe-optional-chaining): Unsafe usage of optional chaining help: If this short-circuits with 'undefined' the evaluation will throw TypeError
+prototypes/live-gift/cloudbase-client.ts:10:49: error typescript(TS2353): Object literal may only specify known properties, and 'detectSessionInUrl' does not exist in type '{ persistence: Persistence; }'.
+prototypes/live-gift/gift-transport.ts:60:23: error typescript(no-base-to-string): 'data?.code ?? data?.error ?? ''' will use Object's default stringification format ('[object Object]') when stringified. help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
+tests/gifts-cloudbase.test.ts:373:22: error typescript(require-array-sort-compare): Require 'compare' argument.

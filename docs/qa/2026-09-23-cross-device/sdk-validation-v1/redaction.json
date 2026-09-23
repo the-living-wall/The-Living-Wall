@@ -1,0 +1,53 @@
+{
+  "note": "Synthetic credentials are removed from textual trace members before committing. Standalone fallback screenshots showing full links are kept outside the repository. Resource identifiers and event order are retained.",
+  "traces": [
+    {
+      "path": "http-browser-recovery/0/sender-trace.zip",
+      "redactedHex64Occurrences": 27
+    },
+    {
+      "path": "http-browser-recovery/0/friend-trace.zip",
+      "redactedHex64Occurrences": 18
+    },
+    {
+      "path": "http-browser-recovery/1/sender-trace.zip",
+      "redactedHex64Occurrences": 10
+    },
+    {
+      "path": "http-browser-recovery/1/friend-trace.zip",
+      "redactedHex64Occurrences": 13
+    },
+    {
+      "path": "http-browser-recovery/2/sender-trace.zip",
+      "redactedHex64Occurrences": 10
+    },
+    {
+      "path": "http-browser-recovery/2/friend-trace.zip",
+      "redactedHex64Occurrences": 13
+    },
+    {
+      "path": "http-browser/0/sender-trace.zip",
+      "redactedHex64Occurrences": 27
+    },
+    {
+      "path": "http-browser/0/friend-trace.zip",
+      "redactedHex64Occurrences": 18
+    },
+    {
+      "path": "http-browser/1/sender-trace.zip",
+      "redactedHex64Occurrences": 10
+    },
+    {
+      "path": "http-browser/1/friend-trace.zip",
+      "redactedHex64Occurrences": 13
+    },
+    {
+      "path": "http-browser/2/sender-trace.zip",
+      "redactedHex64Occurrences": 10
+    },
+    {
+      "path": "http-browser/2/friend-trace.zip",
+      "redactedHex64Occurrences": 13
+    }
+  ]
+}

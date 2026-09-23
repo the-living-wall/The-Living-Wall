@@ -1,0 +1,305 @@
+{
+  "recordedAt": "2026-09-23T15:43:33.851Z",
+  "env": "env-d1g2bv5sn355fc36e",
+  "results": [
+    {
+      "label": "functions",
+      "action": "DescribeResourcePermission",
+      "result": {
+        "RequestId": "bdaa9092-31cc-4bf9-8d81-7d3364f9d98c",
+        "Data": {
+          "TotalCount": 1,
+          "PermissionList": [
+            {
+              "Resource": "",
+              "Permission": "CUSTOM",
+              "ResourceType": "function",
+              "SecurityRule": "{\"*\":{\"invoke\":\"auth != null && auth.loginType != 'ANONYMOUS'\"},\"xiaoying-gifts-cleanup\":{\"invoke\":false}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "collections",
+      "action": "DescribeResourcePermission",
+      "result": {
+        "RequestId": "dafda0b6-9f12-4f59-a139-bda2a8e41e95",
+        "Data": {
+          "TotalCount": 2,
+          "PermissionList": [
+            {
+              "Resource": "xiaoying_gifts",
+              "Permission": "ADMINONLY",
+              "ResourceType": "collection",
+              "SecurityRule": ""
+            },
+            {
+              "Resource": "xiaoying_limits",
+              "Permission": "ADMINONLY",
+              "ResourceType": "collection",
+              "SecurityRule": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "storage",
+      "action": "DescribeResourcePermission",
+      "error": "Command failed: /Users/livehigh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node /private/tmp/xiaoying-cloudbase-cli/node_modules/@cloudbase/cli/bin/tcb api tcb DescribeResourcePermission -e env-d1g2bv5sn355fc36e -r ap-shanghai --body {\"EnvId\":\"env-d1g2bv5sn355fc36e\",\"ResourceType\":\"storage\"} --json\n"
+    },
+    {
+      "label": "userRego",
+      "action": "DescribeEnvConfig",
+      "result": {
+        "Item": {
+          "Key": "",
+          "Value": ""
+        },
+        "RequestId": "ad8898b3-3e45-40d8-ad2d-f117d458102f"
+      }
+    },
+    {
+      "label": "extensionRego",
+      "action": "DescribeEnvConfig",
+      "result": {
+        "Item": {
+          "Key": "",
+          "Value": ""
+        },
+        "RequestId": "55f97283-cf2a-405b-abe5-e9b30b6dbba2"
+      }
+    },
+    {
+      "label": "sources",
+      "action": "DescribeAuthDomains",
+      "result": {
+        "Domains": [
+          {
+            "Id": "b3b973ab-de74-4aaf-ae64-2f933f3b0595",
+            "Domain": "656e-env-d1g2bv5sn355fc36e-1301641054.tcb.qcloud.la",
+            "Type": "USER",
+            "Status": "ENABLE",
+            "CreateTime": "2026-09-23 11:37:46",
+            "UpdateTime": "2026-09-23 11:37:46"
+          },
+          {
+            "Id": "f41784b4-f17f-4455-bd1c-e0ed75263b41",
+            "Domain": "env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+            "Type": "USER",
+            "Status": "ENABLE",
+            "CreateTime": "2026-09-23 11:37:46",
+            "UpdateTime": "2026-09-23 11:37:46"
+          },
+          {
+            "Id": "1ebd1cf7-349a-47c8-b62c-e79c9df31a6a",
+            "Domain": "env-d1g2bv5sn355fc36e-1301641054.tcloudbaseapp.com",
+            "Type": "USER",
+            "Status": "ENABLE",
+            "CreateTime": "2026-09-23 11:38:16",
+            "UpdateTime": "2026-09-23 11:38:16"
+          },
+          {
+            "Id": "ba82601c-c1ae-443f-a821-d08619f0fd7d",
+            "Domain": "localhost:80",
+            "Type": "USER",
+            "Status": "ENABLE",
+            "CreateTime": "2026-09-23 11:37:46",
+            "UpdateTime": "2026-09-23 11:37:46"
+          },
+          {
+            "Id": "77f47538-5494-4567-95a6-0f25e12cb3e0",
+            "Domain": "localhost:8080",
+            "Type": "USER",
+            "Status": "ENABLE",
+            "CreateTime": "2026-09-23 11:37:46",
+            "UpdateTime": "2026-09-23 11:37:46"
+          },
+          {
+            "Id": "1",
+            "Domain": "weda.cloud.tencent.com",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:54",
+            "UpdateTime": "2024-09-29 17:14:54"
+          },
+          {
+            "Id": "2",
+            "Domain": "tcb.cloud.tencent.com",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:54",
+            "UpdateTime": "2024-09-29 17:14:54"
+          },
+          {
+            "Id": "3",
+            "Domain": "weda.cloud.tencent.cn",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:55",
+            "UpdateTime": "2024-09-29 17:14:55"
+          },
+          {
+            "Id": "4",
+            "Domain": "tcb.cloud.tencent.cn",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:55",
+            "UpdateTime": "2024-09-29 17:14:55"
+          },
+          {
+            "Id": "5",
+            "Domain": "weda.cloud.tencent.com.cn",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:55",
+            "UpdateTime": "2024-09-29 17:14:55"
+          },
+          {
+            "Id": "6",
+            "Domain": "tcb.cloud.tencent.com.cn",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2024-09-29 17:14:55",
+            "UpdateTime": "2024-09-29 17:14:55"
+          },
+          {
+            "Id": "7",
+            "Domain": "*.preview.cloudbase.net",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2025-02-20 11:21:06",
+            "UpdateTime": "2025-02-20 12:09:33"
+          },
+          {
+            "Id": "8",
+            "Domain": "*.webapps.tcloudbase.com",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2026-06-03 11:53:55",
+            "UpdateTime": "2026-06-03 11:53:55"
+          },
+          {
+            "Id": "9",
+            "Domain": " docs.cloudbase.net",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2026-06-03 11:53:55",
+            "UpdateTime": "2026-06-03 11:53:55"
+          },
+          {
+            "Id": "10",
+            "Domain": "tcb.tencentcloud.com",
+            "Type": "SYSTEM",
+            "Status": "ENABLE",
+            "CreateTime": "2026-08-04 14:41:49",
+            "UpdateTime": "2026-08-04 14:41:49"
+          }
+        ],
+        "RequestId": "11e00415-cbb1-465f-86d9-2dfc2db6cef5"
+      }
+    },
+    {
+      "label": "environment",
+      "action": "DescribeEnvInfo",
+      "result": {
+        "RequestId": "5bc342b8-0160-45da-a2df-37d0fe0df030",
+        "EnvBaseInfo": {
+          "Alias": "the-living-wall",
+          "CreateTime": "2026-09-23 11:37:38",
+          "CustomLogServices": null,
+          "Databases": [
+            {
+              "InstanceId": "tnt-4tn13ikbi",
+              "Region": "ap-shanghai",
+              "Status": "RUNNING",
+              "UpdateTime": "2026-09-23 11:37:45"
+            }
+          ],
+          "EnvChannel": "qc_console",
+          "EnvId": "env-d1g2bv5sn355fc36e",
+          "EnvPreferences": [
+            {
+              "Key": "Staging",
+              "Value": "off"
+            }
+          ],
+          "EnvStatus": "NORMAL",
+          "EnvType": "baas",
+          "Functions": [
+            {
+              "Backend": "scf",
+              "Namespace": "env-d1g2bv5sn355fc36e",
+              "Region": "ap-shanghai"
+            }
+          ],
+          "IsAutoDegrade": false,
+          "IsDauPackage": false,
+          "IsDefault": false,
+          "LogServices": null,
+          "Meta": null,
+          "PackageId": "baas_personal",
+          "PackageName": "个人版",
+          "PackageType": "baas",
+          "PayMode": "prepayment",
+          "PlatformId": "",
+          "PostgreSQL": null,
+          "Region": "ap-shanghai",
+          "Source": "qcloud",
+          "StaticStorages": [
+            {
+              "Bucket": "7f49-static-env-d1g2bv5sn355fc36e-1301641054",
+              "DefaultDirName": "",
+              "DomainType": "gateway",
+              "EnvId": "",
+              "ExternalStorage": {
+                "BasePath": "",
+                "BucketName": "",
+                "Enabled": false,
+                "Provider": "",
+                "Region": ""
+              },
+              "Region": "ap-shanghai",
+              "StaticDomain": "env-d1g2bv5sn355fc36e-1301641054.tcloudbaseapp.com",
+              "Status": "online"
+            }
+          ],
+          "Status": "NORMAL",
+          "Storages": [
+            {
+              "AppId": "",
+              "Bucket": "656e-env-d1g2bv5sn355fc36e-1301641054",
+              "CdnDomain": "656e-env-d1g2bv5sn355fc36e-1301641054.tcb.qcloud.la",
+              "CustomDomain": "",
+              "DomainType": "cdn",
+              "ExternalStorage": {
+                "BasePath": "",
+                "BucketName": "",
+                "Enabled": false,
+                "Provider": "",
+                "Region": ""
+              },
+              "Region": "ap-shanghai",
+              "Status": "NORMAL"
+            }
+          ],
+          "Tags": null,
+          "UpdateTime": "2026-09-23 11:53:40"
+        }
+      }
+    },
+    {
+      "label": "probe",
+      "action": "GetFunction",
+      "result": {
+        "RequestId": "b5b0274b-4da3-401f-bfdf-e20f758e42af",
+        "FunctionName": "xiaoying-gifts-sdk-probe",
+        "Status": "Active",
+        "Handler": "index.sdk",
+        "Runtime": "Nodejs20.19",
+        "enabled": "false"
+      }
+    }
+  ]
+}

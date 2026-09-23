@@ -1,0 +1,102 @@
+{
+  "note": "Existing repository advisories are not resolved in this SDK validation. Not a full security audit.",
+  "counts": {
+    "info": 0,
+    "low": 1,
+    "moderate": 2,
+    "high": 8,
+    "critical": 0,
+    "total": 11
+  },
+  "introducedPackageCount": 36,
+  "advisories": [
+    {
+      "name": "@cloudflare/vite-plugin",
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/@cloudflare/vite-plugin"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "esbuild",
+      "severity": "low",
+      "nodes": [
+        "node_modules/esbuild"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "image-size",
+      "severity": "high",
+      "nodes": [
+        "node_modules/image-size"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "miniflare",
+      "severity": "high",
+      "nodes": [
+        "node_modules/miniflare"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "react-server-dom-webpack",
+      "severity": "high",
+      "nodes": [
+        "node_modules/react-server-dom-webpack"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "sharp",
+      "severity": "high",
+      "nodes": [
+        "node_modules/sharp"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "undici",
+      "severity": "high",
+      "nodes": [
+        "node_modules/undici"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "vinext",
+      "severity": "high",
+      "nodes": [
+        "node_modules/vinext"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "vite",
+      "severity": "high",
+      "nodes": [
+        "node_modules/vite"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "wrangler",
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/wrangler"
+      ],
+      "newNodes": []
+    },
+    {
+      "name": "ws",
+      "severity": "high",
+      "nodes": [
+        "node_modules/ws"
+      ],
+      "newNodes": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+import cloudbase from '@cloudbase/js-sdk/app';
+import {registerAuth} from '@cloudbase/js-sdk/auth';
+import {registerFunctions} from '@cloudbase/js-sdk/functions';
+registerAuth(cloudbase);registerFunctions(cloudbase);
+const app=cloudbase.init({env:'env-d1g2bv5sn355fc36e',region:'ap-shanghai',endPointMode:'GATEWAY',auth:{detectSessionInUrl:false}});
+const auth=app.auth({persistence:'local'}), report={calls:[],status:'ready'};
+const show=()=>document.querySelector('pre').textContent=JSON.stringify(report,null,2);
+async function request(){const r=await app.callFunction({name:'xiaoying-gifts-sdk-probe',data:{protocol:'gifts/1',request:{path:'/qa-rate-invalid',method:'GET'}}});const entry={at:new Date().toISOString(),status:r.result.status,requestId:r.requestId};report.calls.push(entry);show();return entry;}
+document.querySelector('button').onclick=async()=>{document.querySelector('button').disabled=true;try{
+ if(!await auth.getLoginState()){const s=await auth.signInAnonymously();if(s.error)throw Error(s.error.code);}
+ report.status='running';report.started=new Date().toISOString();show();
+ // Bounded 144 calls, at most four concurrent, stop as soon as 429 appears.
+ for(let i=0;i<36;i++){const results=await Promise.all(Array.from({length:4},request));if(results.some(x=>![404,409,429].includes(x.status)))throw Error('Unexpected response');if(results.some(x=>x.status===429)){report.status='limited';break;}}
+ if(report.status!=='limited')throw Error('Limit not reached within bounded probe');
+ report.limitedAt=new Date().toISOString();show();
+ // Recovery read only: wait to the next fixed minute bucket plus 2 seconds.
+ await new Promise(r=>setTimeout(r,62000-Date.now()%60000));
+ const recovery=await request();report.status=recovery.status===404?'passed':'recovery-failed';
+}catch(e){report.status='failed';report.error=String(e.message||e);}finally{report.finished=new Date().toISOString();show();}};show();

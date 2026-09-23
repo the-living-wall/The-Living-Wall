@@ -1,0 +1,59 @@
+{
+  "source": "850ca8f60f0bbda1f19b1d43ad336ee903cc8a70",
+  "workingTree": "M docs/PRD.md\n M docs/qa/2026-09-23-cross-device/PENDING-ACCEPTANCE.md\n M openspec/changes/cross-device-gifts/tasks.md\n M openspec/changes/shared-shaping-prototype/tasks.md\n M prototypes/live-gift/SoundControls.tsx\n M prototypes/live-gift/qa-cross-device.mjs\n?? docs/qa/2026-09-23-cross-device/release-prep-v1/",
+  "started": "2026-09-23T09:53:10.753Z",
+  "origin": "http://127.0.0.1:4191",
+  "mode": "local-sqlite",
+  "physicalDevices": false,
+  "selectedScenario": "all",
+  "defaultDomainWarmup": false,
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "offlineRetry": true,
+      "serverRestart": true,
+      "browserReload": true,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": true,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": true,
+      "soundActivationMovementPreviewAndStop": true
+    },
+    {
+      "name": "轻松打趣",
+      "status": "passed",
+      "active": "俏皮",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false,
+      "soundActivationMovementPreviewAndStop": false
+    },
+    {
+      "name": "共同约定",
+      "status": "passed",
+      "active": "原来的样子",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false,
+      "soundActivationMovementPreviewAndStop": false
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}

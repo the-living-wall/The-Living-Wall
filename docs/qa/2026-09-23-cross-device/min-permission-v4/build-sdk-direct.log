@@ -1,0 +1,11 @@
+vite v8.0.13 building client environment for production...
+[2Ktransforming...✓ 79 modules transformed.
+rendering chunks...
+computing gzip size...
+outputs/gifts/sdk-site/index.html                             0.37 kB │ gzip:   0.30 kB
+outputs/gifts/sdk-site/assets/index-iYB9M_La.css            204.67 kB │ gzip:  32.19 kB
+outputs/gifts/sdk-site/assets/vision_bundle-BFQ1pYnD.js     135.27 kB │ gzip:  39.86 kB
+outputs/gifts/sdk-site/assets/index-DwFM6OxL.js             306.83 kB │ gzip: 101.14 kB
+outputs/gifts/sdk-site/assets/cloudbase-client-BpFQ3ycF.js  390.66 kB │ gzip:  97.39 kB
+
+✓ built in 246ms

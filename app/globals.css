@@ -547,3 +547,11 @@ canvas:focus-visible {
 .control-stack > .message { width:min(220px, calc(100vw - 44px)); max-width:220px; line-height:1.5; margin-bottom:2px; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
 @media(max-width:700px) { .sound-controls { position:absolute; right:0; top:70px; } }
+.friends-entry {
+  color: #c3e8b7;
+  align-self: flex-end;
+  padding: 10px 0;
+  text-decoration: none;
+}
+.friends-entry:hover { text-decoration: underline; }
+.friends-entry:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
