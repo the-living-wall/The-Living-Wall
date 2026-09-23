@@ -1,0 +1,31 @@
+{
+  "source": "92578e62c4e4260a779b978e332a88478fe0072a",
+  "environment": "env-d1g2bv5sn355fc36e",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "operator": "Codex",
+  "recordedAt": "2026-09-23T06:32:51.127745+00:00",
+  "apiSourceUnchanged": "7e30d0bed878bcd570d538dd79484f15e3a4f75e",
+  "files": {
+    "index.html": "9b9e54f1e7c3d05edd4d454901e4e90dcd8614fdcbef35fad54954e398997562",
+    "favicon.svg": "090b8bedd12fce37d68a9595bd28da7f6b16d196f5b76e7339a73017c55567dc",
+    "models/hand_landmarker.task": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+    "audio/voice.mp3": "a19470ae7d791831fac6853c9d7bcf56dcb73f7d4cb3ea85864611a3b09730ef",
+    "audio/scales.wav": "5e66720847dd780f86f4c069b4283b1f5b32a6a1575f511ca8cae9b1359643f3",
+    "audio/roll.mp3": "fdc354107d53fdc67565518b4980c09d3db39436a7b2f04624e01b75f8078dc5",
+    "audio/move.mp3": "74d22d520cc1d0c5e6ded552bfb21773ce95453d60425b804d61dd66b9a9a6d2",
+    "audio/purr.mp3": "580cbad6df089e608ea97d901767a34f6d4e14248aada40065f05763757e9f7c",
+    "audio/scales.mp3": "90599667dc704b7910eb552e0cf2703dfad2ec1c8c9bcf027df2951149867ac4",
+    "audio/credits.html": "65ba887946738abbeb1a617897bcf8ea06e40dea578d6af7a930367e7756561f",
+    "audio/kalimba.mp3": "0513fc2dac0f9854927d128d7b688ba03d45a99e00ac0241b6724ae39935efa8",
+    "audio/touch.mp3": "55c0ae55673b17aa4fc31fa1606dba638a978e8a551f1a26305fd374574f0d58",
+    "audio/startle.wav": "c32ae8628078145fc5059b6e2d9a474ee836e5a73b842b7eadf77e7e4c757798",
+    "mediapipe/vision_wasm_nosimd_internal.wasm": "3821ea9b1f7fb8c549ef2a064ef5c85750bf375c545a49fd6eea0df44a95f1f4",
+    "mediapipe/vision_wasm_nosimd_internal.js": "927def7b465c51b86e4b3060f93646aca4e27121f4b8fc0483786e407ea9cf1f",
+    "mediapipe/vision_wasm_internal.wasm": "f00ec4731faa23b3e714d00e88d4d10e2df5c0a427d3a2b4ae6e3526fdd14ef7",
+    "mediapipe/vision_wasm_internal.js": "4a97e2520ba506c680ecd6ba6acfb146888afa0e2746d57f205352bc6ebb82eb",
+    "assets/index-DRo09-6I.css": "a520af40894b3d7c2466fae3ef05f689a5bf283c8e1ee0dd1dce4fe4ce443b44",
+    "assets/vision_bundle-BFQ1pYnD.js": "018fe08cd723f4d0d9d7025359be9e66753745e16d90e4429e85195b459e95a9",
+    "assets/index-CL7WJSDJ.js": "39a106eceba20c986f436549a2a3236c111a828154e358c38ce42a728b9f9692"
+  },
+  "rollbackIndexSha256": "814e0b77a63591f13c623e8ebc8a1793d083d65d0e49c3b63b6a6ea0c652fab1"
+}

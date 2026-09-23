@@ -12,6 +12,10 @@ const output =
 await mkdir(output, { recursive: true });
 const data = await mkdtemp(join(tmpdir(), 'xiaoying-two-devices-'));
 const remote = process.env.QA_ORIGIN;
+const selectedScenario = process.env.QA_SCENARIO_INDEX;
+if (selectedScenario !== undefined && !/^[0-2]$/.test(selectedScenario)) {
+  throw new Error('QA_SCENARIO_INDEX must be 0, 1 or 2');
+}
 const origin = remote || 'http://127.0.0.1:4191';
 let store, server;
 const start = async () => {
@@ -42,6 +46,7 @@ const report = {
   origin,
   mode: remote ? 'cloud-isolated-browser-contexts' : 'local-sqlite',
   physicalDevices: false,
+  selectedScenario: selectedScenario ?? 'all',
   defaultDomainWarmup: process.env.QA_WARMUP_DEFAULT_DOMAIN === 'true',
   scenarios: [],
   errors: [],
@@ -52,7 +57,7 @@ const open = async (page, url) => {
     await page
       .getByRole('button', { name: '确定访问', exact: true })
       .click({ timeout: 15000 });
-    await page.waitForLoadState('domcontentloaded');
+    await page.locator('#root').waitFor({ state: 'visible' });
   }
 };
 const btn = (p, name) => p.getByRole('button', { name, exact: true });
@@ -70,6 +75,10 @@ try {
     [1, '轻松打趣', '俏皮', '又把钥匙忘家里了。', '给金鱼配个钥匙挂绳。'],
     [2, '共同约定', null, '周末去海边散步好吗？', '好，到时再确认天气。'],
   ]) {
+    if (selectedScenario !== undefined && String(index) !== selectedScenario)
+      continue;
+    if (remote && report.scenarios.length > 0)
+      await new Promise((resolve) => setTimeout(resolve, 45000));
     const folder = join(output, String(index));
     await mkdir(folder, { recursive: true });
     const sender = await browser.newContext({

@@ -1,0 +1,29 @@
+[uploadFiles] 准备上传 19 个文件
+[uploadFiles] 智能混合模式：先并行快速上传，失败文件自动串行重试
+[parallel-upload] 正在上传第 1 批次 (文件 1-19/19)
+[parallel-upload] 第 1 批次上传成功
+[parallel-upload] 全部 19 个文件并行上传成功
+[uploadFiles] 全部完成！共处理 19 个文件
+[uploadFiles] 准备上传 1 个文件
+[uploadFiles] 智能混合模式：先并行快速上传，失败文件自动串行重试
+[parallel-upload] 正在上传第 1 批次 (文件 1-1/1)
+[parallel-upload] 第 1 批次上传成功
+[parallel-upload] 全部 1 个文件并行上传成功
+[uploadFiles] 全部完成！共处理 1 个文件
+{
+  "data": {
+    "message": "上传完成",
+    "url": "https://env-d1g2bv5sn355fc36e-1301641054.tcloudbaseapp.com/",
+    "totalFiles": 20,
+    "successCount": 20,
+    "failedCount": 0,
+    "verified": false
+  },
+  "meta": {
+    "nextSteps": [
+      "tcb hosting list",
+      "https://env-d1g2bv5sn355fc36e-1301641054.tcloudbaseapp.com/"
+    ],
+    "notice": "hosting deploy 仅做文件上传，不支持版本管理。CDN 缓存通常需数分钟刷新。如需云端构建和版本管理，请使用 tcb app deploy"
+  }
+}
