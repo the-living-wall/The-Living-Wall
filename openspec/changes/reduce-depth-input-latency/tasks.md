@@ -11,5 +11,7 @@
 
 ## 3. 验证与交付
 - [x] 3.1 完成前端/Python/构建/OpenSpec检查，浏览器对照新旧并保留真实证据。
-- [ ] 3.2 更新PRD与启动/迁移/回退/现场测量说明，提交关联Issue的PR；回读PR确认Refs与未完成项。
+- [x] 3.2 更新PRD与启动/迁移/回退/现场测量说明，提交关联Issue的PR；回读PR确认Refs与未完成项。
 - [ ] 3.3 用户现场核对型号、采集帧率/USB/刷新率，电脑/有线/AirPlay各三轮一分钟并验收目标；没有硬件不勾选。
+
+交付 PR：https://github.com/the-living-wall/The-Living-Wall/pull/90（Draft，Refs #89）；最终实现提交1dd80c4，现场任务3.3保持未完成。
