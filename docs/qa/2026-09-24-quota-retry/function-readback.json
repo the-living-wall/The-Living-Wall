@@ -1,0 +1,20 @@
+{
+  "FunctionName": "xiaoying-gifts-sdk-probe",
+  "Handler": "index.sdk",
+  "Status": "Active",
+  "Runtime": "Nodejs20.19",
+  "ModTime": "2026-09-24 04:24:52",
+  "Environment": {
+    "Variables": [
+      {
+        "Key": "GIFT_ENV_ID",
+        "Value": "env-d1g2bv5sn355fc36e"
+      },
+      {
+        "Key": "GIFT_SDK_ENABLED",
+        "Value": "true"
+      }
+    ]
+  },
+  "RequestId": "489ceca0-abf9-42dd-916c-4cfa0aa26526"
+}
