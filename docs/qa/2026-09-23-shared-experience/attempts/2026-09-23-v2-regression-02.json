@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-09-23T01:04:24.844Z",
+  "target": "http://127.0.0.1:4180/",
+  "commit": "6c958d9f4c8a3a4e06745c422d0355c1be4b9efc",
+  "results": [
+    "统一表达区域、替换保护、返回保留、四种窄屏布局、称呼和朋友页无成长面板",
+    "三种试看可取消；改选需重新确认；称呼更改不改历史；取消纪念保留形态和对话"
+  ],
+  "errors": [],
+  "status": "failed",
+  "failure": "locator.click: Timeout 7000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.sound-options > summary')\u001b[22m\n\u001b[2m    - locator resolved to <summary>声音设置</summary>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    13 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /private/tmp/xiaoying-shared-shaping/prototypes/live-gift/qa.mjs:117:50",
+  "finishedAt": "2026-09-23T01:04:38.657Z"
+}

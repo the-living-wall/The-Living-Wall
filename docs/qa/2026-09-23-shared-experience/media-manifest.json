@@ -1,0 +1,52 @@
+[
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/scenarios/quiet/trace.zip",
+    "bytes": 4579727,
+    "sha256": "6fe3c089c2d4e323519754f31cd4b44a6229bf2a7d96523e2139c7bae9e1254c"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/scenarios/promise/trace.zip",
+    "bytes": 4155574,
+    "sha256": "0a49ed078a171e5ecf91437482394ba5dc7465c912584e9806b172b65f886cbc"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/scenarios/playful/trace.zip",
+    "bytes": 4380919,
+    "sha256": "062b080429621f909512f07075ce655f7f01db8d2cdc49a6c65f413351a28621"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/regression/trace.zip",
+    "bytes": 8610339,
+    "sha256": "dd888ee8dde553e69c0ce5952c7f41e16f7e8116566c8b88a343378a935edf8e"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/curious/interaction.webm",
+    "bytes": 2110691,
+    "sha256": "e9079a3a723f345a7ad8ef45a02f60bfe85a9e0c9a064ceb2a646e1cc8eaed03"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/curious/trace.zip",
+    "bytes": 40112394,
+    "sha256": "f8652edf3162b0f277e680d2dc8bde1809244143081674f4dcaab716eca02ae1"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/calm/interaction.webm",
+    "bytes": 2203485,
+    "sha256": "e6972ec41b6da86536dffba5462a42a0f071c5ae24b8689a5cc09ae4d2aa798d"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/calm/trace.zip",
+    "bytes": 42813713,
+    "sha256": "a496fe93f06a4576e0ce94ed306bcaa7da69c7e25a531a0a2179b13f14e46879"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/playful/interaction.webm",
+    "bytes": 2108835,
+    "sha256": "399a7267ef8b25dc6df78889a6a09f8af49241f1d8d4b5058cbcdb97a3fea1b1"
+  },
+  {
+    "file": "/Users/livehigh/Downloads/ob_sync/102_living_wall/outputs/qa/shared-shaping/2026-09-23-final-2807bca/interaction/playful/trace.zip",
+    "bytes": 39834662,
+    "sha256": "e541892f5ce440be6736c774596958a0fdb53031bbc9cea8bc9523e0599cec30"
+  }
+]

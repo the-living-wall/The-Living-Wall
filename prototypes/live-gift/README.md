@@ -84,3 +84,5 @@ npx vite build --config prototypes/live-gift/vite.config.mts
 已同步 main 至 06c3a70，原型声音副本对齐最新控件并保留接收默认静音；朋友页手机声音改为随页面流动，避免主线固定定位造成重叠。以上仍是本机原型，没有真实送达或持久化。
 
 浏览器回归：`node prototypes/live-gift/qa.mjs`；三场景：`node prototypes/live-gift/qa-scenarios.mjs`；真实鼠标互动录制：`node prototypes/live-gift/qa-interaction.mjs`。均可用 QA_OUTPUT 指定新目录。互动脚本只通过现有只读状态接口观察，不注入生物状态；保存画布视频、页面截图和状态采样。
+
+最终结果：被测实现 2807bca，83 项单测、typecheck/lint/build/独立构建、OpenSpec 8/8、三场景、桌面与四种窄屏回归及三种表现真实鼠标互动录制全部通过。[查看本轮证据与失败修复记录](../../docs/qa/2026-09-23-shared-experience/README.md)。审美、手机真机及听感仍待用户验收。
