@@ -123,7 +123,7 @@ def camera_frames(stop):
             device = candidate
     if device is None:
         raise ValueError('未找到当前已适配的 Gemini 335；SDK枚举型号：' +
-                         ('、'.join(names) or '无设备') + '。请核对335/355型号，不自动套用配置。')
+                         ('、'.join(names) or '无设备') + '。请检查 Gemini 335 的 USB 连接及设备占用。')
     pipeline = Pipeline(device)
     profile = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
     if profile.get_format() != OBFormat.Y16:
