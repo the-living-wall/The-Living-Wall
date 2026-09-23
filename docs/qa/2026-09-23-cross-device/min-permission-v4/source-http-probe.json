@@ -1,0 +1,70 @@
+[
+  {
+    "origin": "http://127.0.0.1:4194",
+    "method": "OPTIONS",
+    "status": 204,
+    "allowOrigin": "http://127.0.0.1:4194",
+    "requestId": "53fbaf2d-af14-40d0-971f-19c39cbee541",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "http://127.0.0.1:4194",
+    "method": "POST",
+    "status": 400,
+    "allowOrigin": "http://127.0.0.1:4194",
+    "requestId": "95d4dad1-cef2-4261-b90c-2aae78740435",
+    "code": "INVALID_ARGUMENT",
+    "message": "请在请求头添加设备id",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "http://127.0.0.1:4195",
+    "method": "OPTIONS",
+    "status": 204,
+    "allowOrigin": "http://127.0.0.1:4195",
+    "requestId": "5aa2cf5f-118b-447c-acf6-968262394326",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "http://127.0.0.1:4195",
+    "method": "POST",
+    "status": 400,
+    "allowOrigin": "http://127.0.0.1:4195",
+    "requestId": "fb59effa-b819-450f-941f-43425e30a742",
+    "code": "INVALID_ARGUMENT",
+    "message": "请在请求头添加设备id",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "http://denied.localhost:4195",
+    "method": "OPTIONS",
+    "status": 403,
+    "allowOrigin": null,
+    "requestId": "c566c4ce-978a-4845-8896-0ed169f6e57e",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "http://denied.localhost:4195",
+    "method": "POST",
+    "status": 403,
+    "allowOrigin": null,
+    "requestId": "564524cd-5ca5-4e31-ace9-df9980e589c9",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "https://example.invalid",
+    "method": "OPTIONS",
+    "status": 403,
+    "allowOrigin": null,
+    "requestId": "c6880ac2-20a9-4031-b45a-a67004e1945e",
+    "hasAccessToken": false
+  },
+  {
+    "origin": "https://example.invalid",
+    "method": "POST",
+    "status": 403,
+    "allowOrigin": null,
+    "requestId": "57f03fdf-8e7e-4c7e-9b76-f0087fae51c6",
+    "hasAccessToken": false
+  }
+]

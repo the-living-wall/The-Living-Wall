@@ -1,0 +1,63 @@
+import cloudbase from '@cloudbase/js-sdk/app';
+import { registerAuth } from '@cloudbase/js-sdk/auth';
+import { registerFunctions } from '@cloudbase/js-sdk/functions';
+import { registerDatabase } from '@cloudbase/js-sdk/database';
+import { registerStorage } from '@cloudbase/js-sdk/storage';
+registerAuth(cloudbase); registerFunctions(cloudbase);
+registerDatabase(cloudbase); registerStorage(cloudbase);
+const env = 'env-d1g2bv5sn355fc36e';
+const network: any[] = [];
+const originalFetch = window.fetch.bind(window);
+window.fetch = async (...args) => {
+  const url = new URL(typeof args[0] === 'string' ? args[0] : args[0] instanceof URL ? args[0].href : args[0].url, location.href);
+  const entry: any = { url: url.origin + url.pathname, method: args[1]?.method || 'GET' };
+  network.push(entry);
+  try { const response = await originalFetch(...args); entry.status = response.status; show(); return response; }
+  catch(e: any) { entry.error = String(e.message); show(); throw e; }
+};
+const mode = new URLSearchParams(location.search).get('mode') === 'CLOUD_API' ? 'CLOUD_API' : 'GATEWAY';
+const app = cloudbase.init({ env, region: 'ap-shanghai', endPointMode: mode, timeout: 12000, auth: { detectSessionInUrl: false } });
+const auth = app.auth({ persistence: 'local' });
+const results: any[] = [];
+const output = document.querySelector('pre')!;
+function show() { output.textContent = JSON.stringify({ origin: location.origin, mode, results, network }, null, 2); }
+function summary(value: any) { return { code: value?.code ?? value?.error?.code, status: value?.status ?? value?.statusCode ?? value?.result?.status, requestId: value?.requestId, hasResult: value?.result !== undefined }; }
+async function check(name: string, fn: () => Promise<any>, expect: 'deny' | 'disabled') {
+  try {
+    const value = await fn();
+    const s = summary(value);
+    const passed = expect === 'disabled' ? s.status === 503 : /PERMISSION|DENIED|AUTH|CREDENTIAL|FORBIDDEN/i.test(String(s.code || ''));
+    results.push({ name, passed, returned: s }); show();
+    if (!passed) throw new Error('Unexpected result; stop');
+  } catch(e: any) {
+    if (e.message === 'Unexpected result; stop') throw e;
+    const passed = expect === 'deny' && /PERMISSION|DENIED|AUTH|CREDENTIAL|FORBIDDEN/i.test(String(e.code || '') + ' ' + String(e.message || ''));
+    results.push({ name, passed, rejected: summary(e), message: String(e.message || '').slice(0,220) }); show();
+    if (!passed) throw new Error('Boundary not demonstrated; stop');
+  }
+}
+document.querySelector('button')!.addEventListener('click', async () => {
+  const button = document.querySelector('button')!; button.disabled = true;
+  try {
+    const signIn = await auth.signInAnonymously();
+    if (signIn.error) throw signIn.error;
+    const loggedIn = Boolean(await auth.getLoginState());
+    results.push({ name: 'real-anonymous-session', passed: loggedIn }); show();
+    if (!loggedIn) throw new Error('No real session');
+    if (new URLSearchParams(location.search).get('expect') === 'deny-source') {
+      await check('wrong-host-probe-denied', () => app.callFunction({ name: 'xiaoying-gifts-sdk-probe', data: {} }), 'deny');
+      return;
+    }
+    await check('named-probe-disabled', () => app.callFunction({ name: 'xiaoying-gifts-sdk-probe', data: {} }), 'disabled');
+    await check('cleanup-client-denied', () => app.callFunction({ name: 'xiaoying-gifts-cleanup', data: {} }), 'deny');
+    await check('http-api-function-client-denied', () => app.callFunction({ name: 'xiaoying-gifts-api', data: {} }), 'deny');
+    const id = 'qa_acl_' + crypto.randomUUID();
+    for (const collection of ['xiaoying_gifts','xiaoying_limits']) {
+      await check(collection + '-read-denied', () => app.database().collection(collection).doc(id).get(), 'deny');
+      await check(collection + '-write-denied', () => app.database().collection(collection).doc(id).set({ syntheticAclProbe: true }), 'deny');
+    }
+    await check('storage-upload-denied', () => app.uploadFile({ cloudPath: 'qa-acl/' + id + '.txt', filePath: new File(['synthetic boundary probe'], 'probe.txt', { type: 'text/plain' }) }), 'deny');
+    results.push({ name: 'boundary-sequence-complete', passed: true }); show();
+  } catch(e: any) { results.push({ name: 'stopped', code: e.code, message: String(e.message || e).slice(0,240) }); show(); }
+});
+show();

@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-09-23T15:52:08.196Z",
+  "RequestId": "69cba5b5-ca37-4a88-8f00-2c7b24f366f0",
+  "Data": {
+    "SystemRoles": [
+      {
+        "RoleName": "匿名用户",
+        "Description": "使用匿名登录的用户",
+        "Policies": [
+          {
+            "ResourceName": "所有应用",
+            "IsBindAllAccess": true,
+            "Resource": "*",
+            "ResourceType": "app",
+            "Effect": "allow"
+          },
+          {
+            "ResourceName": "所有APIs",
+            "IsBindAllAccess": true,
+            "Resource": "*",
+            "ResourceType": "apis",
+            "Effect": "allow"
+          }
+        ],
+        "RoleIdentity": "anonymousUser",
+        "RoleId": "2102603300676202498",
+        "Members": []
+      }
+    ],
+    "CustomRoles": [],
+    "TotalCount": 1,
+    "CustomTotalCount": 0
+  }
+}

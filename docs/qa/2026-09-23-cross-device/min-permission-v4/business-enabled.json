@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-09-23T16:09:05.047Z",
+  "requestId": "85142725-53ee-4cc6-84f2-4a748b1befc0",
+  "FunctionName": "xiaoying-gifts-sdk-probe",
+  "Handler": "index.sdk",
+  "Status": "Active",
+  "Environment": {
+    "Variables": [
+      {
+        "Key": "GIFT_ENV_ID",
+        "Value": "env-d1g2bv5sn355fc36e"
+      },
+      {
+        "Key": "GIFT_SDK_ENABLED",
+        "Value": "true"
+      }
+    ]
+  }
+}

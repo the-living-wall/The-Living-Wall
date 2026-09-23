@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-09-23T15:52:12.692Z",
+  "RequestId": "c05d2f7c-a424-4bff-938a-81953380d557",
+  "Data": {
+    "RemovedPolicies": [
+      {
+        "ResourceName": "所有应用",
+        "IsBindAllAccess": true,
+        "Resource": "*",
+        "ResourceType": "app",
+        "Effect": "allow"
+      },
+      {
+        "ResourceName": "所有APIs",
+        "IsBindAllAccess": true,
+        "Resource": "*",
+        "ResourceType": "apis",
+        "Effect": "allow"
+      }
+    ],
+    "Success": true
+  }
+}

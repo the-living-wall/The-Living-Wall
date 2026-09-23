@@ -1,0 +1,12 @@
+{
+  "started": "2026-09-23T20:11:00.502Z",
+  "finished": "2026-09-23T20:12:17.967Z",
+  "status": "failed",
+  "calls": 144,
+  "counts": {
+    "404": 144
+  },
+  "error": "Limit not reached within bounded probe",
+  "diagnosis": "Four-concurrency aligned probe delayed past minute boundary; no observed 429. No further load retries.",
+  "lastRequestId": "fc6595b7-21be-4059-aca7-653f45dab01a"
+}

@@ -1,0 +1,6 @@
+{
+  "recordedAt": "2026-09-23T15:59:15.388Z",
+  "AclTag": "CUSTOM",
+  "RequestId": "da1f73d6-efd5-4015-9efd-b27525bd112b",
+  "Rule": "{\"read\":true,\"write\":\"auth != null && auth.loginType != 'ANONYMOUS' && (resource.openid == auth.openid || resource.openid == auth.uid)\"}"
+}

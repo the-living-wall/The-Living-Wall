@@ -1,0 +1,17 @@
+{
+  "source": "real Chrome browser http://127.0.0.1:4194; DOM results",
+  "anonymousSession": true,
+  "checks": [
+    {"name":"named-probe-disabled","status":503,"passed":true,"requestId":"9d571b56-4088-4bbd-a285-c5bffa85e25a"},
+    {"name":"cleanup-client-denied","code":"EXCEED_AUTHORITY","passed":true,"requestId":"b1d77be9-ab65-4a2c-e213-4fb1d4e333d0"},
+    {"name":"http-api-function-client-denied","code":"EXCEED_AUTHORITY","passed":true,"requestId":"9717a8a7-b1e0-43a7-a0ab-2e08bdbb1e07"},
+    {"name":"xiaoying_gifts-read-denied","code":"DATABASE_PERMISSION_DENIED","passed":true,"requestId":"7c845a76-9e2a-46db-a3c7-24c25379f0ec"},
+    {"name":"xiaoying_gifts-write-denied","code":"DATABASE_PERMISSION_DENIED","passed":true,"requestId":"1b92cb72-3d6b-4159-8945-f2422ca86c6f"},
+    {"name":"xiaoying_limits-read-denied","code":"DATABASE_PERMISSION_DENIED","passed":true,"requestId":"39888188-70ba-4d96-d7b6-f2e5185aa042"},
+    {"name":"xiaoying_limits-write-denied","code":"DATABASE_PERMISSION_DENIED","passed":true,"requestId":"0a6e24ec-957a-4689-c4a5-0fca7d970a0d"},
+    {"name":"storage-upload-denied","passed":false,"requestId":"53599b26-49a6-4cae-d5f3-26f7183b329f"}
+  ],
+  "unexpectedUpload": {"key":"qa-acl/qa_acl_0a94bffc-d651-4d3c-a3e5-d08e2bd14354.txt","size":24,"lastModified":"2026-09-23T15:56:44.000Z","content":"synthetic boundary probe"},
+  "response": "Stopped before business enable; AnonymousLogin reverted to false",
+  "disableLoginRequestId": "9b82129c-4def-4edb-9d7d-5c84a668ba12"
+}

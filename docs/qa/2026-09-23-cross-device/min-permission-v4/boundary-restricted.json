@@ -1,0 +1,19 @@
+{
+  "source":"real Chrome DOM at http://127.0.0.1:4194 using SDK 3.10.1 GATEWAY",
+  "anonymousSession":true,
+  "checks":[
+    {"name":"named-probe-disabled","status":503,"requestId":"600408cf-b002-405f-f816-74e315afb39c"},
+    {"name":"cleanup-client-denied","code":"EXCEED_AUTHORITY","requestId":"bacc2835-67d9-4f53-9460-3e289a8c9aec"},
+    {"name":"http-api-function-client-denied","code":"EXCEED_AUTHORITY","requestId":"07fc2598-8e35-4e30-ff67-4587caab3599"},
+    {"name":"xiaoying_gifts-read-denied","code":"DATABASE_PERMISSION_DENIED","requestId":"00544df6-1203-4d83-cbdd-e142e83fbf73"},
+    {"name":"xiaoying_gifts-write-denied","code":"DATABASE_PERMISSION_DENIED","requestId":"d3472810-a9bf-4750-a96a-77ad7ba1af09"},
+    {"name":"xiaoying_limits-read-denied","code":"DATABASE_PERMISSION_DENIED","requestId":"f657851b-3a61-4f1f-bb87-f9fa9bbcb5d3"},
+    {"name":"xiaoying_limits-write-denied","code":"DATABASE_PERMISSION_DENIED","requestId":"6f7a232c-ab45-48d8-dda3-e81fff18fbe6"},
+    {"name":"storage-upload-denied","message":"[@cloudbase/js-sdk][STORAGE_EXCEED_AUTHORITY][storage]:Insufficient permissions to access target resource."}
+  ],
+  "noCredentials":{"code":"MISSING_CREDENTIALS","requestId":"9fae3c3a-93e2-4bb6-adbb-f1889e6948b6"},
+  "syntheticUploadCleanup":{"deletedCount":1,"prefixListAfterCount":0},
+  "wrongOrigin":{"origin":"http://127.0.0.1:4195","anonymousSession":true,"namedProbeStatus":503,"requestId":"53a00189-a9a1-49fe-9cbc-dd2de5220f9f","expectedDenied":true,"passed":false},
+  "overallPassed":false,
+  "note":"Resource checks passed after storage restriction; source restriction failed, so business enable remains blocked."
+}

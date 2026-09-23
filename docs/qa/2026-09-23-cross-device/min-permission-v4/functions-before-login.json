@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-09-23T15:55:46.796Z",
+  "RequestId": "6749a675-78b8-4e6f-8d54-46c9bfba9d4f",
+  "Data": {
+    "TotalCount": 1,
+    "PermissionList": [
+      {
+        "Resource": "",
+        "Permission": "CUSTOM",
+        "ResourceType": "function",
+        "SecurityRule": "{\"*\":{\"invoke\":\"auth != null && auth.loginType != 'ANONYMOUS'\"},\"xiaoying-gifts-cleanup\":{\"invoke\":false},\"xiaoying-gifts-sdk-probe\":{\"invoke\":\"auth != null\"}}"
+      }
+    ]
+  }
+}

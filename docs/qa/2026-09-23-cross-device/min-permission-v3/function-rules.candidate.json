@@ -1,0 +1,5 @@
+{
+  "*": { "invoke": "auth != null && auth.loginType != 'ANONYMOUS'" },
+  "xiaoying-gifts-cleanup": { "invoke": false },
+  "xiaoying-gifts-sdk-probe": { "invoke": "auth != null" }
+}

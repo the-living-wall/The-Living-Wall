@@ -1,0 +1,24 @@
+✔ CloudBase: creation/claim retries and concurrent claims preserve separate credentials (2.447666ms)
+✔ CloudBase: two writers, idempotency and exact-version joint confirmation (0.964709ms)
+✔ CloudBase: expiry and cleanup remove dialogue, credentials and operation summaries (0.436917ms)
+✔ CloudBase: distributed rate limit survives creating another function instance (1.333208ms)
+✔ CloudBase HTTP: origin, base64 body, auth, no secrets and no SDK invocation bypass (0.425709ms)
+✔ SDK boundary: no event-supplied identity, narrow routes, size limit and secret redaction (0.948666ms)
+✔ SDK contract: 安静陪伴, two credentials, concurrent writes, snapshots and retry (1.118791ms)
+✔ SDK contract: 轻松打趣, two credentials, concurrent writes, snapshots and retry (0.79925ms)
+✔ SDK contract: 共同约定, two credentials, concurrent writes, snapshots and retry (0.4875ms)
+✔ SDK transport: lazy load, shared login, fixed function payload, refresh rechecks session (7.748125ms)
+✔ SDK transport: failed import/login retries without fallback or invoking while unauthenticated (0.709084ms)
+✔ SDK transport: platform errors are sanitized, business conflict is distinct, malformed responses reject (0.640709ms)
+✔ SDK transport: timeout preserves identical request for idempotent retry, late response is ignored (10.615875ms)
+✔ HTTP transport: non-JSON 429 and 403 are recoverable, errors cannot leak platform body (15.215791ms)
+✔ SDK runtime entry: disabled by default, per-invocation context only, no residual identity (1.686625ms)
+✔ SDK transport: timed-out login does not later submit; a new attempt can recover (13.790708ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 131.857333
