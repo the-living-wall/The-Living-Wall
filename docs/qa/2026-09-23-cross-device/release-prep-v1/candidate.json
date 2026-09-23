@@ -1,0 +1,30 @@
+{
+  "candidate": "6ad2092619a2bda4d15c060b8de52f3eb5ca7215",
+  "main": "69b1bd52b9c2bedb0bfa187a0a73729d6a983879",
+  "published": false,
+  "note": "Browser run began at merge 850ca8f with the compatibility fix and QA additions uncommitted; tested app files equal candidate 6ad2092. Documentation was still being written. Cloud bundle build manifest retains its original dirty-state record.",
+  "files": {
+    "package.json": "bc10978573eedd400c65c6ca5d9843944e2ad0e054ca2fe005672b83695468e9",
+    "prototypes/live-gift/SoundControls.tsx": "096812df35d0d141cf6412732498468117f67e3d748eabba459f9f7eb613d3db",
+    "prototypes/live-gift/qa-cross-device.mjs": "ef8c1098e0b0ee7ad78becb005d9f6a6fd4064154dc569df9efe63e515aff1c8",
+    "lib/creature-audio.ts": "b47b048c3c9067138c4b62c7750caab19a9a3127ed23c3f4528d646f0d361ea8",
+    "lib/sound-state.ts": "d853367a257d85214be68d6989a5aebe71832034ab7cdc8ce64727aa45954f7b",
+    "app/globals.css": "ab27cb3b917c56f25bb383585401d60065656d535e15659212941d2e5dd4adc4",
+    "app/showcase/page.tsx": "5a2e519405e637afeeb3ba6b10fafd442dab318f0cbe8bc4ce8e7182a12329a9",
+    "app/sound-controls.tsx": "af13e1ea3d90d7d3650424bada8a4a00980741fed02a3a747936eb7f8d2e022a"
+  },
+  "artifacts": {
+    "outputs/gifts/site/index.html": "2754f6f6553e814283e4d9d5531b17ad7d3afebce08dd34eb19228bd158c7488",
+    "outputs/gifts/site/audio/credits.html": "7753301c0cd779a7753b897045427330ab262e68bb7cb9183b079227c9ba7da2",
+    "outputs/gifts/site/mediapipe/vision_wasm_nosimd_internal.js": "927def7b465c51b86e4b3060f93646aca4e27121f4b8fc0483786e407ea9cf1f",
+    "outputs/gifts/site/mediapipe/vision_wasm_internal.js": "4a97e2520ba506c680ecd6ba6acfb146888afa0e2746d57f205352bc6ebb82eb",
+    "outputs/gifts/site/assets/vision_bundle-BFQ1pYnD.js": "018fe08cd723f4d0d9d7025359be9e66753745e16d90e4429e85195b459e95a9",
+    "outputs/gifts/site/assets/index-iYB9M_La.css": "b532d8310f740437b7ab1efb6ba7d42086c1949dab1ef120245318a5908f6d3a",
+    "outputs/gifts/site/assets/index-B33j-qKt.js": "a267b2a8187c5a26e48284040aee73a0d2a51acb74e127614b712499082b64b9",
+    "outputs/gifts/cloudbase/index.js": "7b74a91287f57412a9b0863f8421dfbd2fc700ad5552aa5c629245140db199ad",
+    "outputs/gifts/cloudbase/package-lock.json": "0ab981c83bd17e569073f8838b9f58c9f0883da6fb006afe21c30614933aaa24",
+    "outputs/gifts/cloudbase/package.json": "7bb599cafe050f8ded75eebe9b0a688ad88b9d5f1c0a164de25c48394bc3b292",
+    "outputs/gifts/cloudbase/manifest.json": "cc0fa7c9cbb06cf3b92087296000e03f6cd42f3a76422a1ccd3770222360d054",
+    "outputs/gifts/cloudbase/service.cjs": "beb2147d112840298127fb7795c9467459511964ab1376043155c800a37eb075"
+  }
+}
