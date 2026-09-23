@@ -1,0 +1,44 @@
+{
+  "started": "2026-09-23T04:58:07.359Z",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "checks": [
+    {
+      "name": "create-idempotency",
+      "status": "passed"
+    },
+    {
+      "name": "concurrent-claim-and-retry",
+      "status": "passed"
+    },
+    {
+      "name": "role-and-invite-isolation",
+      "status": "passed"
+    },
+    {
+      "name": "concurrent-revision-conflict",
+      "status": "passed"
+    },
+    {
+      "name": "actor-authoritative-and-message-idempotency",
+      "status": "passed"
+    },
+    {
+      "name": "two-party-confirmation-memory-does-not-change-style",
+      "status": "passed"
+    },
+    {
+      "name": "historical-name-snapshot",
+      "status": "passed"
+    },
+    {
+      "name": "foreign-origin-rejected",
+      "status": "passed"
+    },
+    {
+      "name": "sender-delete-and-recipient-revoked",
+      "status": "passed"
+    }
+  ],
+  "status": "passed",
+  "finished": "2026-09-23T04:58:28.422Z"
+}

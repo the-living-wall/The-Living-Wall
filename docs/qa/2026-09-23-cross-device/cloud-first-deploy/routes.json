@@ -1,0 +1,80 @@
+{
+  "data": {
+    "Domains": [
+      {
+        "Domain": "env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+        "DomainType": "HTTPSERVICE",
+        "AccessType": "CDN",
+        "CertId": "",
+        "Protocol": "HTTP_AND_HTTPS",
+        "Cname": "env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com.cdn.dnsv1.com",
+        "IsDefault": true,
+        "Enable": true,
+        "Status": "SUCCESS",
+        "DNSStatus": "OK",
+        "PlatformCnameDNSStatus": "OK",
+        "Routes": [
+          {
+            "Path": "/",
+            "PathRewrite": {},
+            "UpstreamResourceType": "STATIC_STORE",
+            "UpstreamResourceName": "staticstore",
+            "EnableSafeDomain": true,
+            "EnableAuth": false,
+            "EnablePathTransmission": false,
+            "QPSPolicy": {},
+            "Enable": true,
+            "CreateTime": "2026-09-23T12:50:36+08:00",
+            "UpdateTime": "2026-09-23T12:50:36+08:00"
+          }
+        ],
+        "CreateTime": "2026-09-23T11:37:49+08:00",
+        "UpdateTime": "2026-09-23T12:48:38+08:00"
+      },
+      {
+        "Domain": "*",
+        "DomainType": "HTTPSERVICE",
+        "AccessType": "NONE",
+        "CertId": "",
+        "Protocol": "HTTP_AND_HTTPS",
+        "Cname": "",
+        "IsDefault": false,
+        "Enable": true,
+        "Status": "SUCCESS",
+        "DNSStatus": "OK",
+        "PlatformCnameDNSStatus": "OK",
+        "Routes": [
+          {
+            "Path": "/api",
+            "PathRewrite": {},
+            "UpstreamResourceType": "SCF",
+            "UpstreamResourceName": "xiaoying-gifts-api",
+            "EnableSafeDomain": true,
+            "EnableAuth": false,
+            "EnablePathTransmission": true,
+            "QPSPolicy": {
+              "QPSTotal": 10,
+              "QPSPerClient": {
+                "LimitBy": "ClientIP",
+                "LimitValue": 5
+              }
+            },
+            "Enable": true,
+            "CreateTime": "2026-09-23T12:42:22+08:00",
+            "UpdateTime": "2026-09-23T12:48:38+08:00"
+          }
+        ],
+        "CreateTime": "2026-09-23T11:37:49+08:00",
+        "UpdateTime": "2026-09-23T12:48:38+08:00"
+      }
+    ],
+    "OriginDomain": "env-d1g2bv5sn355fc36e.tcbaccess-in.tencentcloudbase.com",
+    "RequestId": "2ccce4b2-a2f1-4396-b79a-b0186e5d912f",
+    "TotalCount": 2
+  },
+  "meta": {
+    "total": 2,
+    "limit": 20,
+    "offset": 0
+  }
+}

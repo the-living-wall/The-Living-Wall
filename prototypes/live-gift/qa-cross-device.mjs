@@ -11,9 +11,11 @@ const output =
   process.env.QA_OUTPUT || resolve('outputs/cross-device-qa/browser');
 await mkdir(output, { recursive: true });
 const data = await mkdtemp(join(tmpdir(), 'xiaoying-two-devices-'));
-const origin = 'http://127.0.0.1:4191';
+const remote = process.env.QA_ORIGIN;
+const origin = remote || 'http://127.0.0.1:4191';
 let store, server;
 const start = async () => {
+  if (remote) return;
   store = new GiftStore(join(data, 'gifts.sqlite'));
   server = giftServer(store, {
     origin,
@@ -23,6 +25,7 @@ const start = async () => {
   await new Promise((r) => server.listen(4191, '127.0.0.1', r));
 };
 const stop = async () => {
+  if (remote) return;
   await new Promise((r) => server.close(r));
   store.close();
 };
@@ -36,8 +39,21 @@ const report = {
     encoding: 'utf8',
   }).trim(),
   started: new Date().toISOString(),
+  origin,
+  mode: remote ? 'cloud-isolated-browser-contexts' : 'local-sqlite',
+  physicalDevices: false,
+  defaultDomainWarmup: process.env.QA_WARMUP_DEFAULT_DOMAIN === 'true',
   scenarios: [],
   errors: [],
+};
+const open = async (page, url) => {
+  await page.goto(url);
+  if ((await page.locator('body').innerText()).includes('页面访问提示')) {
+    await page
+      .getByRole('button', { name: '确定访问', exact: true })
+      .click({ timeout: 15000 });
+    await page.waitForLoadState('domcontentloaded');
+  }
 };
 const btn = (p, name) => p.getByRole('button', { name, exact: true });
 const appears = async (locator) =>
@@ -70,7 +86,8 @@ try {
       p.setDefaultTimeout(12000);
       p.on('pageerror', (e) => report.errors.push(e.message));
     }
-    await a.goto(origin);
+    if (process.env.QA_WARMUP_DEFAULT_DOMAIN === 'true') await open(b, origin);
+    await open(a, origin);
     await a.getByRole('button', { name: /送给朋友/ }).click();
     await a.getByLabel('写给朋友的话，也可以留白').fill(first);
     await a.getByLabel('给谁（可选）').fill('小满');
@@ -79,7 +96,7 @@ try {
     await a.getByText('分享给朋友', { exact: true }).click();
     const invite = await a.getByLabel('朋友的邀请链接').inputValue();
     assert.ok(invite.includes('#invite='));
-    await b.goto(invite);
+    await open(b, invite);
     assert.equal(
       await b.getByText(first, { exact: true }).count(),
       0,
@@ -166,7 +183,9 @@ try {
       name,
       status: 'passed',
       active,
-      restartAndOffline: index === 0,
+      offlineRetry: index === 0,
+      serverRestart: index === 0 && !remote,
+      browserReload: index === 0,
     });
   }
   assert.deepEqual(report.errors, []);
@@ -174,6 +193,23 @@ try {
 } catch (e) {
   report.status = 'failed';
   report.error = String(e);
+  for (const [i, context] of browser.contexts().entries()) {
+    for (const [j, page] of context.pages().entries()) {
+      await page
+        .screenshot({
+          path: join(output, `failure-${i}-${j}.png`),
+          fullPage: true,
+        })
+        .catch(() => {});
+      await writeFile(
+        join(output, `failure-${i}-${j}.txt`),
+        await page.locator('body').innerText(),
+      );
+    }
+    await context.tracing
+      .stop({ path: join(output, `failure-${i}-trace.zip`) })
+      .catch(() => {});
+  }
   throw e;
 } finally {
   await writeFile(

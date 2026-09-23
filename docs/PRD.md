@@ -210,4 +210,4 @@ UI-01～03 原型进度（Refs #69）：独立原型源码见 `prototypes/quiet-
 
 代码实现和本地双浏览器验证不代表公网部署完成。用户已澄清仅确认腾讯云域名购买，尚未确认拥有云服务器；公网优先评估托管函数与事务数据库，未创建付费资源。上段删除规则是当前本地实现和目标约定；托管平台备份保留需核实，未核实前不宣称上云后可满足同样承诺。腾讯云入口和真人手机验收以 Issue/PR 发布记录为准；原 Pages 内存演示与正式站保持原状。账号、AI、站外通知、微信小程序不在本次范围。规格见 [cross-device-gifts](../openspec/changes/cross-device-gifts/proposal.md)，部署说明见 [独立服务](../services/gifts/README.md)。
 
-后续环境核对：用户已自行创建 `the-living-wall` 独立个人版环境，截图显示自带共享文档数据库且集合为空；不使用其另一个 `ai-future-letter` 项目，不另开 MySQL 或重新购买 PostgreSQL。后台已新增 CloudBase 文档数据库适配与普通云函数构建包，本地契约测试覆盖并发认领、幂等、双方确认、期限清理及跨函数实例限流。真实云事务、客户端权限、同源网关、定时器和备份边界仍待部署验收；参见 [CloudBase 部署说明](../services/gifts/cloudbase/README.md)。
+2026-09-23 后续部署：用户自行创建的 `the-living-wall` 独立个人版环境已部署文档数据库、消息云函数、每分钟清理函数和同源测试页面；源提交 `7e30d0b`。三个真实云端双浏览器场景及九项接口检查通过，清理探针已自动移除。个人成长、生产站和旧 Pages 演示未变。用户接受当前最小测试入口：双方先打开首页确认腾讯云访问提示，再在同一浏览器打开邀请；首次直接打开邀请会丢失凭证，尚未修复为一次点击直达。只用虚构内容联调；平台备份保留、静态完整安全响应头、实际两台设备及函数实例切换等仍待验收。详细步骤、失败证据、限制与回退见 [首次云端部署记录](qa/2026-09-23-cross-device/cloud-first-deploy/README.md)。不使用另一个 `ai-future-letter` 项目，不另开 MySQL 或购买 PostgreSQL；参见 [CloudBase 部署说明](../services/gifts/cloudbase/README.md)。
