@@ -54,7 +54,7 @@ npx vite build --config prototypes/live-gift/vite.config.mts
 
 管理分层：`shared-state.ts` 管共同确认与记录；`temperaments.ts` 管固定版本表现目录；`SharedExperience.tsx` 管编辑/试看；原 `Creature` 管个人陪伴基础规则。新增方案须新增版本键，不原地改旧版本语义。三套 v2 表现为持续可见的光弧、伴随碎光与探光；首帧、普通靠近/抚摸都保留特征，休息/受惊/恢复和减少动态时呈现静态特征。v1 定义不变用于历史恢复；没有实现完整行为性格。
 
-实际规范见 `openspec/changes/shared-shaping-prototype/`，产品索引 PRD CO-01～08；自动测试不能替代三种表现可辨识、审美和流程理解的人工体验验收。当前不合并、不部署。
+实际规范见 `openspec/changes/shared-shaping-prototype/`，产品索引 PRD CO-01～08；自动测试不能替代三种表现可辨识、审美和流程理解的人工体验验收。当前保持 Draft；独立测试站发布不代表合并或正式站上线。
 
 ## #76 验证记录
 
@@ -86,3 +86,14 @@ npx vite build --config prototypes/live-gift/vite.config.mts
 浏览器回归：`node prototypes/live-gift/qa.mjs`；三场景：`node prototypes/live-gift/qa-scenarios.mjs`；真实鼠标互动录制：`node prototypes/live-gift/qa-interaction.mjs`。均可用 QA_OUTPUT 指定新目录。互动脚本只通过现有只读状态接口观察，不注入生物状态；保存画布视频、页面截图和状态采样。
 
 最终结果：被测实现 2807bca，83 项单测、typecheck/lint/build/独立构建、OpenSpec 8/8、三场景、桌面与四种窄屏回归及三种表现真实鼠标互动录制全部通过。[查看本轮证据与失败修复记录](../../docs/qa/2026-09-23-shared-experience/README.md)。审美、手机真机及听感仍待用户验收。
+
+## 独立测试站发布（2026-09-23）
+
+用户明确授权发布独立测试链接。使用本仓库 GitHub Pages，发布产物分支 `livehighhigh/76-preview-site`，不修改腾讯云正式站与域名。此分支只保存可回退的静态构建产物，不是应用开发分支。部署版本、地址和检查结果在 Issue #76 / PR #77 记录。
+
+```sh
+npm run setup:assets
+PREVIEW_BASE=/The-Living-Wall/ npx vite build --config prototypes/live-gift/vite.config.mts --outDir /private/tmp/xiaoying-pages-build
+```
+
+只在独立原型构建时适配声音、署名和摄像头模型的子目录路径；原站源码及行为保持不变。测试站有公开地址，内容与共同塑造仍只在访问者当前页面内存中，刷新清空，不能跨设备互发消息。没有登录、数据库、通知或正式站发布。首次部署无旧版本；可停用 Pages 撤下，后续可重新发布上一产物提交回退。
