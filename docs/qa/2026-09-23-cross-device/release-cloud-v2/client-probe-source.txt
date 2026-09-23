@@ -1,0 +1,17 @@
+import cloudbase from '@cloudbase/js-sdk';
+const app=cloudbase.init({env:'env-d1g2bv5sn355fc36e',region:'ap-shanghai'});
+const id='release-permission-v2-20260923';
+const out=document.querySelector('pre');
+document.querySelector('button').onclick=async()=>{
+ const report={sdk:'3.10.1',mode:'browser-no-login',id,checks:[]};
+ const cases=[...['xiaoying_gifts','xiaoying_limits'].flatMap(name=>[
+ [name+' read probe',()=>app.database().collection(name).doc(id).get()],
+ [name+' write probe',()=>app.database().collection(name).doc(id).set({releasePermissionProbe:true})]
+ ]),['cleanup non-Timer invoke',()=>app.callFunction({name:'xiaoying-gifts-cleanup',data:{releasePermissionProbe:true}})]];
+ for(const [name,run] of cases){
+  try{const r=await run();report.checks.push({name,status:'unexpected-return',code:r?.code});}
+  catch(e){report.checks.push({name,status:'rejected',code:e.code||null,message:String(e?.message || e?.error_description || e).slice(0,350)});}
+  out.textContent=JSON.stringify(report,null,2);
+ }
+ report.finished=new Date().toISOString();out.textContent=JSON.stringify(report,null,2);
+};

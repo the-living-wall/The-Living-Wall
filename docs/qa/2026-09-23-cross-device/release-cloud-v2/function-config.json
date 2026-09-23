@@ -1,0 +1,9 @@
+{
+  "functionName": "xiaoying-gifts-api",
+  "handler": "index.main",
+  "runtime": "Nodejs20.19",
+  "logType": "normal",
+  "clsLogsetId": "",
+  "clsTopicId": "",
+  "requestId": "5d83a7ab-b655-4561-bc27-ed0b61b2df08"
+}

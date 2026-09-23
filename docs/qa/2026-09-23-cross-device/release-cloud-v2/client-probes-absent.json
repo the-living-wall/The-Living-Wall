@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-09-23T11:06:52.975Z",
+  "ids": [
+    "release-permission-a8c0c560-0a07-4f55-af02-493b6796e5e0",
+    "release-permission-v2-20260923"
+  ],
+  "checks": [
+    {
+      "collection": "xiaoying_gifts",
+      "rows": [],
+      "requestId": "43fc0e84-9687-496d-9b76-f87b7c4dca73"
+    },
+    {
+      "collection": "xiaoying_limits",
+      "rows": [],
+      "requestId": "326a9ecd-cfb7-4ac4-992d-b9680ba8e26c"
+    }
+  ]
+}

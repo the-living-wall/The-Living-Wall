@@ -1,0 +1,10 @@
+{
+  "data": [],
+  "meta": {
+    "total": 0,
+    "nextSteps": [
+      "tcb hosting download <cloudPath> [localPath]",
+      "tcb hosting delete <cloudPath> [--dir]"
+    ]
+  }
+}
