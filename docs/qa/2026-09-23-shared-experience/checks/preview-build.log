@@ -1,0 +1,11 @@
+vite v8.0.13 building client environment for production...
+[2K
+transforming...✓ 65 modules transformed.
+rendering chunks...
+computing gzip size...
+../xiaoying-v2-preview-build/index.html                          0.37 kB │ gzip:  0.30 kB
+../xiaoying-v2-preview-build/assets/index-BoLJaYk0.css         202.27 kB │ gzip: 31.78 kB
+../xiaoying-v2-preview-build/assets/vision_bundle-BFQ1pYnD.js  135.27 kB │ gzip: 39.86 kB
+../xiaoying-v2-preview-build/assets/index-BVCsAhzB.js          294.56 kB │ gzip: 96.88 kB
+
+✓ built in 163ms

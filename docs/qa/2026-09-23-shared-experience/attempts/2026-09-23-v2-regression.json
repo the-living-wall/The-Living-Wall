@@ -1,0 +1,12 @@
+{
+  "startedAt": "2026-09-23T01:02:28.971Z",
+  "target": "http://127.0.0.1:4180/",
+  "commit": "6c958d9f4c8a3a4e06745c422d0355c1be4b9efc",
+  "results": [
+    "统一表达区域、替换保护、返回保留、四种窄屏布局、称呼和朋友页无成长面板"
+  ],
+  "errors": [],
+  "status": "failed",
+  "failure": "locator.fill: Error: strict mode violation: getByLabel('我的称呼') resolved to 2 elements:\n    1) <dialog open=\"\" aria-label=\"修改我的称呼\" class=\"shared-editor\">…</dialog> aka getByRole('dialog', { name: '修改我的称呼' })\n    2) <textarea rows=\"2\" id=\"shared-draft\">阿禾</textarea> aka getByRole('textbox', { name: '我的称呼' })\n\nCall log:\n\u001b[2m  - waiting for getByLabel('我的称呼')\u001b[22m\n\n    at /private/tmp/xiaoying-shared-shaping/prototypes/live-gift/qa.mjs:90:65",
+  "finishedAt": "2026-09-23T01:02:32.795Z"
+}
