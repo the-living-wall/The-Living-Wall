@@ -341,7 +341,14 @@ export default function OnlineApp() {
 }
 
 export function ConnectionPanel({ connection: c }: { connection: Connection }) {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  );
+  const manualLink = useRef<HTMLDetailsElement>(null);
+  const linkInput = useRef<HTMLInputElement>(null);
+  const friendReplied = c.view?.state.messages.some(
+    (message) => message.actor === 'friend',
+  );
   return (
     <div className="connection-panel">
       {c.view ? (
@@ -351,29 +358,47 @@ export function ConnectionPanel({ connection: c }: { connection: Connection }) {
             。此浏览器保留你的访问凭证。
           </p>
           {c.invitation && (
-            <details>
-              <summary>分享给朋友</summary>
-              <p>请只发给一位朋友，首次接受后绑定其浏览器。</p>
-              <input
-                aria-label="朋友的邀请链接"
-                readOnly
-                value={c.invitation}
-                onFocus={(e) => e.target.select()}
-              />
+            <section className="gift-share" aria-label="把心意分享给朋友">
+              <output className="gift-share-status">
+                {friendReplied
+                  ? '朋友已回复，可以在下方继续聊。'
+                  : '心意已创建，把邀请链接发给朋友吧。'}
+              </output>
               <button
-                className="gift-text"
+                className="gift-text gift-send"
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(c.invitation);
-                    setCopied(true);
+                    setCopyState('copied');
                   } catch {
-                    setCopied(false);
+                    setCopyState('failed');
+                    if (manualLink.current) manualLink.current.open = true;
+                    linkInput.current?.focus();
+                    linkInput.current?.select();
                   }
                 }}
               >
-                {copied ? '已复制链接' : '复制邀请链接'}
+                复制邀请链接 ↗
               </button>
-            </details>
+              <output>
+                {copyState === 'copied'
+                  ? '链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。'
+                  : copyState === 'failed'
+                    ? '没能自动复制，请长按或选中下方完整链接，手动复制。'
+                    : '复制后发给一位朋友，对方打开并接受，就能与你留言。'}
+              </output>
+              <details ref={manualLink}>
+                <summary>手动复制链接</summary>
+                <p>请复制这里的完整邀请链接，地址栏的网址不能用来邀请。</p>
+                <input
+                  ref={linkInput}
+                  aria-label="朋友的邀请链接"
+                  readOnly
+                  value={c.invitation}
+                  onFocus={(e) => e.target.select()}
+                />
+              </details>
+            </section>
           )}
           {c.view.actor === 'sender' && (
             <details>

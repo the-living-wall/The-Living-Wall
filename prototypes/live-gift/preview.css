@@ -616,3 +616,10 @@
 .connection-panel button { display: block; margin-top: 10px; }
 .connection-panel input { width: 100%; background: transparent; color: #dce7e3; border: 0; border-bottom: 1px solid #35413d; padding: 8px 0; }
 .connection-panel [role=alert], .online-entry [role=alert] { color: #e4cbaa; }
+
+.connection-panel .gift-share { margin: 20px 0; }
+.connection-panel .gift-share-status { color: #c8d8cd; }
+.connection-panel .gift-share > button { font-size: 17px; min-height: 44px; }
+.connection-panel .gift-share summary { font-size: 12px; color: #97a5a3; }
+
+.connection-panel .gift-share output { display: block; margin: 10px 0; }

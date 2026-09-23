@@ -93,8 +93,70 @@ try {
     await a.getByLabel('给谁（可选）').fill('小满');
     await a.getByLabel('你的落款（可选）').fill('阿禾');
     await a.getByRole('button', { name: /生成分享链接/ }).click();
-    await a.getByText('分享给朋友', { exact: true }).click();
-    const invite = await a.getByLabel('朋友的邀请链接').inputValue();
+    const copyButton = btn(a, '复制邀请链接 ↗');
+    await appears(copyButton);
+    await appears(
+      a.getByText('心意已创建，把邀请链接发给朋友吧。', { exact: true }),
+    );
+    assert.equal(await a.getByLabel('朋友的邀请链接').isVisible(), false);
+    await sender.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await a.bringToFront();
+    await copyButton.click();
+    await appears(
+      a.getByText('链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。', {
+        exact: true,
+      }),
+    );
+    const invite = await a.evaluate(() => navigator.clipboard.readText());
+    assert.equal(invite, await a.getByLabel('朋友的邀请链接').inputValue());
+    await a.screenshot({
+      path: join(folder, 'share-desktop.png'),
+      fullPage: true,
+    });
+    await a.setViewportSize({ width: 390, height: 844 });
+    await a.screenshot({
+      path: join(folder, 'share-mobile.png'),
+      fullPage: true,
+    });
+    assert.ok(
+      await a.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    );
+    if (index === 0) {
+      await a.evaluate(() => {
+        Object.defineProperty(navigator.clipboard, 'writeText', {
+          configurable: true,
+          value: () =>
+            Promise.reject(
+              new DOMException('Clipboard denied', 'NotAllowedError'),
+            ),
+        });
+      });
+      await copyButton.click();
+      await appears(
+        a.getByText('没能自动复制，请长按或选中下方完整链接，手动复制。', {
+          exact: true,
+        }),
+      );
+      await appears(a.getByLabel('朋友的邀请链接'));
+      assert.equal(
+        await a
+          .getByText('链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。', {
+            exact: true,
+          })
+          .count(),
+        0,
+      );
+      assert.equal(await a.getByLabel('朋友的邀请链接').inputValue(), invite);
+      await a.screenshot({
+        path: join(folder, 'copy-fallback.png'),
+        fullPage: true,
+        mask: [a.getByLabel('朋友的邀请链接')],
+      });
+      await a.getByText('手动复制链接', { exact: true }).click();
+    }
+    await a.setViewportSize({ width: 1280, height: 850 });
     assert.ok(invite.includes('#invite='));
     await open(b, invite);
     assert.equal(
@@ -108,6 +170,9 @@ try {
     assert.equal(await b.getByLabel('体验身份', { exact: true }).count(), 0);
     await say(b, second);
     await appears(a.getByText(second, { exact: true }));
+    await appears(
+      a.getByText('朋友已回复，可以在下方继续聊。', { exact: true }),
+    );
     if (index === 0) {
       await friend.setOffline(true);
       await btn(b, '回一句给朋友').click();
@@ -186,6 +251,9 @@ try {
       offlineRetry: index === 0,
       serverRestart: index === 0 && !remote,
       browserReload: index === 0,
+      visibleCopyAndClipboard: true,
+      copyFailureFallback: index === 0,
+      replyStatusFromMessage: true,
     });
   }
   assert.deepEqual(report.errors, []);
