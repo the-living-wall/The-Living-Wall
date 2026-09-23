@@ -1,0 +1,9 @@
+{
+  "Status": "Active",
+  "ModTime": "2026-09-24 05:57:29",
+  "IgnoreSysLog": true,
+  "LogType": "normal",
+  "LogFormat": "tcb-default",
+  "Handler": "index.sdk",
+  "RequestId": "37e96750-1525-4678-ae36-5a4a2a124360"
+}

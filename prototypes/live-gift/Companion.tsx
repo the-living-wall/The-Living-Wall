@@ -488,7 +488,9 @@ export default function Companion({
         </div>
         {connection && import.meta.env.BASE_URL === '/friends/' ? (
           // oxlint-disable-next-line next/no-html-link-for-pages -- Leave the standalone bundle with a full page navigation.
-          <a className="edition" href="/">回到个人陪伴</a>
+          <a className="edition" href="/">
+            回到个人陪伴
+          </a>
         ) : (
           <span className="edition">小莹 · 把陪伴长成光</span>
         )}
@@ -782,7 +784,7 @@ export default function Companion({
       {!projection && (
         <div className="gift-preview-label">
           {connection
-            ? '跨设备测试 · 保存 7 天 · 无站外通知'
+            ? '朋友互动 · 七天到期 · 无站外通知'
             : '共同塑造预览 · 同机演示 · 刷新清空'}
         </div>
       )}

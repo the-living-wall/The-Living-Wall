@@ -1,0 +1,13 @@
+{
+  "EnvId": "env-d1g2bv5sn355fc36e",
+  "PackageId": "baas_personal",
+  "IsAutoRenew": true,
+  "EnableOverrun": false,
+  "Status": "NORMAL",
+  "ExpireTime": "2026-10-23 23:59:59",
+  "EnvQps": {
+    "QpsQuota": 500,
+    "QpsCustomLimit": -1
+  },
+  "requestId": "6926b376-cbf9-49e7-8c83-6c6839c6b8cc"
+}
