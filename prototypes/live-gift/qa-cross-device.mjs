@@ -193,6 +193,19 @@ try {
     await btn(b, '接受这份心意').click();
     await appears(b.getByText(first, { exact: true }));
     assert.equal(await b.getByLabel('体验身份', { exact: true }).count(), 0);
+    if (index === 0) {
+      // Verify the shared audio engine remains usable after main is merged.
+      // Browser activation and asset success do not certify subjective sound.
+      await btn(b, '开启声音').click();
+      await appears(btn(b, '关闭声音'));
+      await b.getByText('声音设置', { exact: true }).click();
+      await btn(b, '试听快速移动').click();
+      assert.equal(await b.getByRole('slider', { name: '互动音量' }).count(), 1);
+      await b.screenshot({ path: join(folder, 'sound-settings.png'), fullPage: true });
+      await b.getByText('声音设置', { exact: true }).click();
+      await btn(b, '关闭声音').click();
+      await appears(btn(b, '开启声音'));
+    }
     await say(b, second);
     await appears(a.getByText(second, { exact: true }));
     await appears(a.getByText('朋友已回复，可以继续聊。', { exact: true }));
@@ -301,6 +314,7 @@ try {
       unifiedConversation: true,
       retentionInFooter: true,
       homeSavedGiftClickable: index === 0,
+      soundActivationMovementPreviewAndStop: index === 0,
     });
   }
   assert.deepEqual(report.errors, []);

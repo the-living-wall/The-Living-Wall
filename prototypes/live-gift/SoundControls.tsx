@@ -23,6 +23,7 @@ const labels: Record<SoundVolumeKey, string> = {
   touch: '接触回应',
   enjoyment: '抚摸享受',
   scales: '鳞片碎响',
+  movement: '快速移动',
   rotation: '快速旋转',
   startle: '受惊 / 转场',
 };
@@ -34,6 +35,7 @@ const previewCues: Record<SoundVolumeKey, SoundCue> = {
   touch: 'touch',
   enjoyment: 'purr',
   scales: 'scales',
+  movement: 'move',
   rotation: 'roll',
   startle: 'startle',
 };
