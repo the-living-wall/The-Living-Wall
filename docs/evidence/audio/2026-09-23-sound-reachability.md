@@ -36,3 +36,9 @@
 ## 待完成
 
 用户在 localhost:3018 试听整体体验，尤其旧鳞片、旋转与呼噜的混音。通过后再按组织流程同步 main、提交 PR、验证 CI；当前没有合并、部署或关闭 Issue。手机与投影现场不在本次验收范围。
+
+## 用户验收与发布准备
+
+2026-09-23 用户完成 localhost:3018 试听并明确表示没有问题，授权合并 main 和更新腾讯云。已从最新 main 建立 3013038780-design/61-sound-reachability，单独迁移 30882e9；保留主线手机 Web Audio 激活恢复逻辑及 trust-copy 测试。
+
+同步后 npm test 为 67/67 通过，typecheck、lint、build、build:tencent 全部通过。PR CI、生产提交 SHA 与实际部署结果留在 #61 关联 PR；本记录不提前宣称上线。
