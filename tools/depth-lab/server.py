@@ -1,8 +1,5 @@
-"""Loopback-only depth laboratory. Raw frames never leave this process/localhost."""
+"""Loopback-only depth laboratory. Raw frames stay in memory/on localhost."""
 import argparse
-import os
-import select
-import struct
 import sys
 import base64
 import json
@@ -10,185 +7,246 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import threading
 import time
+import uuid
 import numpy as np
 import cv2
 from detector import Detector
+from frame_stream import LatestFrame, DepthFrame, camera_frames, read_pipe_frame
 
 ROOT = Path(__file__).resolve().parent
 
 
-def read_exact(count, stop):
-    data = bytearray()
-    while len(data) < count:
-        if stop.is_set():
-            raise ValueError('采集已停止。')
-        ready, _, _ = select.select([sys.stdin.fileno()], [], [], 1)
-        if not ready:
-            continue
-        chunk = os.read(sys.stdin.fileno(), count-len(data))
-        if not chunk:
-            raise ValueError('相机读取进程已退出；请查看启动窗口的错误提示。')
-        data.extend(chunk)
-    return data
+def encode_preview(depth):
+    visible = (depth > 100) & (depth < 5000)
+    mapped = np.clip((depth - 150) / 1850 * 255, 0, 255).astype(np.uint8)
+    rgb = cv2.applyColorMap(mapped, cv2.COLORMAP_TURBO)
+    rgb[~visible] = 0
+    return base64.b64encode(cv2.imencode('.jpg', rgb, [cv2.IMWRITE_JPEG_QUALITY, 75])[1]).decode()
 
 
 class Lab:
     def __init__(self):
         self.lock = threading.RLock()
+        self.lifecycle = threading.RLock()
+        self.detector_lock = threading.Lock()
         self.detector = Detector()
-        self.mode = 'stopped'
-        self.message = '点击连接相机，或选择明确标注的模拟模式。'
-        self.result = {}
-        self.image = None
-        self.frame_at = 0
-        self.contact = 15
-        self.sim_gap = 80
-        self.sim_object = False
+        self.mode, self.message, self.result = 'stopped', '点击连接相机，或选择明确标注的模拟模式。', {}
+        self.image, self.frame_at = None, 0
+        self.contact, self.sim_gap, self.sim_object = 15, 80, False
         self.stop = threading.Event()
         self.worker = None
+        self.threads = []
+        self.frames, self.previews = LatestFrame(), LatestFrame()
+        self.stream_id, self.frame_id = uuid.uuid4().hex, 0
+        self.source_at, self.processing_ms = None, None
+        self.device = {}
+        self.received_count = self.processed_count = self.preview_count = 0
+        self.capture_dropped = 0
+        self.first_source = self.last_source = None
+        self.first_frame_id = self.last_frame_id = 0
+        self.generation = 0
+        self.calibrate_after = 0
+        self.calibration_requested = False
+        self.roi = self.detector.roi
 
     def start(self, mode):
-        self.shutdown()
-        with self.lock:
-            self.mode = mode
-            self.detector.reset()
-            self.result = {}
-            self.image = None
-            self.frame_at = 0
-            self.message = '正在等待 Gemini 335 深度数据…' if mode in ('camera','pipe') else '模拟数据，不代表相机已连接或触摸已验证。'
-            self.stop = threading.Event()
-            self.worker = threading.Thread(target=self.run, args=(mode,self.stop), daemon=True)
-            self.worker.start()
+        with self.lifecycle:
+            self.shutdown()
+            with self.lock:
+                self.mode = mode
+                self.message = '等待真实深度流…' if mode in ('camera', 'pipe') else '模拟数据，不代表相机已连接或触摸已验证。'
+                self.stop = threading.Event()
+                self.frames, self.previews = LatestFrame(), LatestFrame()
+                self.stream_id, self.frame_id = uuid.uuid4().hex, 0
+                self.source_at, self.processing_ms, self.device = None, None, {}
+                self.received_count = self.processed_count = self.preview_count = self.capture_dropped = 0
+                self.first_source = self.last_source = None
+                self.first_frame_id = self.last_frame_id = 0
+                self.calibrate_after = 0
+                self.calibration_requested = False
+                self.threads = [threading.Thread(target=fn, args=(self.stop,), daemon=True)
+                                for fn in (lambda stop: self.acquire(mode, stop), self.process, self.preview)]
+                self.worker = self.threads[1]
+            for thread in self.threads:
+                thread.start()
 
     def shutdown(self):
-        was_pipe = self.mode == 'pipe'
-        self.stop.set()
-        if self.worker:
-            self.worker.join(timeout=4)
-            if self.worker.is_alive():
-                raise ValueError('设备仍在关闭，请稍后重试。')
-        self.worker = None
-        if was_pipe:
-            sys.stdin.close()
-        with self.lock:
-            self.mode = 'stopped'
-            self.image = None
-            self.frame_at = 0
-            self.result = {}
-            self.detector.reset()
-
-    def run(self, mode, stop):
-        pipeline = None
-        started = False
-        try:
-            if mode == 'camera':
-                from pyorbbecsdk import Context, Pipeline, Config, OBSensorType, OBFormat
-                context = Context()
-                devices = context.query_devices()
-                if devices.get_count() == 0:
-                    raise ValueError('未检测到 Orbbec 相机。请连接 USB 3 数据线，关闭其他占用相机的软件，再点连接。')
-                device = None
-                for i in range(devices.get_count()):
-                    candidate = devices.get_device_by_index(i)
-                    if '335' in candidate.get_device_info().get_name():
-                        device = candidate
-                        break
-                if device is None:
-                    raise ValueError('检测到 Orbbec 设备，但不是 Gemini 335。')
-                pipeline = Pipeline(device)
-                profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                profile = profiles.get_default_video_stream_profile()
-                if profile.get_format() != OBFormat.Y16:
-                    raise ValueError('默认深度格式不是 Y16，请使用官方工具检查设备配置。')
-                calibration = profile.get_intrinsic()
-                intr = (calibration.fx, calibration.fy, calibration.cx, calibration.cy)
-                config = Config()
-                config.enable_stream(profile)
-                pipeline.start(config)
-                started = True
-                with self.lock:
-                    self.message = 'Gemini 335 深度流已连接。固定相机，对准平整表面后校准。'
-            missed = 0
-            while not stop.is_set():
-                if mode == 'pipe':
-                    size = struct.unpack('!I', read_exact(4, stop))[0]
-                    if not 0 < size < 4096:
-                        raise ValueError('无效相机数据头。')
-                    header = json.loads(read_exact(size, stop))
-                    w, h = int(header['width']), int(header['height'])
-                    if not 0 < w <= 4096 or not 0 < h <= 4096:
-                        raise ValueError('无效深度分辨率。')
-                    depth = np.frombuffer(read_exact(w*h*4, stop), '<f4').reshape(h,w)
-                    intr = header['intrinsics']
-                    factor = 320/w
-                    depth = cv2.resize(depth,(320,round(h*factor)),interpolation=cv2.INTER_NEAREST)
-                    scaled = (intr[0]*factor,intr[1]*factor,(intr[2]+.5)*factor-.5,(intr[3]+.5)*factor-.5)
-                elif mode == 'camera':
-                    frames = pipeline.wait_for_frames(1000)
-                    frame = frames.get_depth_frame() if frames else None
-                    if frame is None:
-                        missed += 1
-                        if missed >= 3:
-                            raise ValueError('连续未收到深度帧。检查连接后重新连接，并重新校准。')
-                        continue
-                    missed = 0
-                    w,h=frame.get_width(),frame.get_height()
-                    depth=np.frombuffer(frame.get_data(),np.uint16).reshape(h,w).astype(np.float32)*frame.get_depth_scale()
-                    # Nearest-neighbor preserves missing depth instead of inventing samples.
-                    factor=320/w
-                    depth=cv2.resize(depth,(320,round(h*factor)),interpolation=cv2.INTER_NEAREST)
-                    # Pixel-centre mapping for resize.
-                    scaled=(intr[0]*factor,intr[1]*factor,(intr[2]+.5)*factor-.5,(intr[3]+.5)*factor-.5)
-                else:
-                    depth=np.full((240,320),1000,dtype=np.float32)
-                    scaled=(300.,300.,159.5,119.5)
-                    with self.lock:
-                        if self.sim_object and not self.detector.calibrating:
-                            # Connected body/arm with an independently near-wall palm.
-                            depth[65:180,85:125] -= 180
-                            depth[105:130,125:180] -= 100
-                            depth[96:142,180:207] -= self.sim_gap
-                            # A second disconnected palm.
-                            depth[65:95,215:245] -= self.sim_gap
-                    depth += np.random.default_rng().normal(0,.6,depth.shape).astype(np.float32)
-                    stop.wait(.07)
-                with self.lock:
-                    if mode == 'pipe':
-                        self.message = 'Gemini 335 真实深度流已连接（独立相机读取进程）。'
-                    self.result=self.detector.update(depth,scaled,contact=self.contact)
-                    self.frame_at=time.monotonic()
-                    visible=(depth>100)&(depth<5000)
-                    mapped=np.clip((depth-150)/1850*255,0,255).astype(np.uint8)
-                    rgb=cv2.applyColorMap(mapped,cv2.COLORMAP_TURBO)
-                    rgb[~visible]=0
-                    self.image=base64.b64encode(cv2.imencode('.jpg',rgb,[cv2.IMWRITE_JPEG_QUALITY,75])[1]).decode()
-        except Exception as exc:
+        with self.lifecycle:
+            was_pipe = self.mode == 'pipe'
+            self.stop.set()
+            self.frames.close()
+            self.previews.close()
             with self.lock:
-                self.message = (
-                    '相机已检测到，但 macOS 拒绝打开 USB 视频接口。请从 Mac 终端启动测试台后重试；若仍失败，需要进一步处理设备访问权限。错误：' + str(exc)
-                    if 'uvc_open' in str(exc) and 'Code: -3' in str(exc)
-                    else f'{type(exc).__name__}: {exc}'
-                )
-                self.result={'state':'error'}
-                self.mode='error'
-                self.image=None
-                self.frame_at=0
+                self.generation += 1
+                self.mode, self.result, self.image, self.frame_at = 'stopped', {}, None, 0
+                self.source_at = None
+            for thread in self.threads:
+                thread.join(timeout=4)
+            if any(thread.is_alive() for thread in self.threads):
+                raise ValueError('设备仍在关闭，请稍后重试。')
+            self.threads, self.worker = [], None
+            if was_pipe:
+                sys.stdin.close()
+            with self.detector_lock:
                 self.detector.reset()
-        finally:
-            if pipeline is not None and started:
-                try:
-                    pipeline.stop()
-                except Exception:
-                    pass
+                with self.lock:
+                    self.roi = self.detector.roi
 
-    def snapshot(self):
+    def fail(self, stop, exc):
+        if stop.is_set():
+            return
+        stop.set()
+        self.frames.close()
+        self.previews.close()
         with self.lock:
-            age=time.monotonic()-self.frame_at if self.frame_at else None
-            result=dict(self.result)
-            if age is not None and age>1.5:
-                result.update(state='unknown',gap_mm=None,position=None,regions=[],near_regions=[],diagnostic_valid=False,message='画面已过期，不能用于触碰判断。')
-            return dict(mode=self.mode,message=self.message,result=result,image=self.image,
-                        age_ms=round(age*1000) if age is not None else None,roi=self.detector.roi)
+            self.generation += 1
+            self.mode, self.result, self.image, self.frame_at = 'error', {'state': 'error'}, None, 0
+            self.source_at = None
+            self.message = ('macOS拒绝打开USB，请使用权限启动脚本。' if 'uvc_open' in str(exc) and 'Code: -3' in str(exc) else '') + str(exc)
+
+    def source(self, mode, stop):
+        if mode == 'camera':
+            yield from camera_frames(stop)
+        elif mode == 'pipe':
+            while not stop.is_set():
+                yield read_pipe_frame(sys.stdin.fileno(), stop)
+        else:
+            stream_id, frame_id = self.stream_id, 0
+            rng = np.random.default_rng()
+            while not stop.wait(.07):
+                depth = np.full((240, 320), 1000, dtype=np.float32)
+                with self.lock:
+                    present = self.sim_object and self.result.get('state') != 'calibrating'
+                    gap = self.sim_gap
+                if present:
+                    depth[65:180,85:125] -= 180
+                    depth[105:130,125:180] -= 100
+                    depth[96:142,180:207] -= gap
+                    depth[65:95,215:245] -= gap
+                depth += rng.normal(0, .6, depth.shape).astype(np.float32)
+                frame_id += 1
+                yield DepthFrame(depth, (300.,300.,159.5,119.5), stream_id, frame_id,
+                                 time.monotonic()*1000, {'model': 'simulation'})
+
+    def acquire(self, mode, stop):
+        previous_id, stream_id = 0, None
+        try:
+            for frame in self.source(mode, stop):
+                if stop.is_set():
+                    break
+                if stream_id is not None and stream_id != frame.stream_id:
+                    raise ValueError('采集会话已改变，请重启服务并重新校准。')
+                stream_id = frame.stream_id
+                if frame.frame_id <= previous_id:
+                    continue
+                previous_id = frame.frame_id
+                with self.lock:
+                    self.received_count += 1
+                    if self.first_source is None:
+                        self.first_source = frame.received_mono_ms
+                        self.first_frame_id = frame.frame_id
+                    self.last_source, self.last_frame_id = frame.received_mono_ms, frame.frame_id
+                    self.capture_dropped = frame.capture_dropped
+                self.frames.put(frame)
+        except Exception as exc:
+            self.fail(stop, exc)
+
+    def process(self, stop):
+        try:
+            while not stop.is_set():
+                frame = self.frames.take()
+                if frame is None:
+                    continue
+                # A frozen old capture is not a new calibration sample.
+                if time.monotonic()*1000 - frame.received_mono_ms > 300:
+                    continue
+                started = time.monotonic()
+                h, w = frame.depth.shape
+                factor = 320/w
+                depth = cv2.resize(frame.depth, (320, round(h*factor)), interpolation=cv2.INTER_NEAREST)
+                intr = frame.intrinsics
+                scaled = (intr[0]*factor, intr[1]*factor, (intr[2]+.5)*factor-.5, (intr[3]+.5)*factor-.5)
+                with self.detector_lock:
+                    with self.lock:
+                        generation, contact, cutoff = self.generation, self.contact, self.calibrate_after
+                        calibrating = self.calibration_requested
+                    if calibrating or frame.received_mono_ms < cutoff:
+                        continue
+                    result = self.detector.update(depth, scaled, contact=contact)
+                    finished = time.monotonic()
+                    with self.lock:
+                        if stop.is_set() or generation != self.generation:
+                            continue
+                        self.result, self.frame_at = result, finished
+                        self.source_at, self.processing_ms = frame.received_mono_ms, (finished-started)*1000
+                        self.stream_id, self.frame_id, self.device = frame.stream_id, frame.frame_id, frame.device
+                        self.processed_count += 1
+                        if self.mode in ('camera', 'pipe'):
+                            self.message = '真实深度流已连接，请校准空墙后互动。'
+                self.previews.put((depth, generation))
+        except Exception as exc:
+            self.fail(stop, exc)
+
+    def preview(self, stop):
+        last_started = 0
+        try:
+            while not stop.is_set():
+                if stop.wait(max(0, .1 - (time.monotonic()-last_started))):
+                    break
+                item = self.previews.take()
+                if item is None:
+                    continue
+                last_started = time.monotonic()
+                depth, generation = item
+                image = encode_preview(depth)
+                with self.lock:
+                    if not stop.is_set() and generation == self.generation:
+                        self.image = image
+                        self.preview_count += 1
+        except Exception as exc:
+            self.fail(stop, exc)
+
+    def calibrate(self, roi):
+        with self.lifecycle:
+            # Invalidate immediately, even if an old detection is still running.
+            # Never wait for detector_lock while holding the publication lock.
+            with self.lock:
+                if not self.frame_at or time.monotonic()-self.frame_at > 1:
+                    raise ValueError('请先连接相机并等待有效画面。')
+                self.generation += 1
+                self.calibration_requested = True
+                self.result = dict(state='calibrating', progress=0, near_regions=[], diagnostic_valid=False)
+            with self.detector_lock:
+                self.detector.begin(roi)
+                with self.lock:
+                    self.roi = self.detector.roi
+                    self.calibrate_after = time.monotonic()*1000
+                    self.calibration_requested = False
+
+    def snapshot(self, compact=False):
+        with self.lock:
+            now = time.monotonic()
+            age = (now-self.frame_at)*1000 if self.frame_at else None
+            source_age = max(0, now*1000-self.source_at) if self.source_at is not None else None
+            result = dict(self.result)
+            if age is not None and age > 1500:
+                result.update(state='unknown', gap_mm=None, position=None, regions=[], near_regions=[], diagnostic_valid=False, message='画面已过期，不能用于触碰判断。')
+            duration = (self.last_source-self.first_source) if self.first_source is not None else 0
+            diagnostics = dict(received_frames=self.received_count, processed_frames=self.processed_count,
+                capture_dropped=self.capture_dropped, processing_dropped=self.frames.dropped,
+                preview_frames=self.preview_count, preview_dropped=self.previews.dropped,
+                capture_fps=(self.last_frame_id-self.first_frame_id)*1000/duration if duration > 0 else 0)
+            if compact:
+                result = {key: result[key] for key in ('state', 'background_model', 'diagnostic_valid') if key in result}
+                result['near_regions'] = [{key: region[key] for key in ('center', 'area_px') if key in region}
+                                          for region in self.result.get('near_regions', [])] if source_age is not None and source_age <= 300 else []
+                return dict(protocol_version=1, mode=self.mode, message=self.message, result=result,
+                    stream_id=self.stream_id, frame_id=self.frame_id, source_age_ms=source_age,
+                    processing_ms=self.processing_ms, received_mono_ms=self.source_at,
+                    diagnostics=diagnostics, device=self.device)
+            return dict(mode=self.mode, message=self.message, result=result, image=self.image,
+                        age_ms=round(age) if age is not None else None, roi=self.roi,
+                        source_age_ms=source_age, diagnostics=diagnostics, device=self.device)
 
 
 lab=Lab()
@@ -220,6 +278,11 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply((ROOT/'guide.mjs').read_bytes(),mime='text/javascript; charset=utf-8')
         if self.path in ('/entity','/entity.html'):
             return self.reply((ROOT/'entity.html').read_bytes(),mime='text/html; charset=utf-8')
+        if self.path=='/api/input':
+            origin, site = self.headers.get('Origin'), self.headers.get('Sec-Fetch-Site')
+            if (origin and origin != 'http://'+self.headers.get('Host')) or (site and site not in ('same-origin', 'none')):
+                return self.reply({'error':'Local same-origin requests only'},403)
+            return self.reply(lab.snapshot(compact=True))
         if self.path=='/api/state':
             snapshot = lab.snapshot()
             snapshot['capture_stdin'] = getattr(self.server, 'capture_stdin', False)
@@ -247,10 +310,7 @@ class Handler(BaseHTTPRequestHandler):
                 roi=args.get('roi',[.2,.2,.8,.8])
                 if len(roi)!=4 or not all(isinstance(v,(float,int)) and np.isfinite(v) and 0<=v<=1 for v in roi) or roi[2]-roi[0]<.15 or roi[3]-roi[1]<.15:
                     raise ValueError('选区太小：请框选一块完整的平整表面。')
-                with lab.lock:
-                    if not lab.frame_at or time.monotonic()-lab.frame_at>1:
-                        raise ValueError('请先连接相机并等待有效画面。')
-                    lab.detector.begin(roi)
+                lab.calibrate(roi)
             elif self.path=='/api/settings':
                 with lab.lock:
                     value=float(args.get('contact',lab.contact))

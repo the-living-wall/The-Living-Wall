@@ -42,6 +42,10 @@ zsh 启动相机权限测试.command
 
 相机和前端服务须在同一台电脑运行；`127.0.0.1` 不是远程访问地址。模拟数据会被前端拒绝，不用于伪装硬件测试成功。
 
+低延迟实验（#89）：合并前在独立副本检出 `livehighhigh/89-depth-latency`，合并后使用 main；网页、采集脚本、`frame_stream.py` 与服务必须来自同一提交。停止旧程序后重新启动并校准，不混用新旧管道协议。启用深度实验后可展开“输入诊断”，记录 60 秒并导出数值。协议错误须更新完整启动链路。预览最多 10Hz，原始绿色圆圈独立更新；不要把预览或光团缓动计为取点速度。现场报告的 Gemini 355 与旧记录 335 尚待 SDK 枚举核实。
+
+电脑屏幕、有线 O3 投影与 AirPlay 的测试顺序、目标、数值记录和完整回退版本见[延迟验证记录](../evidence/depth-latency/README.md)。有线物理响应目标仍待现场验收，本版本不自动发布生产。
+
 ## 3. 检查与反馈
 
 ```sh
@@ -50,7 +54,7 @@ npm run typecheck
 npm run lint
 npm run build
 cd tools/depth-lab
-.venv/bin/python -m unittest -v test_detector test_server test_metrology test_frontend_contract
+.venv/bin/python -m unittest discover -v -p 'test_*.py'
 node --test test_guide.mjs
 ```
 
