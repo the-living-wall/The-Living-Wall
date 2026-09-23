@@ -26,7 +26,7 @@ exports.cleanup = async (event) => {
 };
 // Separate ordinary function (index.sdk), no HTTP route. Not enabled by deploying
 // the existing main/cleanup bundle. Platform policy must restrict this function.
-exports.sdk = async (event, context) => {
+const handleSdk = async (event, context) => {
   if (process.env.GIFT_SDK_ENABLED !== 'true')
     return { status: 503, value: { error: '连接配置尚未完成，请稍后重试。' } };
   let uid;
@@ -37,4 +37,25 @@ exports.sdk = async (event, context) => {
     /* Missing/malformed platform context fails closed. */
   }
   return createSdkHandler(getStore())(event, uid);
+};
+// Application diagnostics remain available when platform response-body logging
+// is disabled. Never log the event, context, result, message or credentials.
+exports.sdk = async (event, context) => {
+  const started = Date.now();
+  let status = 500;
+  try {
+    const result = await handleSdk(event, context);
+    status = result.status;
+    return result;
+  } catch {
+    return { status: 500, value: { error: '服务暂时不可用，请稍后重试。' } };
+  } finally {
+    console.info(
+      JSON.stringify({
+        event: 'gift-sdk-result',
+        status,
+        durationMs: Math.max(0, Date.now() - started),
+      }),
+    );
+  }
 };

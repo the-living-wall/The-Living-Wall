@@ -212,3 +212,55 @@ void test('SDK transport: timed-out login does not later submit; a new attempt c
   await new Promise((resolve) => setTimeout(resolve, 2));
   assert.equal(calls, 1);
 });
+
+void test('SDK runtime diagnostics exclude messages, credentials, context and unexpected errors', async () => {
+  const code = await readFile(
+    new URL('../services/gifts/cloudbase/index.cjs', import.meta.url),
+    'utf8',
+  );
+  const logs: string[] = [];
+  const exports: {
+    sdk?: (event: unknown, context?: unknown) => Promise<unknown>;
+  } = {};
+  let fail = false;
+  runInNewContext(code, {
+    exports,
+    console: { info: (line: string) => logs.push(line) },
+    process: { env: { GIFT_ENV_ID: 'test', GIFT_SDK_ENABLED: 'true' } },
+    require: (name: string) =>
+      name === '@cloudbase/node-sdk'
+        ? {
+            init: () => ({ database: () => ({}) }),
+            parseContext: () => ({ environment: { TCB_UUID: 'private-user' } }),
+          }
+        : {
+            CloudGiftStore: class {},
+            createSdkHandler: () => async () => {
+              if (fail) throw new Error('private-error');
+              return {
+                status: 200,
+                value: { text: 'private-message', token: 'private-token' },
+              };
+            },
+          },
+  });
+  await exports.sdk!({ text: 'private-input' }, { secret: 'private-context' });
+  fail = true;
+  const failure = await exports.sdk!({});
+  assert.equal((failure as { status: number }).status, 500);
+  assert.ok(!JSON.stringify(failure).includes('private'));
+  assert.deepEqual(
+    logs.map((line) => JSON.parse(line).status),
+    [200, 500],
+  );
+  for (const line of logs) {
+    const item = JSON.parse(line);
+    assert.deepEqual(Object.keys(item).sort(), [
+      'durationMs',
+      'event',
+      'status',
+    ]);
+    assert.ok(item.durationMs >= 0);
+    assert.ok(!line.includes('private'));
+  }
+});

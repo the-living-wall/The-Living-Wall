@@ -1,0 +1,27 @@
+import { createCloudbaseClient as realClient } from '../../../prototypes/live-gift/cloudbase-client.ts';
+export function createCloudbaseClient(env: string, region: string, name: string) {
+  const real = realClient(env, region, name);
+  return {
+    ensureSession: () => real.ensureSession(),
+    async invoke(data: any) {
+      const control = document.getElementById('qa-fault') as unknown as HTMLSelectElement;
+      const status = document.getElementById('qa-status')!;
+      const mode = data.request.method === 'POST' ? control.value : 'none';
+      if (mode !== 'none') control.value = 'none';
+      if (mode === 'before') {
+        status.textContent = '已注入：本次写入未发往后台';
+        throw {code: 'NETWORK_ERROR'};
+      }
+      const result: any = await real.invoke(data);
+      if (mode === 'after') {
+        const payload = typeof result.result === 'string' ? JSON.parse(result.result) : result.result;
+        if (payload?.status >= 200 && payload?.status < 300) {
+          status.textContent = '已注入：真实后台保存成功，丢弃本次响应，等待原传输超时';
+          return new Promise(() => {});
+        }
+        status.textContent = '未注入：后台没有成功，保留真实失败';
+      }
+      return result;
+    }
+  };
+}

@@ -26,6 +26,7 @@ export type Connection = {
   invitation: string;
   retry: () => Promise<boolean>;
   hasPending: boolean;
+  pendingAction: SharedAction | null;
   creationPending: boolean;
   creationDraft: { text: string; names: SharedState['names'] } | null;
 };
@@ -307,6 +308,9 @@ export default function OnlineApp() {
     remove,
     retry,
     hasPending,
+    pendingAction: hasPending
+      ? (read<Pending | null>('gift-pending:' + selected, null)?.action ?? null)
+      : null,
     creationPending: !!creation,
     creationDraft: creation
       ? {

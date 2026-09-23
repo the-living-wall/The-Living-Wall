@@ -33,3 +33,7 @@ Refs #88 / PR #91。2026-09-24，操作者 Codex。基于 539de47（已合入 ma
 3. 按 #70 → #77 → #91 依赖处理 base、同步及最新 CI；主站 main 自动部署已开启，不提前打开朋友构建开关。保持 Refs #88，不能合并时提前关闭 Issue。
 4. 主站 EdgeOne 项目 makers-m2bkgxhijig7 的生产构建变量为 VITE_GIFTS_ONLINE=true、VITE_GIFTS_TRANSPORT=cloudbase、VITE_GIFTS_CLOUDBASE_ENV=env-d1g2bv5sn355fc36e、VITE_GIFTS_CLOUDBASE_REGION=ap-shanghai、VITE_GIFTS_CLOUDBASE_FUNCTION=xiaoying-gifts-sdk-probe。均为公开配置，不得放入平台密钥。开启前重新核对实际部署及资源规则。
 5. 按 main 确定 SHA 发布后，回读正式 HTTPS 页面/响应头、SDK 冒烟与部署 ID，才登记完成。回退先恢复前一托管部署，或关闭 VITE_GIFTS_ONLINE 并重建；验证已证明能撤下入口和页面。回退不恢复数据库备份，不撤销已删除数据。
+
+## 后续补验
+
+内置浏览器仍可用，已补齐本机真实 SDK 写入失败和成功响应丢失恢复，并修复刷新后待发编辑框空白的问题。留言、改名、提议恢复均通过，见 [专项记录](../2026-09-24-sdk-recovery/README.md)。07f61e1 的 GitHub CI 已通过（run 35922799763）；后续修复须以新提交 CI 为准。

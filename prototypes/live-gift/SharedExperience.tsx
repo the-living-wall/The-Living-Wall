@@ -53,14 +53,35 @@ export default function SharedExperience({
     onTrial(null);
   };
   const open = (next: Mode, proposal?: Proposal) => {
+    const draft = connection?.pendingAction;
+    const pendingProposal =
+      next === 'style' && draft?.type === 'propose' ? draft : null;
     onTrial(null);
     setWatching(false);
-    setText(next === 'name' ? state.names[actor] : (proposal?.reason ?? ''));
-    setSources(proposal?.sources.map((m) => m.id) ?? []);
-    setStyle(
-      proposal?.choice.kind === 'style' ? proposal.choice.style : state.active,
+    setText(
+      next === 'name'
+        ? draft?.type === 'rename'
+          ? draft.name
+          : state.names[actor]
+        : next === 'reply' && draft?.type === 'message'
+          ? draft.text
+          : (pendingProposal?.reason ?? proposal?.reason ?? ''),
     );
-    setExpected(proposal?.version ?? null);
+    setSources(
+      pendingProposal?.sourceIds ?? proposal?.sources.map((m) => m.id) ?? [],
+    );
+    setStyle(
+      pendingProposal
+        ? pendingProposal.choice.kind === 'style'
+          ? pendingProposal.choice.style
+          : state.active
+        : proposal?.choice.kind === 'style'
+          ? proposal.choice.style
+          : state.active,
+    );
+    setExpected(
+      pendingProposal ? pendingProposal.expected : (proposal?.version ?? null),
+    );
     setMode(next);
   };
   const switchActor = (next: Actor) => {
@@ -433,7 +454,10 @@ export default function SharedExperience({
                     : '你先选择，另一个体验身份确认后才生效。'}
             </p>
             {mode === 'style' && (
-              <fieldset className="shared-sources">
+              <fieldset
+                className="shared-sources"
+                disabled={connection?.hasPending || connection?.busy}
+              >
                 <legend>从你们的话里，选一段来由</legend>
                 {expected !== null && (
                   <p className="shared-muted">
@@ -465,7 +489,10 @@ export default function SharedExperience({
               </fieldset>
             )}
             {mode === 'style' && (
-              <fieldset className="shared-style-options">
+              <fieldset
+                className="shared-style-options"
+                disabled={connection?.hasPending || connection?.busy}
+              >
                 <legend>你希望它是什么样</legend>
                 {[
                   state.active,
