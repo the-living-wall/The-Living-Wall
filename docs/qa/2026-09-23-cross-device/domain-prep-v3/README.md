@@ -2,6 +2,8 @@
 
 2026-09-23，Refs #88 / PR #91。操作者 Codex，证据来自登录后的腾讯云控制台浏览器可见页面；本轮没有应用行为变化，不是生产部署记录。
 
+> 后续纠正：本页是“选择 CloudBase 作为备案资源并绑定自定义入口”这一方案的核验，不是朋友聊天功能的通用前提。用户要求优先复用现有主站；续费、云托管及固定 IP 路线已暂停，见 [现有主站接入核验](../existing-site-integration-v1/README.md)。原查询与未付款记录保留。
+
 ## 查询授权与备案状态
 
 最初对“继续”的解释被自动审批审查拒绝，未通过替代路径执行。随后用户明确允许创建 `Beian_QCSLinkedRoleInDescribeBeianResource` 并授予 `QcloudAccessForBeianLinkedRoleInDescribeBeianResource` 查询策略，再继续浏览器授权操作。操作后授权弹窗消失、备案控制台可访问；没有提交备案申请。未额外核对 IAM 角色清单，不以页面消失代替完整 IAM 审计。
