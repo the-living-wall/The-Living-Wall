@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type Dispatch } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { Connection } from './OnlineApp';
 import {
   actorName,
   getProposalSources,
@@ -16,7 +17,8 @@ import {
 
 type Props = {
   state: SharedState;
-  dispatch: Dispatch<SharedAction>;
+  dispatch: (action: SharedAction) => void | Promise<boolean>;
+  connection?: Connection;
   trial: StyleKey | null;
   onTrial: (key: StyleKey | null) => void;
 };
@@ -24,10 +26,12 @@ type Mode = 'reply' | 'style' | 'watch' | 'name';
 export default function SharedExperience({
   state,
   dispatch,
+  connection,
   trial,
   onTrial,
 }: Props) {
-  const [actor, setActor] = useState<Actor>('friend');
+  const [localActor, setActor] = useState<Actor>('friend');
+  const actor = connection?.view?.actor ?? localActor;
   const [mode, setMode] = useState<Mode | null>(null);
   const [watching, setWatching] = useState(false);
   const [text, setText] = useState('');
@@ -42,6 +46,7 @@ export default function SharedExperience({
     if (mode) dialog.current?.showModal();
   }, [mode]);
   const close = () => {
+    if (connection?.busy) return;
     dialog.current?.close();
     setMode(null);
     setWatching(false);
@@ -62,12 +67,13 @@ export default function SharedExperience({
     close();
     setActor(next);
   };
-  const submit = () => {
-    if (!mode || mode === 'watch') return;
-    if (mode === 'name') dispatch({ type: 'rename', actor, name: text });
-    else if (mode === 'reply') dispatch({ type: 'message', actor, text });
+  const submit = async () => {
+    if (!mode || mode === 'watch' || connection?.busy) return;
+    let action: SharedAction;
+    if (mode === 'name') action = { type: 'rename', actor, name: text };
+    else if (mode === 'reply') action = { type: 'message', actor, text };
     else
-      dispatch({
+      action = {
         type: 'propose',
         actor,
         expected,
@@ -77,8 +83,9 @@ export default function SharedExperience({
           style === state.active
             ? { kind: 'memory' }
             : { kind: 'style', style },
-      });
-    close();
+      };
+    const result = await dispatch(action);
+    if (result !== false) close();
   };
   const choiceName = (p: Proposal) =>
     p.choice.kind === 'style'
@@ -97,20 +104,29 @@ export default function SharedExperience({
   return (
     <div className="shared-experience">
       <div className="shared-role">
-        <label htmlFor="shared-role">体验身份</label>
-        <select
-          id="shared-role"
-          value={actor}
-          onChange={(e) => switchActor(e.target.value as Actor)}
-        >
-          <option value="sender">
-            {actorName(state.names, 'sender')} · 送出心意
-          </option>
-          <option value="friend">
-            {actorName(state.names, 'friend')} · 收到心意
-          </option>
-        </select>
-        <small>同机演示两个身份 · 没有真实发送</small>
+        {connection?.view ? (
+          <span>
+            {actorName(state.names, actor)} ·{' '}
+            {actor === 'sender' ? '送出心意' : '收到心意'}
+          </span>
+        ) : (
+          <>
+            <label htmlFor="shared-role">体验身份</label>
+            <select
+              id="shared-role"
+              value={actor}
+              onChange={(e) => switchActor(e.target.value as Actor)}
+            >
+              <option value="sender">
+                {actorName(state.names, 'sender')} · 送出心意
+              </option>
+              <option value="friend">
+                {actorName(state.names, 'friend')} · 收到心意
+              </option>
+            </select>
+            <small>同机演示两个身份 · 没有真实发送</small>
+          </>
+        )}
         <button
           className="gift-text shared-name-edit"
           onClick={() => open('name')}
@@ -196,7 +212,7 @@ export default function SharedExperience({
                 <button
                   className="gift-text"
                   onClick={() => {
-                    dispatch({
+                    void dispatch({
                       type: 'withdraw',
                       actor,
                       version: pending.version,
@@ -212,7 +228,7 @@ export default function SharedExperience({
                 <button
                   className="gift-text gift-send"
                   onClick={() => {
-                    dispatch({
+                    void dispatch({
                       type: 'accept',
                       actor,
                       version: pending.version,
@@ -228,7 +244,7 @@ export default function SharedExperience({
                 <button
                   className="gift-text"
                   onClick={() => {
-                    dispatch({
+                    void dispatch({
                       type: 'decline',
                       actor,
                       version: pending.version,
@@ -284,7 +300,7 @@ export default function SharedExperience({
                       className="gift-text"
                       disabled={!!pending || state.active === record.previous}
                       onClick={() =>
-                        dispatch({
+                        void dispatch({
                           type: 'propose',
                           actor,
                           expected: null,
@@ -305,7 +321,7 @@ export default function SharedExperience({
                       className="gift-text"
                       disabled={!!pending}
                       onClick={() =>
-                        dispatch({
+                        void dispatch({
                           type: 'propose',
                           actor,
                           expected: null,
@@ -391,12 +407,28 @@ export default function SharedExperience({
             </div>
           )}
           <div hidden={watching}>
+            {connection?.error && <p role="alert">{connection.error}</p>}
+            {connection?.hasPending && (
+              <button
+                className="gift-text"
+                disabled={connection.busy}
+                onClick={async () => {
+                  if (await connection.retry()) close();
+                }}
+              >
+                重试上次操作
+              </button>
+            )}
             <p className="shared-muted">
               {mode === 'name'
                 ? '只修改显示称呼，已有共同记录中的署名不变。'
                 : mode === 'reply'
-                  ? '只留在本页演示，不会发送给朋友。'
-                  : '你先选择，另一个体验身份确认后才生效。'}
+                  ? connection
+                    ? '确认后回复给这位朋友，内容保存至这份心意到期。'
+                    : '只留在本页演示，不会发送给朋友。'
+                  : connection
+                    ? '你先选择，朋友确认同一版本后才生效。'
+                    : '你先选择，另一个体验身份确认后才生效。'}
             </p>
             {mode === 'style' && (
               <fieldset className="shared-sources">
@@ -503,6 +535,7 @@ export default function SharedExperience({
               rows={2}
               maxLength={mode === 'name' ? undefined : 80}
               value={text}
+              readOnly={connection?.hasPending || connection?.busy}
               onChange={(e) =>
                 setText(
                   mode === 'name'
@@ -518,20 +551,24 @@ export default function SharedExperience({
               <button
                 className="gift-save"
                 disabled={
-                  mode === 'name'
+                  connection?.busy ||
+                  connection?.hasPending ||
+                  (mode === 'name'
                     ? false
                     : mode === 'reply'
                       ? !text.trim()
                       : !availableSources.some((source) =>
                           sources.includes(source.id),
-                        )
+                        ))
                 }
                 onClick={submit}
               >
                 {mode === 'name'
                   ? '保存称呼'
                   : mode === 'reply'
-                    ? '留在这次交流里'
+                    ? connection
+                      ? '回复给朋友'
+                      : '留在这次交流里'
                     : expected !== null
                       ? '提出修改后的选择'
                       : '提出这个选择'}

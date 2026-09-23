@@ -1,0 +1,14 @@
+
+> sites-project@0.1.0 build:gifts
+> VITE_GIFTS_ONLINE=true vite build --config prototypes/live-gift/vite.config.mts --outDir ../../outputs/gifts/site
+
+vite v8.0.13 building client environment for production...
+[2Ktransforming...✓ 66 modules transformed.
+rendering chunks...
+computing gzip size...
+outputs/gifts/site/index.html                          0.37 kB │ gzip:  0.30 kB
+outputs/gifts/site/assets/index-ubcfabZI.css         203.01 kB │ gzip: 31.95 kB
+outputs/gifts/site/assets/vision_bundle-BFQ1pYnD.js  135.27 kB │ gzip: 39.86 kB
+outputs/gifts/site/assets/index-MhtZs_-e.js          302.59 kB │ gzip: 99.72 kB
+
+✓ built in 205ms

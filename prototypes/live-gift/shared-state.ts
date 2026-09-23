@@ -55,7 +55,7 @@ export type SharedAction =
   | { type: 'accept'; actor: Actor; version: number; at: number }
   | { type: 'decline'; actor: Actor; version: number }
   | { type: 'withdraw'; actor: Actor; version: number };
-const clean = (text: string) => text.trim().slice(0, 80);
+const clean = (text: string) => Array.from(text.trim()).slice(0, 80).join('');
 export function createSharedState(greeting: string): SharedState {
   return {
     names: { sender: '', friend: '' },

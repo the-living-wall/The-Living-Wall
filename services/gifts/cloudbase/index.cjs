@@ -1,0 +1,22 @@
+/* oxlint-disable typescript/no-require-imports -- CloudBase ordinary functions load a CommonJS index.main entry. */
+const cloudbase = require('@cloudbase/node-sdk');
+const { CloudGiftStore, createHandler } = require('./service.cjs');
+
+let store, handler;
+function getStore() {
+  if (!process.env.GIFT_ENV_ID) throw new Error('GIFT_ENV_ID is required');
+  if (!store)
+    store = new CloudGiftStore(
+      cloudbase.init({ env: process.env.GIFT_ENV_ID }).database(),
+    );
+  return store;
+}
+exports.main = async (event) => {
+  if (!handler) handler = createHandler(getStore(), process.env.PUBLIC_ORIGIN);
+  return handler(event);
+};
+// Deploy as a separate timer-only function (index.cleanup), with no HTTP route.
+exports.cleanup = async (event) => {
+  if (event.Type !== 'Timer') throw new Error('Timer trigger required');
+  return { removed: await getStore().purge() };
+};

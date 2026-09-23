@@ -1,0 +1,27 @@
+{
+  "source": "7118dfbc595c4aaea0b584c6cd862056377aa568",
+  "workingTree": "M docs/PRD.md\n M package-lock.json\n M package.json\n M prototypes/live-gift/Companion.tsx\n M prototypes/live-gift/SharedExperience.tsx\n M prototypes/live-gift/entry.tsx\n M prototypes/live-gift/preview.css\n M prototypes/live-gift/shared-state.ts\n?? openspec/changes/cross-device-gifts/\n?? prototypes/live-gift/OnlineApp.tsx\n?? prototypes/live-gift/qa-cross-device.mjs\n?? scripts/build-gifts-cloudbase.mjs\n?? services/\n?? tests/gifts-cloudbase.test.ts\n?? tests/gifts.test.ts",
+  "started": "2026-09-23T04:09:41.307Z",
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "restartAndOffline": true
+    },
+    {
+      "name": "轻松打趣",
+      "status": "passed",
+      "active": "俏皮",
+      "restartAndOffline": false
+    },
+    {
+      "name": "共同约定",
+      "status": "passed",
+      "active": "原来的样子",
+      "restartAndOffline": false
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}

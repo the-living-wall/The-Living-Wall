@@ -1,0 +1,26 @@
+[Unit]
+Description=Xiaoying independent friends test
+After=network.target
+
+[Service]
+Type=simple
+User=xiaoying-test
+Group=xiaoying-test
+WorkingDirectory=/opt/xiaoying-friends/current
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=4190
+Environment=PUBLIC_ORIGIN=https://REPLACE_WITH_TEST_DOMAIN
+Environment=GIFT_STATIC=/opt/xiaoying-friends/current/outputs/gifts/site
+Environment=GIFT_DB=/var/lib/xiaoying-friends/data.sqlite
+ExecStart=/usr/bin/node services/gifts/start.ts
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/xiaoying-friends
+
+[Install]
+WantedBy=multi-user.target

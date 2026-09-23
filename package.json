@@ -12,11 +12,14 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "build:tencent": "DEPLOY_TARGET=tencent vinext build",
-    "test": "node --test tests/creature.test.ts tests/recording-batch.test.mjs tests/depth-bridge.test.ts tests/depth-input.test.ts tests/creature-archive.test.ts tests/sound-state.test.ts tests/visual-stage.test.ts tests/trust-copy.test.ts tests/shared-shaping.test.ts",
+    "test": "node --test tests/creature.test.ts tests/recording-batch.test.mjs tests/depth-bridge.test.ts tests/depth-input.test.ts tests/creature-archive.test.ts tests/sound-state.test.ts tests/visual-stage.test.ts tests/trust-copy.test.ts tests/shared-shaping.test.ts tests/gifts.test.ts tests/gifts-cloudbase.test.ts",
     "qa:lighting": "node scripts/lighting-browser-qa.mjs",
     "spec:validate": "openspec validate --all --strict",
     "setup:assets": "node scripts/setup-assets.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:gifts": "VITE_GIFTS_ONLINE=true vite build --config prototypes/live-gift/vite.config.mts --outDir ../../outputs/gifts/site",
+    "start:gifts": "node services/gifts/start.ts",
+    "build:gifts:cloud": "node scripts/build-gifts-cloudbase.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
@@ -51,6 +54,7 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
+    "esbuild": "0.27.3",
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",
