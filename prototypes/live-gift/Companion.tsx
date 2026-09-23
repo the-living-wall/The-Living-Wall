@@ -4,7 +4,12 @@ import HandCamera from '../../app/hand-camera';
 import DepthInputPoller from '../../app/depth-input';
 import SoundControls from './SoundControls';
 import SharedExperience from './SharedExperience';
-import { sharedReducer, createSharedState } from './shared-state';
+import {
+  cleanName,
+  actorName,
+  sharedReducer,
+  createSharedState,
+} from './shared-state';
 import { drawTemperament, ORIGINAL, type StyleKey } from './temperaments';
 import { Button } from '@/components/ui/button';
 import {
@@ -92,12 +97,6 @@ export default function Companion() {
     media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
-  const [draft, setDraft] = useState('');
-  const [editing, setEditing] = useState(false);
-  const editorDialog = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    if (editing) editorDialog.current?.showModal();
-  }, [editing]);
   const previewArchive = useRef(new Map<string, string>());
   const previewStorage = useRef({
     getItem: (key: string) => previewArchive.current.get(key) ?? null,
@@ -109,7 +108,6 @@ export default function Companion() {
     setTrial(null);
     if (next === 'receive') dispatchShared({ type: 'greeting', text: note });
     setGiftView(next);
-    setEditing(false);
     setMessage('');
     setCamera(false);
     source.current = 'mouse';
@@ -522,6 +520,12 @@ export default function Companion() {
               </>
             )}
           </h2>
+          {giftView === 'receive' && (
+            <div className="gift-address">
+              给 {actorName(shared.names, 'friend')} · 来自{' '}
+              {actorName(shared.names, 'sender')}
+            </div>
+          )}
           <p>
             {giftView === 'create'
               ? '留一点光，也捎一句话。让朋友知道，你在惦记着。'
@@ -550,7 +554,62 @@ export default function Companion() {
                 <option value="thanks">想谢谢你</option>
                 <option value="joy">分你一点开心</option>
               </select>
-              <p>选一句开头，再写成你自己的话。</p>
+              {noteEdited && note !== openings[intent] && (
+                <button
+                  className="gift-text"
+                  onClick={() => {
+                    setNote(openings[intent]);
+                    setNoteEdited(false);
+                  }}
+                >
+                  使用这句开头
+                </button>
+              )}
+              <label htmlFor="gift-message">写给朋友的话，也可以留白</label>
+              <textarea
+                id="gift-message"
+                rows={3}
+                maxLength={80}
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                  setNoteEdited(true);
+                }}
+              />
+              <div className="gift-names">
+                <label>
+                  给谁（可选）
+                  <input
+                    aria-label="给谁（可选）"
+                    defaultValue={shared.names.friend}
+                    onBlur={(e) => {
+                      e.target.value = cleanName(e.target.value);
+                      dispatchShared({
+                        type: 'rename',
+                        actor: 'friend',
+                        name: e.target.value,
+                      });
+                    }}
+                    placeholder="你对朋友的称呼"
+                  />
+                </label>
+                <label>
+                  你的落款（可选）
+                  <input
+                    aria-label="你的落款（可选）"
+                    defaultValue={shared.names.sender}
+                    onBlur={(e) => {
+                      e.target.value = cleanName(e.target.value);
+                      dispatchShared({
+                        type: 'rename',
+                        actor: 'sender',
+                        name: e.target.value,
+                      });
+                    }}
+                    placeholder="朋友熟悉的你"
+                  />
+                </label>
+              </div>
             </div>
           )}
         </section>
@@ -579,31 +638,35 @@ export default function Companion() {
             : camera
               ? '手部互动 · 不录制、不上传'
               : '鼠标 / 触摸 / 方向键'}
-          <div className="growth-summary" aria-label="小莹的成长与亲密度">
-            <div className="growth-summary-heading">
-              <strong>{growthInfo.name}</strong>
-              <span>成长 {growthPercent}%</span>
-            </div>
-            <p>{growthInfo.description}</p>
-            <div className="growth-meter">
-              <span>成长</span>
-              <progress
-                value={growth}
-                max={1}
-                aria-label={`成长 ${growthPercent}%`}
-              />
-            </div>
-            <div className="growth-meter">
-              <span>亲密</span>
-              <progress
-                value={affection}
-                max={1}
-                aria-label={`亲密度 ${affectionPercent}%`}
-              />
-              <em>{intimacyCopy(affection)}</em>
-            </div>
-          </div>
-          <div className="help-note">预览成长仅在本页 · 不读取真实存档</div>
+          {giftView === 'home' && (
+            <>
+              <div className="growth-summary" aria-label="小莹的成长与亲密度">
+                <div className="growth-summary-heading">
+                  <strong>{growthInfo.name}</strong>
+                  <span>成长 {growthPercent}%</span>
+                </div>
+                <p>{growthInfo.description}</p>
+                <div className="growth-meter">
+                  <span>成长</span>
+                  <progress
+                    value={growth}
+                    max={1}
+                    aria-label={`成长 ${growthPercent}%`}
+                  />
+                </div>
+                <div className="growth-meter">
+                  <span>亲密</span>
+                  <progress
+                    value={affection}
+                    max={1}
+                    aria-label={`亲密度 ${affectionPercent}%`}
+                  />
+                  <em>{intimacyCopy(affection)}</em>
+                </div>
+              </div>
+              <div className="help-note">预览成长仅在本页 · 不读取真实存档</div>
+            </>
+          )}
           <br />
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
@@ -622,15 +685,6 @@ export default function Companion() {
                 </button>
               ) : (
                 <>
-                  <button
-                    className="gift-text"
-                    onClick={() => {
-                      setDraft(note);
-                      setEditing(true);
-                    }}
-                  >
-                    {noteEdited ? '编辑留言' : '捎一句话'}
-                  </button>
                   <button
                     className="gift-text gift-send"
                     onClick={() => go('receive')}
@@ -683,41 +737,6 @@ export default function Companion() {
           </div>
         </div>
       </footer>
-      {editing && !projection && (
-        <dialog
-          ref={editorDialog}
-          onCancel={() => setEditing(false)}
-          className="gift-editor"
-          aria-label="编辑留言"
-        >
-          <label htmlFor="gift-message">捎一句话，也可以留白</label>
-          <textarea
-            id="gift-message"
-            maxLength={80}
-            rows={3}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setEditing(false);
-            }}
-          />
-          <div>
-            <button className="gift-text" onClick={() => setEditing(false)}>
-              取消
-            </button>
-            <button
-              className="gift-save"
-              onClick={() => {
-                setNote(draft.trim());
-                setNoteEdited(true);
-                setEditing(false);
-              }}
-            >
-              保存留言
-            </button>
-          </div>
-        </dialog>
-      )}
       {!projection && (
         <div className="gift-preview-label">
           共同塑造预览 · 同机演示 · 刷新清空

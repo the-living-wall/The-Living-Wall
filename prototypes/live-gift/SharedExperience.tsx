@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type Dispatch } from 'react';
 import {
-  ACTOR_NAMES,
+  actorName,
   getProposalSources,
   type Actor,
   type Proposal,
@@ -20,7 +20,7 @@ type Props = {
   trial: StyleKey | null;
   onTrial: (key: StyleKey | null) => void;
 };
-type Mode = 'reply' | 'memory' | 'style' | 'watch';
+type Mode = 'reply' | 'style' | 'watch' | 'name';
 export default function SharedExperience({
   state,
   dispatch,
@@ -50,7 +50,7 @@ export default function SharedExperience({
   const open = (next: Mode, proposal?: Proposal) => {
     onTrial(null);
     setWatching(false);
-    setText(proposal?.reason ?? '');
+    setText(next === 'name' ? state.names[actor] : (proposal?.reason ?? ''));
     setSources(proposal?.sources.map((m) => m.id) ?? []);
     setStyle(
       proposal?.choice.kind === 'style' ? proposal.choice.style : state.active,
@@ -64,7 +64,8 @@ export default function SharedExperience({
   };
   const submit = () => {
     if (!mode || mode === 'watch') return;
-    if (mode === 'reply') dispatch({ type: 'message', actor, text });
+    if (mode === 'name') dispatch({ type: 'rename', actor, name: text });
+    else if (mode === 'reply') dispatch({ type: 'message', actor, text });
     else
       dispatch({
         type: 'propose',
@@ -73,7 +74,9 @@ export default function SharedExperience({
         sourceIds: sources,
         reason: text,
         choice:
-          mode === 'style' ? { kind: 'style', style } : { kind: 'memory' },
+          style === state.active
+            ? { kind: 'memory' }
+            : { kind: 'style', style },
       });
     close();
   };
@@ -87,7 +90,7 @@ export default function SharedExperience({
         : '取消这条纪念';
   const renderMessage = (m: SharedState['messages'][number]) => (
     <div className="shared-message" key={m.id}>
-      <span>{m.actor === actor ? '你' : '朋友'}留下的话</span>
+      <span>{actorName(state.names, m.actor)}留下的话</span>
       <p>{m.text}</p>
     </div>
   );
@@ -100,10 +103,20 @@ export default function SharedExperience({
           value={actor}
           onChange={(e) => switchActor(e.target.value as Actor)}
         >
-          <option value="sender">送出心意的人</option>
-          <option value="friend">收到心意的人</option>
+          <option value="sender">
+            {actorName(state.names, 'sender')} · 送出心意
+          </option>
+          <option value="friend">
+            {actorName(state.names, 'friend')} · 收到心意
+          </option>
         </select>
         <small>同机演示两个身份 · 没有真实发送</small>
+        <button
+          className="gift-text shared-name-edit"
+          onClick={() => open('name')}
+        >
+          修改我的称呼
+        </button>
       </div>
       {replies.length > 2 && (
         <details className="shared-history">
@@ -125,13 +138,6 @@ export default function SharedExperience({
           <button
             className="gift-text"
             disabled={!!pending}
-            onClick={() => open('memory')}
-          >
-            留下这一刻
-          </button>
-          <button
-            className="gift-text"
-            disabled={!!pending}
             onClick={() => open('style')}
           >
             一起塑造小莹
@@ -150,7 +156,7 @@ export default function SharedExperience({
       {pending && (
         <section className="shared-pending" aria-label="待共同确认的提议">
           <span className="shared-eyebrow">
-            {pending.author === actor ? '你提出的选择' : '朋友想和你一起'}
+            {actorName(pending.names, pending.author)}提出的选择
           </span>
           <h3>{choiceName(pending)}</h3>
           {pending.reason && <p>{pending.reason}</p>}
@@ -158,7 +164,7 @@ export default function SharedExperience({
             <summary>来自哪段话</summary>
             {pending.sources.map((m) => (
               <blockquote key={m.id}>
-                <small>{ACTOR_NAMES[m.actor]}</small>
+                <small>{m.name ?? actorName(state.names, m.actor)}</small>
                 {m.text}
               </blockquote>
             ))}
@@ -180,7 +186,12 @@ export default function SharedExperience({
             {pending.author === actor ? (
               <>
                 <p className="shared-muted">
-                  等待另一个体验身份选择。你们可以慢慢来。
+                  等待
+                  {actorName(
+                    state.names,
+                    actor === 'sender' ? 'friend' : 'sender',
+                  )}
+                  选择。你们可以慢慢来。
                 </p>
                 <button
                   className="gift-text"
@@ -233,13 +244,10 @@ export default function SharedExperience({
               <button
                 className="gift-text"
                 onClick={() => {
-                  open(
-                    pending.choice.kind === 'style' ? 'style' : 'memory',
-                    pending,
-                  );
+                  open('style', pending);
                 }}
               >
-                {pending.choice.kind === 'style' ? '换一种试试' : '修改提议'}
+                调整这个选择
               </button>
             )}
           </div>
@@ -247,7 +255,7 @@ export default function SharedExperience({
       )}
       {state.history.length > 0 && (
         <details className="shared-history shared-traces">
-          <summary>一起留下的痕迹（{state.history.length}）</summary>
+          <summary>我们的共同记录（{state.history.length}）</summary>
           {state.history
             .slice()
             .reverse()
@@ -255,13 +263,14 @@ export default function SharedExperience({
               <article key={record.version}>
                 <h3>{choiceName(record)}</h3>
                 <small>
-                  两个体验身份已确认 ·{' '}
+                  {actorName(record.names, 'sender')}与
+                  {actorName(record.names, 'friend')}已确认 ·{' '}
                   {new Date(record.at).toLocaleDateString('zh-CN')}
                 </small>
                 {record.reason && <p>{record.reason}</p>}
                 {record.sources.map((m) => (
                   <blockquote key={m.id}>
-                    <small>{ACTOR_NAMES[m.actor]}</small>
+                    <small>{m.name ?? actorName(state.names, m.actor)}</small>
                     {m.text}
                   </blockquote>
                 ))}
@@ -290,7 +299,7 @@ export default function SharedExperience({
                     </button>
                   </>
                 )}
-                {record.choice.kind === 'memory' &&
+                {record.keepsMoment &&
                   (state.memories.some((m) => m.version === record.version) ? (
                     <button
                       className="gift-text"
@@ -332,7 +341,7 @@ export default function SharedExperience({
                 ? '看看这个样子'
                 : mode === 'style'
                   ? '一起塑造小莹'
-                  : '留下这一刻'
+                  : '修改我的称呼'
           }
           onCancel={(e) => {
             e.preventDefault();
@@ -343,11 +352,13 @@ export default function SharedExperience({
             <h3>
               {mode === 'reply'
                 ? '回一句给朋友'
-                : mode === 'watch'
-                  ? '看看这个样子'
-                  : mode === 'style'
-                    ? '一起塑造小莹'
-                    : '留下这一刻'}
+                : mode === 'name'
+                  ? '修改我的称呼'
+                  : mode === 'watch'
+                    ? '看看这个样子'
+                    : mode === 'style'
+                      ? '一起塑造小莹'
+                      : '修改我的称呼'}
             </h3>
             <button
               className="gift-text"
@@ -381,11 +392,13 @@ export default function SharedExperience({
           )}
           <div hidden={watching}>
             <p className="shared-muted">
-              {mode === 'reply'
-                ? '只留在本页演示，不会发送给朋友。'
-                : '你先选择，另一个体验身份确认后才生效。'}
+              {mode === 'name'
+                ? '只修改显示称呼，已有共同记录中的署名不变。'
+                : mode === 'reply'
+                  ? '只留在本页演示，不会发送给朋友。'
+                  : '你先选择，另一个体验身份确认后才生效。'}
             </p>
-            {mode !== 'reply' && (
+            {mode === 'style' && (
               <fieldset className="shared-sources">
                 <legend>从你们的话里，选一段来由</legend>
                 {expected !== null && (
@@ -410,7 +423,7 @@ export default function SharedExperience({
                       }
                     />
                     <span>
-                      <small>{ACTOR_NAMES[m.actor]}</small>
+                      <small>{m.name ?? actorName(state.names, m.actor)}</small>
                       {m.text}
                     </span>
                   </label>
@@ -420,8 +433,23 @@ export default function SharedExperience({
             {mode === 'style' && (
               <fieldset className="shared-style-options">
                 <legend>你希望它是什么样</legend>
-                {STYLE_KEYS.map((key) => (
-                  <label key={key} aria-label={TEMPERAMENTS[key].name}>
+                {[
+                  state.active,
+                  ...STYLE_KEYS.filter((key) => key !== state.active),
+                  ...(pending?.choice.kind === 'style' &&
+                  pending.choice.style !== state.active &&
+                  !STYLE_KEYS.includes(pending.choice.style)
+                    ? [pending.choice.style]
+                    : []),
+                ].map((key) => (
+                  <label
+                    key={key}
+                    aria-label={
+                      key === state.active
+                        ? '保留现在的样子'
+                        : `${TEMPERAMENTS[key].name}${!STYLE_KEYS.includes(key) ? '（此前版本）' : ''}`
+                    }
+                  >
                     <input
                       type="radio"
                       name="shared-style"
@@ -433,8 +461,16 @@ export default function SharedExperience({
                       }}
                     />
                     <span>
-                      <strong>{TEMPERAMENTS[key].name}</strong>
-                      <small>{TEMPERAMENTS[key].detail}</small>
+                      <strong>
+                        {key === state.active
+                          ? '保留现在的样子'
+                          : TEMPERAMENTS[key].name}
+                      </strong>
+                      <small>
+                        {key === state.active
+                          ? '把这段话留作纪念，样子不变。'
+                          : TEMPERAMENTS[key].detail}
+                      </small>
                     </span>
                   </label>
                 ))}
@@ -456,16 +492,24 @@ export default function SharedExperience({
               </fieldset>
             )}
             <label className="shared-draft-label" htmlFor="shared-draft">
-              {mode === 'reply'
-                ? '想对朋友说的话'
-                : '为什么想留下它？也可以留白'}
+              {mode === 'name'
+                ? '我的称呼'
+                : mode === 'reply'
+                  ? '想对朋友说的话'
+                  : '为什么想留下它？也可以留白'}
             </label>
             <textarea
               id="shared-draft"
               rows={2}
-              maxLength={80}
+              maxLength={mode === 'name' ? undefined : 80}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) =>
+                setText(
+                  mode === 'name'
+                    ? Array.from(e.target.value).slice(0, 20).join('')
+                    : e.target.value,
+                )
+              }
             />
             <div className="shared-editor-actions">
               <button className="gift-text" onClick={close}>
@@ -474,19 +518,23 @@ export default function SharedExperience({
               <button
                 className="gift-save"
                 disabled={
-                  mode === 'reply'
-                    ? !text.trim()
-                    : !availableSources.some((source) =>
-                        sources.includes(source.id),
-                      )
+                  mode === 'name'
+                    ? false
+                    : mode === 'reply'
+                      ? !text.trim()
+                      : !availableSources.some((source) =>
+                          sources.includes(source.id),
+                        )
                 }
                 onClick={submit}
               >
-                {mode === 'reply'
-                  ? '留在这次交流里'
-                  : expected !== null
-                    ? '提出修改后的选择'
-                    : '提出这个选择'}
+                {mode === 'name'
+                  ? '保存称呼'
+                  : mode === 'reply'
+                    ? '留在这次交流里'
+                    : expected !== null
+                      ? '提出修改后的选择'
+                      : '提出这个选择'}
               </button>
             </div>
           </div>

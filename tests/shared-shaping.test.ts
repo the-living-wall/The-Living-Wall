@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Creature } from '../lib/creature.ts';
 import {
+  actorName,
+  cleanName,
   createSharedState,
   getProposalSources,
   sharedReducer as reduce,
@@ -106,9 +108,9 @@ void test('memory and cancelling memory both require agreement without changing 
     sourceIds: chat.map((m) => m.id),
     reason: '我们的约定',
   });
-  assert.equal(state.memories.length, 0);
+  assert.equal(state.memories.length, 1);
   state = accept(state, 'sender');
-  const memory = state.memories[0];
+  const memory = state.memories.at(-1)!;
   assert.equal(state.active, 'calm/v1');
   assert.equal(memory.sources.length, 2);
   state = reduce(state, {
@@ -119,9 +121,9 @@ void test('memory and cancelling memory both require agreement without changing 
     sourceIds: [],
     reason: '',
   });
-  assert.equal(state.memories.length, 1);
+  assert.equal(state.memories.length, 2);
   state = accept(state);
-  assert.equal(state.memories.length, 0);
+  assert.equal(state.memories.length, 1);
   assert.equal(state.active, 'calm/v1');
   assert.deepEqual(state.messages, chat);
   assert.equal(state.history.length, 3);
@@ -285,5 +287,121 @@ void test('three presentation recipes draw distinct marks without mutating the c
     calls.length = 0;
     drawTemperament(ctx, 1200, 800, creature, style, 2.5, true);
     assert.equal(calls.length, 0);
+  }
+});
+
+void test('names are bounded, fall back and keep proposal signatures immutable across renaming', () => {
+  assert.equal(cleanName('  小光  '), '小光');
+  assert.equal(Array.from(cleanName('🌿'.repeat(25))).length, 20);
+  let state = createSharedState('给你一点光');
+  assert.equal(actorName(state.names, 'friend'), '收到心意的人');
+  state = reduce(state, { type: 'rename', actor: 'sender', name: '阿禾' });
+  state = reduce(state, { type: 'rename', actor: 'friend', name: '小满' });
+  state = propose(state, 'calm/v2');
+  const pending = state.pending!;
+  state = reduce(state, { type: 'rename', actor: 'sender', name: '新落款' });
+  state = reduce(state, { type: 'rename', actor: 'friend', name: '新称呼' });
+  assert.equal(state.pending, pending);
+  assert.equal(pending.sources[0].name, '阿禾');
+  state = accept(state);
+  assert.deepEqual(state.history[0].names, { sender: '阿禾', friend: '小满' });
+  assert.equal(state.history[0].sources[0].name, '阿禾');
+  state = reduce(state, { type: 'greeting', text: '新的话' });
+  assert.equal(state.history[0].sources[0].text, '给你一点光');
+});
+
+void test('new style also keeps a moment; cancelling it does not undo appearance, chat or original history', () => {
+  let state = accept(propose(createSharedState('共同选择'), 'playful/v2'));
+  const record = state.history[0];
+  assert.equal(state.memories.length, 1);
+  state = reduce(state, {
+    type: 'propose',
+    actor: 'sender',
+    expected: null,
+    sourceIds: [],
+    reason: '',
+    choice: { kind: 'remove-memory', memoryId: record.version },
+  });
+  assert.equal(state.memories.length, 1);
+  state = accept(state);
+  assert.equal(state.memories.length, 0);
+  assert.equal(state.active, 'playful/v2');
+  assert.equal(state.history[0], record);
+  assert.equal(state.messages[0].text, '共同选择');
+  const history = state.history;
+  for (let i = 0; i < 50; i++)
+    state = reduce(state, {
+      type: 'message',
+      actor: i % 2 ? 'sender' : 'friend',
+      text: '聊一句',
+    });
+  assert.equal(state.active, 'playful/v2');
+  assert.equal(state.history, history);
+  assert.equal(state.memories.length, 0);
+});
+
+void test('v2 marks are visible immediately, throughout a cycle and ordinary interaction without changing creature state', () => {
+  const creature = new Creature();
+  const calls: string[] = [];
+  const ctx = new Proxy(
+    {},
+    { get: (_target, name) => () => calls.push(String(name)) },
+  ) as CanvasRenderingContext2D;
+  for (const [style, method] of [
+    ['calm/v2', 'ellipse'],
+    ['playful/v2', 'fillRect'],
+    ['curious/v2', 'quadraticCurveTo'],
+  ] as const) {
+    for (const time of [0, 0.01, 2, 5, 6, 7.99, 8, 16]) {
+      for (const enjoyment of [0, 0.7, 1]) {
+        creature.enjoyment = enjoyment;
+        const before = JSON.stringify(creature);
+        calls.length = 0;
+        drawTemperament(ctx, 1280, 850, creature, style, time, false);
+        assert.ok(calls.includes(method), `${style} missing at ${time}`);
+        assert.equal(JSON.stringify(creature), before);
+      }
+    }
+  }
+});
+
+void test('v2 keeps identical static marks during reduced motion and exceptional states, then resumes motion', () => {
+  for (const style of ['calm/v2', 'playful/v2', 'curious/v2'] as const) {
+    for (const mode of ['reduced', 'resting', 'startle', 'recover'] as const) {
+      const creature = new Creature();
+      if (mode === 'resting') creature.resting = true;
+      if (mode === 'startle' || mode === 'recover') creature.phase = mode;
+      const draw = (seconds: number) => {
+        const calls: unknown[] = [];
+        const ctx = new Proxy(
+          {},
+          {
+            get:
+              (_target, name) =>
+              (...args: unknown[]) =>
+                calls.push([String(name), args]),
+            set: (_target, name, value) => {
+              calls.push([String(name), value]);
+              return true;
+            },
+          },
+        ) as CanvasRenderingContext2D;
+        drawTemperament(
+          ctx,
+          1280,
+          850,
+          creature,
+          style,
+          seconds,
+          mode === 'reduced',
+        );
+        return calls;
+      };
+      assert.ok(draw(0).length > 0);
+      assert.deepEqual(draw(0), draw(3));
+      creature.resting = false;
+      creature.phase = 'alone';
+      if (mode !== 'reduced') assert.notDeepEqual(draw(0), draw(3));
+    }
   }
 });

@@ -18,7 +18,7 @@
 - **THEN** 原型提示先选择片段，不创建提议
 
 ### Requirement: Memory and temperament are independent
-原型 SHALL 分别提供「留下这一刻」与「一起塑造小莹」。共同记忆生效不改变主性情；主性情初始保留原样，只能从固定目录或历史选择中主动选择。
+原型 SHALL 仅提供「一起塑造小莹」入口，默认保留现有表现。共同确认后保存纪念，选择新的表现时同时改变主性情。取消纪念不撤销形态或删除原对话。
 
 #### Scenario: Keeping a moment
 - **WHEN** 两个不同体验身份确认同一版本的记忆提议
@@ -81,8 +81,33 @@
 
 #### Scenario: Reduced motion or creature rest
 - **WHEN** 用户偏好减少动态或小莹正在休息/受惊/恢复
-- **THEN** 不播放附加动作，仍可通过文字了解当前选择并操作确认
+- **THEN** v2 不播放附加动作，但保留可辨认的静态光感；v1 保持原有行为，仍可通过文字了解当前选择并操作确认
 
 #### Scenario: Long content on a narrow screen
 - **WHEN** 片段、说明和历史较长
 - **THEN** 内容可滚动阅读，关闭、提交、身份切换和原声音控件均可触达且无横向溢出
+
+### Requirement: Unified expression and names
+原型 SHALL 将开头、正文、给谁和落款放在同一表达区域；已编辑文字不自动被选项替换。称呼可选，最多 20 个 Unicode 字符，空值回退角色名；不承担认证。
+
+#### Scenario: Preserve authored text
+- **WHEN** 用户修改正文后切换开头
+- **THEN** 正文保留，只有明确选择使用新开头才替换；返回编辑仍保留内容
+
+#### Scenario: Rename after proposing
+- **WHEN** 参与者在提议之后修改自己的称呼
+- **THEN** 当前留言显示新称呼，待确认来源、历史原文署名及双方姓名快照不变；确认仍按固定角色 ID 判断
+
+### Requirement: Experience rather than quantified shared growth
+朋友创作与接收页 SHALL 不显示成长百分比、亲密条或成长大面板；个人页保持原有成长展示。共同记录默认收起，不引入共同等级。
+
+#### Scenario: Conversation without a joint choice
+- **WHEN** 用户持续聊天或抚摸小莹但未完成共同确认
+- **THEN** 共同性情、纪念和历史不自动增加或变化
+
+### Requirement: Continuous v2 identity during interaction
+新增 v2 表现 SHALL 在首帧、静置、靠近和普通抚摸中保持可辨认的不同标记，原 v1 定义不变，历史使用确切版本。
+
+#### Scenario: Interact with a selected temperament
+- **WHEN** 用户确认或试看 v2 表现后靠近、抚摸、受惊再恢复
+- **THEN** 普通互动保留对应光感与节奏，特殊状态暂停运动但保留静态特征，恢复后仍是所选表现；减少动态时呈现静态特征

@@ -92,7 +92,13 @@ try {
       await step('进入朋友视角；当前原样，接收默认静音', async () => {
         await page.goto(target);
         await page.getByRole('button', { name: /送给朋友/ }).click();
+        await page.getByLabel('给谁（可选）').fill('小满');
+        await page.getByLabel('你的落款（可选）').fill('阿禾');
         await page.getByRole('button', { name: /预览这份心意/ }).click();
+        assert.ok(
+          (await page.locator('.gift-address').textContent()).includes('小满'),
+        );
+        assert.equal(await page.locator('.growth-summary').count(), 0);
         await active('原来的样子');
         assert.ok(await button('开启声音').isVisible());
       });
@@ -108,7 +114,7 @@ try {
         await shot('01-dialogue');
       });
       await step('手动选双方原话和理由；主题不自动识别', async () => {
-        await button(test.style ? '一起塑造小莹' : '留下这一刻').click();
+        await button('一起塑造小莹').click();
         const dialog = page.getByRole('dialog');
         assert.equal(await button('提出这个选择').isEnabled(), false);
         for (const line of test.lines) {

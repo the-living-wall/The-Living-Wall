@@ -162,35 +162,39 @@
   pointer-events: none;
 }
 /* Keep the original control positions when content fits; let long exchanges scroll. */
-.gift-preview[data-gift-view='receive'] {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create']) {
   display: grid;
   grid-template-rows: 135px auto minmax(36px, 1fr) auto;
 }
-.gift-preview[data-gift-view='receive'] .mast {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create']) .mast {
   grid-row: 1;
   align-self: start;
 }
-.gift-preview[data-gift-view='receive'] .guide {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create']) .guide {
   position: relative;
   inset: auto;
   grid-row: 2;
   margin: 0 40px;
 }
-.gift-preview[data-gift-view='receive'] .status {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+  .status {
   position: absolute;
 }
-.gift-preview[data-gift-view='receive'] .bottom {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+  .bottom {
   position: relative;
   inset: auto;
   grid-row: 4;
   margin: 0 40px 28px;
   align-self: end;
 }
-.gift-preview[data-gift-view='receive'] .gift-editor {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+  .gift-editor {
   left: 40px;
   right: auto;
 }
-.gift-preview[data-gift-view='receive'] .gift-preview-label {
+.gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+  .gift-preview-label {
   position: relative;
   inset: auto;
   grid-row: 5;
@@ -218,22 +222,27 @@
     margin-top: 14px;
   }
   .gift-preview[data-gift-view='create'] .growth-summary,
-  .gift-preview[data-gift-view='receive'] .growth-summary {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+    .growth-summary {
     display: none;
   }
-  .gift-preview[data-gift-view='receive'] {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create']) {
     grid-template-rows: 105px auto minmax(32px, 1fr) auto;
   }
-  .gift-preview[data-gift-view='receive'] .guide {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+    .guide {
     margin: 0 22px;
   }
-  .gift-preview[data-gift-view='receive'] .bottom {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+    .bottom {
     margin: 0 22px 22px;
   }
-  .gift-preview[data-gift-view='receive'] .gift-editor {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+    .gift-editor {
     left: 22px;
   }
-  .gift-preview[data-gift-view='receive'] .gift-preview-label {
+  .gift-preview:is([data-gift-view='receive'], [data-gift-view='create'])
+    .gift-preview-label {
     margin: 0 22px 6px;
   }
 }
@@ -524,5 +533,76 @@
   }
   .shared-experience {
     margin-top: 20px;
+  }
+}
+
+/* One letter-writing area, without another card or detached editor. */
+.gift-intent textarea,
+.gift-names input {
+  width: 100%;
+  background: transparent;
+  color: #e2e9e5;
+  border: 0;
+  border-bottom: 1px solid #35413d;
+  border-radius: 0;
+  padding: 10px 0;
+  font:
+    15px/1.8 Arial,
+    'PingFang SC',
+    sans-serif;
+}
+.gift-intent textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+.gift-intent > label:not(:first-child) {
+  margin-top: 20px;
+}
+.gift-names {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+.gift-names input {
+  min-width: 0;
+  font-size: 13px;
+}
+.gift-address {
+  color: #b7c8bd;
+  font-size: 13px;
+  margin: 18px 0 12px;
+  overflow-wrap: anywhere;
+}
+.shared-name-edit {
+  font-size: 11px;
+}
+.gift-preview[data-gift-view='create'] .guide {
+  width: min(370px, calc(100vw - 80px));
+  max-width: 370px;
+}
+@media (max-width: 700px) {
+  .gift-preview[data-gift-view='create'] .guide {
+    width: calc(100vw - 44px);
+    max-width: 370px;
+  }
+  .gift-preview[data-gift-view='create'] .status {
+    display: none;
+  }
+}
+/* The latest main places sound absolutely on phones; friend pages have flowing content. */
+@media (max-width: 700px) {
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive'])
+    .sound-controls {
+    position: relative;
+    inset: auto;
+  }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive'])
+    .sound-options {
+    display: block;
+  }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive'])
+    .control-stack {
+    gap: 12px;
   }
 }

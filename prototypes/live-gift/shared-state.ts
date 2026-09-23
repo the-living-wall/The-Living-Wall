@@ -5,7 +5,11 @@ export const ACTOR_NAMES: Record<Actor, string> = {
   sender: '送出心意的人',
   friend: '收到心意的人',
 };
-export type Message = { id: number; actor: Actor; text: string };
+export const cleanName = (name: string) =>
+  Array.from(name.trim()).slice(0, 20).join('');
+export const actorName = (names: Record<Actor, string>, actor: Actor) =>
+  names[actor] || ACTOR_NAMES[actor];
+export type Message = { id: number; actor: Actor; text: string; name?: string };
 export type Choice =
   | { kind: 'style'; style: StyleKey }
   | { kind: 'memory' }
@@ -16,6 +20,8 @@ export type Proposal = {
   choice: Choice;
   sources: Message[];
   reason: string;
+  names: Record<Actor, string>;
+  keepsMoment: boolean;
 };
 export type SharedRecord = Proposal & {
   previous: StyleKey;
@@ -24,6 +30,7 @@ export type SharedRecord = Proposal & {
   at: number;
 };
 export type SharedState = {
+  names: Record<Actor, string>;
   nextId: number;
   messages: Message[];
   active: StyleKey;
@@ -33,6 +40,7 @@ export type SharedState = {
   feedback: string;
 };
 export type SharedAction =
+  | { type: 'rename'; actor: Actor; name: string }
   | { type: 'message'; actor: Actor; text: string }
   | { type: 'greeting'; text: string }
   | {
@@ -50,6 +58,7 @@ export type SharedAction =
 const clean = (text: string) => text.trim().slice(0, 80);
 export function createSharedState(greeting: string): SharedState {
   return {
+    names: { sender: '', friend: '' },
     nextId: 2,
     messages: clean(greeting)
       ? [{ id: 1, actor: 'sender', text: clean(greeting) }]
@@ -84,6 +93,11 @@ export function sharedReducer(
   state: SharedState,
   action: SharedAction,
 ): SharedState {
+  if (action.type === 'rename')
+    return {
+      ...state,
+      names: { ...state.names, [action.actor]: cleanName(action.name) },
+    };
   if (action.type === 'greeting') {
     const text = clean(action.text);
     if ((state.messages.find((m) => m.id === 1)?.text ?? '') === text)
@@ -150,7 +164,15 @@ export function sharedReducer(
         version: state.nextId,
         author: action.actor,
         choice: { ...choice },
-        sources: sources.map((m) => ({ ...m })),
+        sources: sources.map((m) => ({
+          ...m,
+          name: m.name ?? actorName(state.names, m.actor),
+        })),
+        names: { ...(state.pending?.names ?? state.names) },
+        keepsMoment:
+          choice.kind !== 'remove-memory' &&
+          !historical &&
+          (state.pending?.keepsMoment ?? true),
         reason: clean(action.reason),
       },
       feedback: '提议已留在本页，切换体验身份后可查看；共同选择尚未改变。',
@@ -187,12 +209,11 @@ export function sharedReducer(
   };
   const removeId =
     proposal.choice.kind === 'remove-memory' ? proposal.choice.memoryId : null;
-  const memories =
-    proposal.choice.kind === 'memory'
-      ? [...state.memories, record]
-      : removeId !== null
-        ? state.memories.filter((m) => m.version !== removeId)
-        : state.memories;
+  const memories = proposal.keepsMoment
+    ? [...state.memories, record]
+    : removeId !== null
+      ? state.memories.filter((m) => m.version !== removeId)
+      : state.memories;
   return {
     ...state,
     active,
@@ -201,7 +222,7 @@ export function sharedReducer(
     history: [...state.history, record],
     feedback:
       proposal.choice.kind === 'style'
-        ? '两个体验身份已共同选择，小莹的样子已更新。'
+        ? `${actorName(record.names, 'sender')}与${actorName(record.names, 'friend')}已共同选择，小莹的样子已更新。`
         : proposal.choice.kind === 'memory'
           ? '这一刻已成为本页的共同纪念。'
           : '已取消这条纪念，原对话仍保留。',
