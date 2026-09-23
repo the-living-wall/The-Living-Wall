@@ -1,0 +1,28 @@
+{
+  "source": "6e148f104c59a6d057ec6bbfa0befa94fad806ad",
+  "workingTree": "",
+  "started": "2026-09-23T08:54:55.197Z",
+  "origin": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+  "mode": "cloud-isolated-browser-contexts",
+  "physicalDevices": false,
+  "selectedScenario": "0",
+  "defaultDomainWarmup": true,
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "offlineRetry": true,
+      "serverRestart": false,
+      "browserReload": true,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": true,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": true
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}
