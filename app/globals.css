@@ -542,3 +542,22 @@ canvas:focus-visible {
 .control-stack > .message { width:min(220px, calc(100vw - 44px)); max-width:220px; line-height:1.5; margin-bottom:2px; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
 @media(max-width:700px) { .sound-controls { position:absolute; right:0; top:70px; } }
+
+.depth-diagnostics {
+  position: fixed;
+  z-index: 5;
+  right: 24px;
+  top: 290px;
+  max-width: min(330px, calc(100vw - 48px));
+  padding: 8px 12px;
+  border: 1px solid #46534b;
+  border-radius: 8px;
+  background: #12191cee;
+  color: #d9e5dc;
+  font-size: 12px;
+}
+.depth-diagnostics summary { cursor: pointer; }
+.depth-diagnostics p { margin: 8px 0; }
+.depth-diagnostics button { border: 1px solid #46534b; padding: 4px 8px; border-radius: 4px; }
+.depth-diagnostics button:disabled { opacity: .4; }
+.projection .depth-diagnostics { display: none; }

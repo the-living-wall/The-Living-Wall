@@ -22,9 +22,11 @@ class FrontendContractTests(unittest.TestCase):
         frame[90:145, 130:190] -= 20
         lab.result = lab.detector.update(frame, intrinsics, now=10)
         lab.frame_at = time.monotonic()
-        active = lab.snapshot()
-        lab.frame_at = time.monotonic() - 2
-        stale = lab.snapshot()
+        lab.source_at = lab.frame_at * 1000
+        lab.frame_id, lab.processing_ms = 31, 2
+        active = lab.snapshot(compact=True)
+        lab.source_at = (time.monotonic() - .4) * 1000
+        stale = lab.snapshot(compact=True)
         script = '''
 import assert from 'node:assert/strict';
 import { adaptDepthState } from './lib/depth-input.ts';

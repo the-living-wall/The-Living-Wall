@@ -1,11 +1,22 @@
 import assert from 'node:assert/strict';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import test from 'node:test';
-import { handleDepthBridge } from '../lib/depth-dev-bridge.ts';
+import {
+  handleDepthBridge,
+  compactDepthPayload,
+} from '../lib/depth-dev-bridge.ts';
 
 const port = 3017;
 const original = async () =>
-  Response.json({ mode: 'camera', image: 'raw-frame', age_ms: 12 });
+  Response.json({
+    protocol_version: 1,
+    mode: 'camera',
+    image: 'raw-frame',
+    source_age_ms: 12,
+    result: {
+      near_regions: [{ center: [0.2, 0.3], area_px: 40, contour: [[1, 2]] }],
+    },
+  });
 
 async function call(
   path = '/__depth-lab/state',
@@ -47,7 +58,12 @@ void test('same-origin reads state without image', async () => {
     origin: `http://127.0.0.1:${port}`,
   });
   assert.equal(result.code, 200);
-  assert.deepEqual(result.body, { mode: 'camera', age_ms: 12 });
+  assert.deepEqual(result.body, {
+    protocol_version: 1,
+    mode: 'camera',
+    source_age_ms: 12,
+    result: { near_regions: [{ center: [0.2, 0.3], area_px: 40 }] },
+  });
 });
 
 void test('rejects remote host, cross-origin, unknown path and writes', async () => {
@@ -96,4 +112,46 @@ void test('reports upstream failure and timeout', async () => {
     ).code,
     502,
   );
+});
+
+void test('old endpoint and protocol fail explicitly, without legacy retry', async () => {
+  assert.equal(
+    (
+      await call(
+        undefined,
+        {},
+        'GET',
+        async () => new Response('', { status: 404 }),
+      )
+    ).code,
+    426,
+  );
+  assert.equal(
+    (
+      await call(undefined, {}, 'GET', async () =>
+        Response.json({ mode: 'camera', age_ms: 1 }),
+      )
+    ).code,
+    426,
+  );
+});
+
+void test('only the lightweight endpoint is requested and nested images cannot pass the allowlist', async () => {
+  const urls: string[] = [];
+  await call(undefined, {}, 'GET', async (url) => {
+    urls.push(
+      typeof url === 'string' ? url : url instanceof URL ? url.href : url.url,
+    );
+    return original();
+  });
+  assert.deepEqual(urls, ['http://127.0.0.1:8769/api/input']);
+  const data = compactDepthPayload({
+    protocol_version: 1,
+    message: { image: 'hidden' },
+    device: { model: { image: 'hidden' } },
+    result: {
+      near_regions: [{ center: [{ image: 'hidden' }, 0], area_px: 40 }],
+    },
+  });
+  assert.ok(!JSON.stringify(data).includes('hidden'));
 });
