@@ -28,3 +28,5 @@ OnlineApp 向编辑器提供本机待确认 action；编辑器打开时恢复对
 生产来源首访、实际响应头、冷实例浏览器恢复以及费用/备份门禁保持未完成。
 
 本地最终检查：108 项测试通过，typecheck、lint、主站 build、腾讯完整 build、严格规格 10/10 通过。构建顺序串行；日志在本目录。首次 QA 包类型检查因临时测试包装器的 DOM 类型断言失败，修正 QA 包断言后通过；该测试包装器不属于生产代码。
+
+修复代码提交 96cb15d；SDK 云函数候选包已生成，散列见 cloud-candidate-manifest.json。未部署该候选，现有测试函数保持 3abddff。正式配置集中决策见 [发布确认范围](../2026-09-24-production-candidate/RELEASE-DECISIONS.md)。
