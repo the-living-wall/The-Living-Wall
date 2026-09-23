@@ -1,0 +1,257 @@
+/* Existing app styles are imported unchanged; additions are isolated to this preview. */
+.gift-preview .gift-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+.gift-text {
+  border: 0;
+  background: transparent;
+  color: #a6b0b3;
+  font-size: 14px;
+  min-height: 44px;
+  padding: 8px 0;
+}
+.gift-text:hover {
+  color: #c6efbc;
+}
+.gift-send {
+  color: #c6efbc;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+.gift-guide {
+  pointer-events: auto;
+}
+.gift-guide > button {
+  margin-bottom: 8px;
+}
+.gift-guide > p {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.gift-intent {
+  margin-top: 24px;
+}
+.gift-intent label {
+  display: block;
+  font-size: 12px;
+  color: #a6b0b3;
+  margin-bottom: 4px;
+}
+.gift-intent select {
+  display: block;
+  width: 100%;
+  background: #000;
+  border: 0;
+  border-bottom: 1px solid #303638;
+  border-radius: 0;
+  color: #edf2f1;
+  padding: 8px 0;
+  min-height: 44px;
+  font:
+    18px Arial,
+    'PingFang SC',
+    sans-serif;
+}
+.gift-intent p {
+  font-size: 12px !important;
+  margin-top: 6px !important;
+}
+.gift-receive-note {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #8e9999;
+}
+.gift-reply {
+  margin-top: 28px;
+}
+.gift-reply::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  margin-bottom: 18px;
+  background: #35413d;
+}
+.gift-reply-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 14px;
+  margin-top: 4px;
+}
+.gift-reply-actions .gift-text {
+  font-size: 13px;
+}
+.gift-echo {
+  pointer-events: auto;
+}
+.gift-echo h3 {
+  margin: 0 0 8px;
+  color: #8e9999;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.gift-echo output {
+  display: block;
+  margin: 0;
+  color: #c1cbca;
+  font-size: 14px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.gift-editor {
+  position: fixed;
+  z-index: 8;
+  bottom: 220px;
+  right: 40px;
+  width: 330px;
+  max-width: calc(100vw - 44px);
+  padding: 22px;
+  border: 1px solid #303638;
+  border-radius: 10px;
+  background: #0b1011;
+  box-shadow: 0 12px 40px #0008;
+}
+.gift-editor label {
+  display: block;
+  font-size: 13px;
+  color: #a6b0b3;
+  margin-bottom: 14px;
+}
+.gift-editor textarea {
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid #354143;
+  background: #0b1011;
+  color: #edf2f1;
+  font:
+    16px/1.8 Arial,
+    'PingFang SC',
+    sans-serif;
+  resize: vertical;
+}
+.gift-editor > div {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  margin-top: 18px;
+}
+.gift-save {
+  border: 0;
+  border-radius: 7px;
+  background: #c6efbc;
+  color: #142315;
+  padding: 10px 16px;
+  min-height: 44px;
+}
+.gift-preview-label {
+  position: fixed;
+  bottom: 3px;
+  left: 40px;
+  color: #76817f;
+  font-size: 10px;
+  pointer-events: none;
+}
+/* Keep the original control positions when content fits; let long exchanges scroll. */
+.gift-preview[data-gift-view='receive'] {
+  display: grid;
+  grid-template-rows: 135px auto minmax(36px, 1fr) auto;
+}
+.gift-preview[data-gift-view='receive'] .mast {
+  grid-row: 1;
+  align-self: start;
+}
+.gift-preview[data-gift-view='receive'] .guide {
+  position: relative;
+  inset: auto;
+  grid-row: 2;
+  margin: 0 40px;
+}
+.gift-preview[data-gift-view='receive'] .status {
+  position: absolute;
+}
+.gift-preview[data-gift-view='receive'] .bottom {
+  position: relative;
+  inset: auto;
+  grid-row: 4;
+  margin: 0 40px 28px;
+  align-self: end;
+}
+.gift-preview[data-gift-view='receive'] .gift-editor {
+  left: 40px;
+  right: auto;
+}
+@media (max-width: 700px) {
+  .gift-preview .gift-actions {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .gift-preview .control-stack {
+    gap: 6px;
+  }
+  .gift-editor {
+    right: 22px;
+    bottom: 205px;
+  }
+  .gift-preview-label {
+    left: 22px;
+  }
+  .gift-preview[data-gift-view='create'] .guide {
+    max-width: 220px;
+  }
+  .gift-intent {
+    margin-top: 14px;
+  }
+  .gift-preview[data-gift-view='create'] .growth-summary,
+  .gift-preview[data-gift-view='receive'] .growth-summary {
+    display: none;
+  }
+  .gift-preview[data-gift-view='receive'] {
+    grid-template-rows: 105px auto minmax(32px, 1fr) auto;
+  }
+  .gift-preview[data-gift-view='receive'] .guide {
+    margin: 0 22px;
+  }
+  .gift-preview[data-gift-view='receive'] .bottom {
+    margin: 0 22px 22px;
+  }
+  .gift-preview[data-gift-view='receive'] .gift-editor {
+    left: 22px;
+  }
+}
+
+.gift-editor {
+  top: auto;
+  left: auto;
+  margin: 0;
+  color: #edf2f1;
+}
+.gift-editor::backdrop {
+  background: #0005;
+}
+/* Explicit layers keep the standalone Vite root's canvas below the original UI. */
+.gift-preview {
+  isolation: isolate;
+}
+.gift-preview .stage {
+  z-index: -1;
+}
+.gift-preview .guide {
+  z-index: 2;
+}
+.gift-preview .status {
+  z-index: 2;
+}
+.gift-preview .mast,
+.gift-preview .bottom {
+  transform: translateZ(0);
+}
