@@ -4,12 +4,23 @@ import {
   type SoundState,
 } from './sound-state.ts';
 import { makeAirCandidate, makeCuriosityCandidate } from './air-candidates.ts';
-const clips = ['purr', 'voice', 'touch', 'scales', 'roll', 'startle'] as const;
+const clips = [
+  'purr',
+  'voice',
+  'touch',
+  'scales',
+  'move',
+  'roll',
+  'startle',
+] as const;
 const clipSources: Record<(typeof clips)[number], string> = {
   purr: '/audio/purr.mp3',
   voice: '/audio/voice.mp3',
   touch: '/audio/touch.mp3',
-  scales: '/audio/scales.wav',
+  // Return to the earlier crisp rattle while the B1 WAV is reworked; the WAV
+  // stays in the archive for comparison and is not used by the live mix.
+  scales: '/audio/scales.mp3',
+  move: '/audio/move.mp3',
   roll: '/audio/roll.mp3',
   startle: '/audio/startle.wav',
 };
@@ -20,6 +31,7 @@ export type SoundVolumeKey =
   | 'touch'
   | 'enjoyment'
   | 'scales'
+  | 'movement'
   | 'rotation'
   | 'startle';
 export const DEFAULT_SOUND_VOLUMES: Record<SoundVolumeKey, number> = {
@@ -29,6 +41,7 @@ export const DEFAULT_SOUND_VOLUMES: Record<SoundVolumeKey, number> = {
   touch: 1,
   enjoyment: 1,
   scales: 1,
+  movement: 1,
   rotation: 1,
   startle: 1,
 };
@@ -41,6 +54,7 @@ const cueVolumeKey: Record<SoundCue, SoundVolumeKey> = {
   purr: 'enjoyment',
   roll: 'rotation',
   scales: 'scales',
+  move: 'movement',
   startle: 'startle',
 };
 const settings = {
@@ -56,9 +70,9 @@ const settings = {
   // mix, so keep it at half its previous level while preserving its tone.
   voice: { rate: 0.88, seconds: 1.2, gain: 0.25, cutoff: 3200 },
   touch: { rate: 0.8, seconds: 0.4, gain: 0.22, cutoff: 1800 },
-  // The B1 scale recording is a low-level close mic capture; keep its short
-  // transient but lift it enough to remain audible beside the other cues.
-  scales: { rate: 0.75, seconds: 0.35, gain: 0.72, cutoff: 2600 },
+  // Earlier rattle, with its transient and audible tail restored.
+  scales: { rate: 0.6, seconds: 1.2, gain: 0.18, cutoff: 1900 },
+  move: { rate: 1, seconds: 1, gain: 0.32, cutoff: 3000 },
   startle: { rate: 1, seconds: 0.82, gain: 0.55, cutoff: 3600 },
   roll: { rate: 0.7, seconds: 2, gain: 0.4, cutoff: 3500 },
 };
@@ -81,6 +95,9 @@ export class CreatureAudio {
     nodes: AudioNode[];
   };
   private closed = false;
+  private body?: NonNullable<CreatureAudio['active']>;
+  private movement?: NonNullable<CreatureAudio['active']>;
+  private previewUntil = 0;
   private ready = false;
   private cueVolumes = { ...DEFAULT_SOUND_VOLUMES };
   constructor(volume: number) {
@@ -131,28 +148,43 @@ export class CreatureAudio {
   }
   update(state: SoundState) {
     if (!this.ready || this.closed || this.context.state !== 'running') return;
-    // The purr bed is a separate low-frequency channel, so it does not make
-    // the short-event director think the audio channel is busy.
+    if (this.context.currentTime < this.previewUntil) return;
     const event = this.director.update(state, !!this.active);
-    const purrBed = !!this.purrBed;
-    if (event.stop && !(purrBed && event.cue === 'scales'))
+    if (
+      event.stop &&
+      (!event.cue || event.cue === 'startle' || event.cue === 'rest')
+    )
       this.stop();
-    if (event.cue === 'scales' && this.active) {
-      this.stopTransient();
-    }
+    else if (event.stop) this.stopTransient();
+    if (event.purring) this.play('purr');
+    else this.stopPurr();
+    if (event.bodyCue) this.play(event.bodyCue);
+    if (event.move) this.play('move');
     if (event.cue) this.play(event.cue);
   }
-  private play(cue: SoundCue) {
-    // One sustained purr and one short event may coexist. Short events still
-    // serialize with each other so they cannot pile up into noise.
-    if (cue === 'purr' ? this.purrBed : this.active) return;
+  private play(cue: SoundCue, preview = false) {
+    const channel =
+      cue === 'purr'
+        ? 'purrBed'
+        : cue === 'move'
+          ? 'movement'
+          : cue === 'scales' || cue === 'roll'
+            ? 'body'
+            : 'active';
+    const current = this[channel];
+    if (current) {
+      // A sustained spin can replace its initial rattle, never the core voice.
+      if (cue !== 'roll' || current.cue !== 'scales') return;
+      this.fadeOut(current);
+      this[channel] = undefined;
+    }
     const buffer = this.buffers.get(cue);
     if (!buffer) return;
     const c = this.context,
       config = settings[cue],
       start = c.currentTime;
     const offset = cue === 'roll' ? 0.5 : 0;
-    const looping = cue === 'purr';
+    const looping = cue === 'purr' && !preview;
     const duration = Math.min(
       config.seconds,
       (buffer.duration - offset) / config.rate,
@@ -206,8 +238,7 @@ export class CreatureAudio {
       gain.gain.setValueAtTime(level, start + attack);
     }
     const active = { cue, source, gain, nodes };
-    if (looping) this.purrBed = active;
-    else this.active = active;
+    this[channel] = active;
     if (looping) source.start(start, offset);
     else source.start(start, offset, duration * config.rate);
     // The source ending precedes delay tails; disconnect only after tail completion.
@@ -215,9 +246,7 @@ export class CreatureAudio {
       setTimeout(
         () => {
           nodes.forEach((n) => n.disconnect());
-          if (looping) {
-            if (this.purrBed === active) this.purrBed = undefined;
-          } else if (this.active === active) this.active = undefined;
+          if (this[channel] === active) this[channel] = undefined;
         },
         tail * 1000 + 50,
       );
@@ -226,11 +255,20 @@ export class CreatureAudio {
   audition(cue: SoundCue) {
     if (!this.ready || this.closed) return;
     this.stop();
-    this.play(cue);
+    this.previewUntil =
+      this.context.currentTime +
+      settings[cue].seconds +
+      (cue === 'voice' ? 0.8 : 0) +
+      0.15;
+    this.play(cue, true);
   }
   stop() {
     this.stopTransient();
     this.stopPurr();
+    for (const key of ['body', 'movement'] as const) {
+      if (this[key]) this.fadeOut(this[key]);
+      this[key] = undefined;
+    }
   }
   private stopTransient() {
     const a = this.active;

@@ -1,5 +1,15 @@
-/** Discrete cues, never a looping soundtrack. Time is Creature simulation time. */
-export type SoundCue = 'touch' | 'voice' | 'curiosity' | 'purr' | 'scales' | 'startle' | 'roll' | 'rest' | 'settle';
+/** Decisions use simulation time; playback owns the independent audio channels. */
+export type SoundCue =
+  | 'touch'
+  | 'voice'
+  | 'curiosity'
+  | 'purr'
+  | 'scales'
+  | 'move'
+  | 'startle'
+  | 'roll'
+  | 'rest'
+  | 'settle';
 export type SoundState = {
   time: number;
   phase: string;
@@ -9,49 +19,81 @@ export type SoundState = {
   resting: boolean;
   alarm: number;
   heading: number;
-  /** Actual creature displacement speed, separate from hand/input speed. */
   motionSpeed: number;
   frightCount: number;
+  /** Actual Creature presence; omitted by older callers. */
+  presence?: number;
+};
+export type SoundEvent = {
+  stop: boolean;
+  cue?: SoundCue;
+  bodyCue?: 'scales' | 'roll';
+  move?: boolean;
+  purring: boolean;
 };
 export class SoundDirector {
   private previous?: SoundState;
-  private since = 0;
   private lastStroke = -Infinity;
-  private stage = 0;
-  private next = 0;
+  private strokeSince = -Infinity;
+  private voiceDone = false;
+  private purring = false;
   private turning = false;
+  private spinningSince = -Infinity;
   private moving = false;
-  private motionSound = false;
-  private shockUntil = 0;
   private nextTouch = 0;
-  private nextTurnCue = 0;
-  private nextBodyCue = 0;
+  private nextTurn = 0;
+  private nextRoll = 0;
+  private nextMove = 0;
+  private nextBreath = 0;
+  private quietSince = 0;
+  private curiosityUntil = -Infinity;
+  private shockAt = -Infinity;
   reset() {
     this.previous = undefined;
-    this.lastStroke = -Infinity;
-    this.stage = 0;
-    this.next = 0;
-    this.turning = false;
-    this.moving = false;
-    this.motionSound = false;
-    this.shockUntil = 0;
-    this.nextTouch = 0;
-    this.nextTurnCue = 0;
-    this.nextBodyCue = 0;
+    this.lastStroke = this.strokeSince = -Infinity;
+    this.spinningSince = this.curiosityUntil = -Infinity;
+    this.shockAt = -Infinity;
+    this.voiceDone = this.purring = this.turning = this.moving = false;
+    this.nextTouch = this.nextTurn = this.nextRoll = this.nextMove = 0;
+    this.nextBreath = this.quietSince = 0;
   }
-  update(s: SoundState, busy = false): { stop: boolean; cue?: SoundCue } {
+  update(s: SoundState, busy = false): SoundEvent {
     const p = this.previous;
-    this.previous = { ...s };
     if (!p || s.time < p.time) {
       this.reset();
       this.previous = { ...s };
-      this.since = s.time;
-      this.stage = 0;
-      this.next = s.time;
-      return { stop: true };
+      this.quietSince = s.time;
+      this.nextBreath = s.time + 10;
+      return { stop: true, purring: false };
     }
+    this.previous = { ...s };
     const dt = s.time - p.time;
-    // This is the heading used by the renderer, not pointer speed. Wrap at ±π.
+    const event: SoundEvent = { stop: false, purring: false };
+    const alarm = s.alarm >= 0.1;
+    if (alarm) {
+      this.lastStroke = this.strokeSince = -Infinity;
+      this.purring = false;
+      this.curiosityUntil = this.spinningSince = -Infinity;
+      this.quietSince = s.time;
+      this.nextBreath = s.time + 30;
+      // One attack only; subsequent alarm frames must not cut its tail.
+      if (p.alarm < 0.1) {
+        this.shockAt = s.time;
+        this.moving = false;
+        return { ...event, stop: true, cue: 'startle' };
+      }
+      if (s.time - this.shockAt > 0.18) {
+        const wasMoving = this.moving;
+        this.moving = s.motionSpeed >= (this.moving ? 0.08 : 0.14);
+        if (this.moving && !wasMoving && s.time >= this.nextMove) {
+          event.move = true;
+          this.nextMove = s.time + 1.2;
+        }
+      }
+      return event;
+    }
+    // Keep post-alarm motion eligible: it is measured from the renderer's
+    // heading and actual displacement, never the pointer's swipe speed.
     const speed =
       dt > 0 && dt <= 0.25
         ? Math.abs(
@@ -61,117 +103,95 @@ export class SoundDirector {
             ),
           ) / dt
         : 0;
-    const wasTurning = this.turning;
-    // Rotation and displacement are material events, not behaviour phases.
-    // Use hysteresis so a single shape turn makes one cue, not one per frame.
-    this.turning = speed >= (this.turning ? 0.3 : 0.65);
-    // Startle is exclusively an alarm transition. Internal fright bookkeeping
-    // must never make the cue audible in an otherwise calm state.
-    const shock = s.alarm >= 0.1 && p.alarm < 0.1;
-    if (shock) this.shockUntil = s.time + 1.2;
-    if (shock || s.time < this.shockUntil) {
-      this.stage = 0;
-      this.lastStroke = -Infinity;
-      this.since = s.time;
-      if (shock) {
-        this.motionSound = true;
-        return { stop: true, cue: 'startle' };
-      }
-      // Don't stop the shock cue on every frame while alarm remains high.
-      return { stop: false };
+    const present = s.presence === undefined || s.presence > 0.1;
+    this.turning = present && speed >= (this.turning ? 0.3 : 0.65);
+    if (present && speed >= 1.8) {
+      if (!Number.isFinite(this.spinningSince)) this.spinningSince = s.time;
+    } else this.spinningSince = -Infinity;
+    const roll =
+      Number.isFinite(this.spinningSince) &&
+      s.time - this.spinningSince >= 0.35 &&
+      s.time >= this.nextRoll;
+    if (roll) {
+      event.bodyCue = 'roll';
+      this.nextRoll = s.time + 2.5;
+      this.nextTurn = s.time + 2.2;
+    } else if (this.turning && s.time >= this.nextTurn) {
+      event.bodyCue = 'scales';
+      this.nextTurn = s.time + 1.4;
     }
-    const fastTurnOnset = this.turning && !wasTurning;
-    if (fastTurnOnset && s.time >= this.nextTurnCue && s.time >= this.nextBodyCue) {
-      // A visible rapid rotation is itself a body event. Emit it before the
-      // petting sequence so contact cannot swallow the material cue.
-      this.nextTurnCue = s.time + 1.4;
-      this.nextBodyCue = s.time + 1.8;
-      return { stop: true, cue: 'scales' };
+    const wasMoving = this.moving;
+    this.moving = present && s.motionSpeed >= (this.moving ? 0.08 : 0.14);
+    if (this.moving && !wasMoving && s.time >= this.nextMove) {
+      event.move = true;
+      this.nextMove = s.time + 1.2;
     }
-    const endedMotion = this.motionSound;
-    this.motionSound = false;
-    // A brief reversal in the same valid touch area is one petting interaction.
-    // Hover/contact loss, leaving the body, or a longer pause still ends it.
-    const continued = s.touching && s.time - this.lastStroke <= 0.5;
-    const stoppedStroke = !s.stroked && !continued && this.stage > 0;
-    const stop =
-      endedMotion ||
-      stoppedStroke ||
-      (p.stroked && !s.stroked && !continued) ||
-      (p.resting && !s.resting);
-    if (endedMotion) {
-      // A body whoosh is an overlay event, not a new stroking interaction.
-      // Do not restart the enjoyment clock or purr will never become reachable
-      // while the creature is gently repositioning itself.
-      this.next = Math.max(this.next, s.time + 0.2);
-    }
-    if (s.alarm >= 0.1) {
-      this.stage = 0;
-      this.since = s.time;
-      return { stop };
-    }
-    const satisfied = stoppedStroke && this.stage >= 3 && p.enjoyment > 0.45;
-    if (stoppedStroke) this.stage = 0;
+
     if (s.stroked) {
-      if (this.stage === 0) this.since = s.time;
+      if (!Number.isFinite(this.strokeSince)) this.strokeSince = s.time;
       this.lastStroke = s.time;
     }
-    if (s.resting && !p.resting) {
-      this.next = s.time + 5;
-      return { stop: true, cue: 'rest' };
+    const contact = s.stroked || s.touching;
+    const continuing = !s.resting && contact && s.time - this.lastStroke <= 0.8;
+    const wasPurring = this.purring;
+    this.purring =
+      continuing &&
+      ((s.stroked && s.enjoyment > 0.45) || (wasPurring && s.enjoyment > 0.35));
+    event.purring = this.purring;
+    if (!continuing) {
+      this.strokeSince = -Infinity;
+      this.voiceDone = false;
     }
-    if (satisfied) return { stop: true, cue: 'settle' };
     if (
-      !s.stroked &&
-      !s.touching &&
-      (s.phase === 'probe' || s.phase === 'invite') &&
-      p.phase !== s.phase
+      contact ||
+      s.phase !== 'alone' ||
+      s.resting ||
+      this.turning ||
+      this.moving
     ) {
-      return { stop: false, cue: 'curiosity' };
+      this.quietSince = s.time;
+      this.nextBreath = Math.max(this.nextBreath, s.time + 30);
     }
-    // Contact acknowledgment is independent of moving fast enough to stroke.
-    if (s.touching && !p.touching && s.time >= this.nextTouch) {
+
+    if (s.resting && !p.resting) {
+      this.nextBreath = s.time + 30;
+      return { ...event, stop: true, cue: 'rest' };
+    }
+    if (p.resting && !s.resting) event.stop = true;
+    if (wasPurring && !this.purring && !s.resting && s.enjoyment > 0.35) {
+      return { ...event, stop: true, cue: 'settle' };
+    }
+    if (!contact && (p.stroked || p.touching)) event.stop = true;
+    const curious = !s.stroked && (s.phase === 'probe' || s.phase === 'invite');
+    if (curious && s.phase !== p.phase) this.curiosityUntil = s.time + 1;
+    if (!curious) this.curiosityUntil = -Infinity;
+
+    if (contact && !p.touching && !p.stroked && s.time >= this.nextTouch) {
       this.nextTouch = s.time + 1.5;
-      if (s.stroked && this.stage === 0) {
-        this.stage = 1;
-        this.next = s.time + 1.1;
-      }
-      return { stop: true, cue: 'touch' };
+      return { ...event, stop: true, cue: 'touch' };
     }
-    if (s.stroked && this.stage === 0 && !endedMotion) {
-      this.stage = 1;
-      this.next = s.time + 1.1;
-      if (s.time < this.nextTouch) return { stop };
-      this.nextTouch = s.time + 1.5;
-      return { stop: true, cue: 'touch' };
+    if (busy && !event.stop) return event;
+    if (curious && s.time <= this.curiosityUntil) {
+      this.curiosityUntil = -Infinity;
+      return { ...event, cue: 'curiosity' };
     }
-    // A fast material turn remains audible even when another cue is playing;
-    // other petting stages still wait for the real audio channel.
-    if (s.time < this.next || (busy && !stop)) return { stop };
-    let cue: SoundCue | undefined;
-    if (s.stroked) {
-      const elapsed = s.time - this.since;
-      if (this.stage === 0) {
-        cue = 'touch';
-        this.stage = 1;
-      } else if (this.stage === 1 && elapsed >= 1) {
-        cue = 'voice';
-        this.stage = 2;
-      } else if (this.stage === 2 && elapsed >= 4 && s.enjoyment > 0.45) {
-        cue = 'purr';
-        this.stage = 3;
-      } else if (this.stage === 3 && elapsed >= 8 && s.enjoyment > 0.65) {
-        cue = 'roll';
-        this.stage = 4;
-      }
+    if (s.stroked && !this.voiceDone && s.time - this.strokeSince >= 1) {
+      this.voiceDone = true;
+      return { ...event, cue: 'voice' };
     }
-    // Every fast turn onset is a material change in the creature's body.
-    // It remains audible while touching or stroking, and has no cooldown;
-    // the hysteresis above prevents repeated cues during one continuous turn.
-    if (cue)
-      this.next = s.time + (cue === 'purr' ? 3.3 : cue === 'voice' ? 2.2 : 1.1);
-    // Deep enjoyment transitions from the sustained purr bed to the short
-    // roll cue; stop the bed before that one-shot event starts.
-    return { stop: stop || cue === 'roll', cue };
+    if (
+      !contact &&
+      !s.resting &&
+      !event.stop &&
+      !event.bodyCue &&
+      !event.move &&
+      s.phase === 'alone' &&
+      s.time >= this.nextBreath &&
+      s.time - this.quietSince >= 10
+    ) {
+      this.nextBreath = s.time + 18;
+      return { ...event, cue: 'rest' };
+    }
+    return event;
   }
 }

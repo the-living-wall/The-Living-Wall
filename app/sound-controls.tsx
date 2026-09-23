@@ -6,9 +6,9 @@ import type { SoundCue } from '@/lib/sound-state';
 import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'xiaoying-sound-volumes';
-const labels: Record<SoundVolumeKey, string> = { breathing: '呼吸', heartMouth: '心 / 口部回应', curiosityHand: '好奇伸手', touch: '接触回应', enjoyment: '抚摸享受', scales: '鳞片碎响', rotation: '快速旋转', startle: '受惊 / 转场' };
+const labels: Record<SoundVolumeKey, string> = { breathing: '呼吸', heartMouth: '心 / 口部回应', curiosityHand: '好奇伸手', touch: '接触回应', enjoyment: '抚摸享受', scales: '鳞片碎响', movement: '快速移动', rotation: '快速旋转', startle: '受惊 / 转场' };
 const keys = Object.keys(DEFAULT_SOUND_VOLUMES) as SoundVolumeKey[];
-const previewCues: Record<SoundVolumeKey, SoundCue> = { breathing: 'rest', heartMouth: 'voice', curiosityHand: 'curiosity', touch: 'touch', enjoyment: 'purr', scales: 'scales', rotation: 'roll', startle: 'startle' };
+const previewCues: Record<SoundVolumeKey, SoundCue> = { breathing: 'rest', heartMouth: 'voice', curiosityHand: 'curiosity', touch: 'touch', enjoyment: 'purr', scales: 'scales', movement: 'move', rotation: 'roll', startle: 'startle' };
 type SavedVolumes = Record<SoundVolumeKey, number> & { music: number };
 const readVolumes = (): SavedVolumes => {
   const next: SavedVolumes = { ...DEFAULT_SOUND_VOLUMES, music: 0.12 };
