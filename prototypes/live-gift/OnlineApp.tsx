@@ -340,30 +340,33 @@ export default function OnlineApp() {
   return <Companion key={selected || 'new'} connection={connection} />;
 }
 
-export function ConnectionPanel({ connection: c }: { connection: Connection }) {
+export function ConnectionPanel({
+  connection: c,
+  mode,
+}: {
+  connection: Connection;
+  mode: 'home' | 'create' | 'receive';
+}) {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
-  const manualLink = useRef<HTMLDetailsElement>(null);
+
   const linkInput = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (copyState === 'failed') {
+      linkInput.current?.focus();
+      linkInput.current?.select();
+    }
+  }, [copyState]);
   const friendReplied = c.view?.state.messages.some(
     (message) => message.actor === 'friend',
   );
   return (
-    <div className="connection-panel">
-      {c.view ? (
+    <div className={`connection-panel connection-${mode}`}>
+      {c.view && mode === 'receive' ? (
         <>
-          <p>
-            交流保存至 {new Date(c.view.expires).toLocaleDateString('zh-CN')}
-            。此浏览器保留你的访问凭证。
-          </p>
           {c.invitation && (
             <section className="gift-share" aria-label="把心意分享给朋友">
-              <output className="gift-share-status">
-                {friendReplied
-                  ? '朋友已回复，可以在下方继续聊。'
-                  : '心意已创建，把邀请链接发给朋友吧。'}
-              </output>
               <button
                 className="gift-text gift-send"
                 onClick={async () => {
@@ -372,24 +375,21 @@ export function ConnectionPanel({ connection: c }: { connection: Connection }) {
                     setCopyState('copied');
                   } catch {
                     setCopyState('failed');
-                    if (manualLink.current) manualLink.current.open = true;
-                    linkInput.current?.focus();
-                    linkInput.current?.select();
                   }
                 }}
               >
                 复制邀请链接 ↗
               </button>
               <output>
-                {copyState === 'copied'
-                  ? '链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。'
-                  : copyState === 'failed'
-                    ? '没能自动复制，请长按或选中下方完整链接，手动复制。'
-                    : '复制后发给一位朋友，对方打开并接受，就能与你留言。'}
+                {copyState === 'failed'
+                  ? '没能自动复制，请选中下方完整链接，手动复制。'
+                  : friendReplied
+                    ? '朋友已回复，可以继续聊。'
+                    : copyState === 'copied'
+                      ? '链接已复制，粘贴给这位朋友即可。'
+                      : '心意已创建，复制链接发给这位朋友。'}
               </output>
-              <details ref={manualLink}>
-                <summary>手动复制链接</summary>
-                <p>请复制这里的完整邀请链接，地址栏的网址不能用来邀请。</p>
+              {copyState === 'failed' && (
                 <input
                   ref={linkInput}
                   aria-label="朋友的邀请链接"
@@ -397,7 +397,7 @@ export function ConnectionPanel({ connection: c }: { connection: Connection }) {
                   value={c.invitation}
                   onFocus={(e) => e.target.select()}
                 />
-              </details>
+              )}
             </section>
           )}
           {c.view.actor === 'sender' && (
@@ -412,6 +412,9 @@ export function ConnectionPanel({ connection: c }: { connection: Connection }) {
               </button>
             </details>
           )}
+          <p className="gift-retention" aria-label="这份交流的保存期限">
+            交流保存至 {new Date(c.view.expires).toLocaleDateString('zh-CN')}。
+          </p>
         </>
       ) : (
         <>
@@ -420,7 +423,9 @@ export function ConnectionPanel({ connection: c }: { connection: Connection }) {
               上次创建结果尚未确认，请重试生成以找回同一份心意，原文不会重复发布。
             </p>
           )}
-          <p>测试交流保存 7 天，发送者可删除。清理浏览器数据后无法找回身份。</p>
+          {mode === 'create' && (
+            <p>交流保存 7 天。请保留当前浏览器数据，以便找回。</p>
+          )}
           {c.saved.length > 0 && (
             <details>
               <summary>我的心意（{c.saved.length}）</summary>

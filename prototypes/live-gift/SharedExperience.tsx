@@ -41,7 +41,7 @@ export default function SharedExperience({
   const dialog = useRef<HTMLDialogElement>(null);
   const pending = state.pending;
   const availableSources = getProposalSources(state, expected);
-  const replies = state.messages.filter((m) => m.id !== 1);
+  const messages = state.messages;
   useEffect(() => {
     if (mode) dialog.current?.showModal();
   }, [mode]);
@@ -134,13 +134,15 @@ export default function SharedExperience({
           修改我的称呼
         </button>
       </div>
-      {replies.length > 2 && (
-        <details className="shared-history">
-          <summary>之前的话（{replies.length - 2}）</summary>
-          {replies.slice(0, -2).map(renderMessage)}
-        </details>
-      )}
-      {replies.slice(-2).map(renderMessage)}
+      <section className="shared-conversation" aria-label="我们的对话">
+        {messages.length > 4 && (
+          <details className="shared-history">
+            <summary>之前的话（{messages.length - 4}）</summary>
+            {messages.slice(0, -4).map(renderMessage)}
+          </details>
+        )}
+        {messages.slice(-4).map(renderMessage)}
+      </section>
       <button className="gift-text shared-reply" onClick={() => open('reply')}>
         回一句给朋友
       </button>

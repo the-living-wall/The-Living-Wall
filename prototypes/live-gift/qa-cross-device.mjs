@@ -105,19 +105,20 @@ try {
     const copyButton = btn(a, '复制邀请链接 ↗');
     await appears(copyButton);
     await appears(
-      a.getByText('心意已创建，把邀请链接发给朋友吧。', { exact: true }),
+      a.getByText('心意已创建，复制链接发给这位朋友。', { exact: true }),
     );
-    assert.equal(await a.getByLabel('朋友的邀请链接').isVisible(), false);
+    assert.equal(await a.getByLabel('朋友的邀请链接').count(), 0);
+    assert.equal(await a.getByText('手动复制链接', { exact: true }).count(), 0);
     await sender.grantPermissions(['clipboard-read', 'clipboard-write']);
     await a.bringToFront();
     await copyButton.click();
     await appears(
-      a.getByText('链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。', {
+      a.getByText('链接已复制，粘贴给这位朋友即可。', {
         exact: true,
       }),
     );
     const invite = await a.evaluate(() => navigator.clipboard.readText());
-    assert.equal(invite, await a.getByLabel('朋友的邀请链接').inputValue());
+    assert.match(new URL(invite).hash, /^#invite=[a-f0-9]{64}$/);
     await a.screenshot({
       path: join(folder, 'share-desktop.png'),
       fullPage: true,
@@ -144,14 +145,14 @@ try {
       });
       await copyButton.click();
       await appears(
-        a.getByText('没能自动复制，请长按或选中下方完整链接，手动复制。', {
+        a.getByText('没能自动复制，请选中下方完整链接，手动复制。', {
           exact: true,
         }),
       );
       await appears(a.getByLabel('朋友的邀请链接'));
       assert.equal(
         await a
-          .getByText('链接已复制。请粘贴到微信或其他聊天中，发给这位朋友。', {
+          .getByText('链接已复制，粘贴给这位朋友即可。', {
             exact: true,
           })
           .count(),
@@ -163,10 +164,25 @@ try {
         fullPage: true,
         mask: [a.getByLabel('朋友的邀请链接')],
       });
-      await a.getByText('手动复制链接', { exact: true }).click();
+      await a.evaluate(() => {
+        delete navigator.clipboard.writeText;
+      });
+      await copyButton.click();
+      await a.getByLabel('朋友的邀请链接').waitFor({ state: 'detached' });
     }
     await a.setViewportSize({ width: 1280, height: 850 });
     assert.ok(invite.includes('#invite='));
+    if (index === 0) {
+      await btn(a, '回到小莹').click();
+      assert.equal(
+        await a.getByText('管理这份心意', { exact: true }).count(),
+        0,
+      );
+      assert.equal(await a.getByLabel('这份交流的保存期限').count(), 0);
+      await a.getByText(/^我的心意/).click();
+      await btn(a, '送给 小满').click();
+      await appears(copyButton);
+    }
     await open(b, invite);
     assert.equal(
       await b.getByText(first, { exact: true }).count(),
@@ -179,9 +195,28 @@ try {
     assert.equal(await b.getByLabel('体验身份', { exact: true }).count(), 0);
     await say(b, second);
     await appears(a.getByText(second, { exact: true }));
-    await appears(
-      a.getByText('朋友已回复，可以在下方继续聊。', { exact: true }),
-    );
+    await appears(a.getByText('朋友已回复，可以继续聊。', { exact: true }));
+    for (const page of [a, b]) {
+      const conversation = page.getByLabel('我们的对话', { exact: true });
+      await appears(conversation.getByText(first, { exact: true }));
+      await appears(conversation.getByText(second, { exact: true }));
+      const texts = await conversation
+        .locator('.shared-message p')
+        .allTextContents();
+      assert.deepEqual(texts, [first, second]);
+      assert.equal(await page.getByText(first, { exact: true }).count(), 1);
+      assert.equal(
+        await page.locator('.guide').getByLabel('这份交流的保存期限').count(),
+        0,
+      );
+      assert.equal(
+        await page
+          .locator('.control-stack')
+          .getByLabel('这份交流的保存期限')
+          .count(),
+        1,
+      );
+    }
     if (index === 0) {
       await friend.setOffline(true);
       await btn(b, '回一句给朋友').click();
@@ -263,6 +298,9 @@ try {
       visibleCopyAndClipboard: true,
       copyFailureFallback: index === 0,
       replyStatusFromMessage: true,
+      unifiedConversation: true,
+      retentionInFooter: true,
+      homeSavedGiftClickable: index === 0,
     });
   }
   assert.deepEqual(report.errors, []);

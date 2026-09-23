@@ -623,3 +623,19 @@
 .connection-panel .gift-share summary { font-size: 12px; color: #97a5a3; }
 
 .connection-panel .gift-share output { display: block; margin: 10px 0; }
+
+/* Conversation first; sharing and storage details stay with the quiet utilities. */
+.connection-panel { pointer-events: auto; }
+.control-stack > .connection-panel { width: min(310px, 100%); text-align: right; margin-top: 0; }
+.connection-panel .gift-share { margin: 0; }
+.connection-panel .gift-share > button { margin: 0 0 0 auto; }
+.connection-panel .gift-retention { color: #8e9999; font-size: 11px !important; }
+.connection-panel input { min-width: 0; }
+.shared-role { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 12px; margin-bottom: 12px; }
+.shared-conversation .shared-message { margin: 0 0 20px; }
+.gift-preview[data-gift-view='receive'] .guide { width: min(370px, calc(100vw - 80px)); max-width: 370px; }
+@media (max-width: 700px) {
+  .gift-preview[data-gift-view='receive'] .guide { width: calc(100vw - 44px); max-width: 370px; }
+  .gift-preview[data-gift-view='receive'] .gift-address { max-width: calc(100% - 90px); }
+  .gift-preview[data-gift-view='receive'] .shared-role { margin-top: 22px; }
+}

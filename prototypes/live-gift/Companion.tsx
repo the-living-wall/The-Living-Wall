@@ -501,7 +501,9 @@ export default function Companion({
             <br />
             停下来，看看它会不会靠过来。
           </p>
-          {connection && <ConnectionPanel connection={connection} />}
+          {connection && (
+            <ConnectionPanel connection={connection} mode="home" />
+          )}
         </section>
       ) : (
         <section className="guide gift-guide">
@@ -540,14 +542,9 @@ export default function Companion({
               {actorName(shared.names, 'sender')}
             </div>
           )}
-          <p>
-            {giftView === 'create'
-              ? '留一点光，也捎一句话。让朋友知道，你在惦记着。'
-              : connection?.view
-                ? (shared.messages.find((m) => m.id === 1)?.text ?? '')
-                : note}
-          </p>
-          {connection && <ConnectionPanel connection={connection} />}
+          {giftView === 'create' && (
+            <p>留一点光，也捎一句话。让朋友知道，你在惦记着。</p>
+          )}
           {giftView === 'receive' && (
             <SharedExperience
               connection={connection}
@@ -693,6 +690,9 @@ export default function Companion({
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
         <div className="control-stack">
+          {connection && giftView !== 'home' && (
+            <ConnectionPanel connection={connection} mode={giftView} />
+          )}
           {message && !projection && (
             <output className="message">{message}</output>
           )}

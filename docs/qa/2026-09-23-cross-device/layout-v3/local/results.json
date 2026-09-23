@@ -1,0 +1,56 @@
+{
+  "source": "315fb3629fb4dafa3ae78da13bc78e16da101cb9",
+  "workingTree": "M docs/PRD.md\n M openspec/changes/cross-device-gifts/design.md\n M openspec/changes/cross-device-gifts/tasks.md\n M prototypes/live-gift/Companion.tsx\n M prototypes/live-gift/OnlineApp.tsx\n M prototypes/live-gift/SharedExperience.tsx\n M prototypes/live-gift/preview.css\n M prototypes/live-gift/qa-cross-device.mjs",
+  "started": "2026-09-23T08:50:00.172Z",
+  "origin": "http://127.0.0.1:4191",
+  "mode": "local-sqlite",
+  "physicalDevices": false,
+  "selectedScenario": "all",
+  "defaultDomainWarmup": false,
+  "scenarios": [
+    {
+      "name": "安静陪伴",
+      "status": "passed",
+      "active": "沉静",
+      "offlineRetry": true,
+      "serverRestart": true,
+      "browserReload": true,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": true,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": true
+    },
+    {
+      "name": "轻松打趣",
+      "status": "passed",
+      "active": "俏皮",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false
+    },
+    {
+      "name": "共同约定",
+      "status": "passed",
+      "active": "原来的样子",
+      "offlineRetry": false,
+      "serverRestart": false,
+      "browserReload": false,
+      "visibleCopyAndClipboard": true,
+      "copyFailureFallback": false,
+      "replyStatusFromMessage": true,
+      "unifiedConversation": true,
+      "retentionInFooter": true,
+      "homeSavedGiftClickable": false
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}
