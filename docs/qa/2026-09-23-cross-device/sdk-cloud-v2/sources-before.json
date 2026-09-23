@@ -1,0 +1,127 @@
+{
+  "data": [
+    {
+      "Id": "b3b973ab-de74-4aaf-ae64-2f933f3b0595",
+      "Domain": "656e-env-d1g2bv5sn355fc36e-1301641054.tcb.qcloud.la",
+      "Type": "USER",
+      "Status": "ENABLE",
+      "CreateTime": "2026-09-23 11:37:46",
+      "UpdateTime": "2026-09-23 11:37:46"
+    },
+    {
+      "Id": "f41784b4-f17f-4455-bd1c-e0ed75263b41",
+      "Domain": "env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com",
+      "Type": "USER",
+      "Status": "ENABLE",
+      "CreateTime": "2026-09-23 11:37:46",
+      "UpdateTime": "2026-09-23 11:37:46"
+    },
+    {
+      "Id": "1ebd1cf7-349a-47c8-b62c-e79c9df31a6a",
+      "Domain": "env-d1g2bv5sn355fc36e-1301641054.tcloudbaseapp.com",
+      "Type": "USER",
+      "Status": "ENABLE",
+      "CreateTime": "2026-09-23 11:38:16",
+      "UpdateTime": "2026-09-23 11:38:16"
+    },
+    {
+      "Id": "ba82601c-c1ae-443f-a821-d08619f0fd7d",
+      "Domain": "localhost:80",
+      "Type": "USER",
+      "Status": "ENABLE",
+      "CreateTime": "2026-09-23 11:37:46",
+      "UpdateTime": "2026-09-23 11:37:46"
+    },
+    {
+      "Id": "77f47538-5494-4567-95a6-0f25e12cb3e0",
+      "Domain": "localhost:8080",
+      "Type": "USER",
+      "Status": "ENABLE",
+      "CreateTime": "2026-09-23 11:37:46",
+      "UpdateTime": "2026-09-23 11:37:46"
+    },
+    {
+      "Id": "1",
+      "Domain": "weda.cloud.tencent.com",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:54",
+      "UpdateTime": "2024-09-29 17:14:54"
+    },
+    {
+      "Id": "2",
+      "Domain": "tcb.cloud.tencent.com",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:54",
+      "UpdateTime": "2024-09-29 17:14:54"
+    },
+    {
+      "Id": "3",
+      "Domain": "weda.cloud.tencent.cn",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:55",
+      "UpdateTime": "2024-09-29 17:14:55"
+    },
+    {
+      "Id": "4",
+      "Domain": "tcb.cloud.tencent.cn",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:55",
+      "UpdateTime": "2024-09-29 17:14:55"
+    },
+    {
+      "Id": "5",
+      "Domain": "weda.cloud.tencent.com.cn",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:55",
+      "UpdateTime": "2024-09-29 17:14:55"
+    },
+    {
+      "Id": "6",
+      "Domain": "tcb.cloud.tencent.com.cn",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2024-09-29 17:14:55",
+      "UpdateTime": "2024-09-29 17:14:55"
+    },
+    {
+      "Id": "7",
+      "Domain": "*.preview.cloudbase.net",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2025-02-20 11:21:06",
+      "UpdateTime": "2025-02-20 12:09:33"
+    },
+    {
+      "Id": "8",
+      "Domain": "*.webapps.tcloudbase.com",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2026-06-03 11:53:55",
+      "UpdateTime": "2026-06-03 11:53:55"
+    },
+    {
+      "Id": "9",
+      "Domain": " docs.cloudbase.net",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2026-06-03 11:53:55",
+      "UpdateTime": "2026-06-03 11:53:55"
+    },
+    {
+      "Id": "10",
+      "Domain": "tcb.tencentcloud.com",
+      "Type": "SYSTEM",
+      "Status": "ENABLE",
+      "CreateTime": "2026-08-04 14:41:49",
+      "UpdateTime": "2026-08-04 14:41:49"
+    }
+  ],
+  "meta": {
+    "total": 15
+  }
+}

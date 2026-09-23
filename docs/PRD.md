@@ -235,3 +235,5 @@ UI-01～03 原型进度（Refs #69）：独立原型源码见 `prototypes/quiet-
 2026-09-23 部署方向纠正（Refs #88）：用户要求在已有 thelivingwall.cn 主站增加朋友互动，复用已购 CloudBase。控制台确认主站为 EdgeOne Makers 全球可用区（不含中国大陆）；优先验证官方 SDK 接入现有业务函数，不再将 CloudBase 备案资源的六个月有效期和固定 IP 当作通用前提。具体接入及权限尚未实现或变更，生产保持原状；见 [核验与下一步](qa/2026-09-23-cross-device/existing-site-integration-v1/README.md)。无应用行为变化。
 
 2026-09-23 SDK 接入验证范围（Refs #88）：增加显式选择的官方 SDK 调用方式，免注册体验下使用平台匿名会话取得调用资格，双方访问权限仍由独立邀请/参与者凭证决定。匿名会话不作为真实身份，不写入共同成长。本地契约和原 HTTP 三场景已通过；待确认创建在刷新后恢复原文与称呼，避免显示默认文案却重发旧内容。当前不调整生产、旧 HTTP 测试站或数据库可见性；真实匿名授权、最终来源及费用/数据边界未完成前不宣称正式可用。见 [SDK 第一版验证](qa/2026-09-23-cross-device/sdk-validation-v1/README.md) 及 [权限与回退](../services/gifts/cloudbase/SDK-VALIDATION.md)。
+
+2026-09-23 SDK 云端联调进度（Refs #88）：隔离函数 `xiaoying-gifts-sdk-probe` 已部署源 `d916ba6`，业务开关保持关闭；原 HTTP 健康接口正常。匿名登录、具名函数权限和来源尚未开放。保存 OPA 会切换整个测试环境的网关鉴权方式，自动审批审查要求用户另行明确确认该影响，操作未执行。当前没有真实 SDK 匿名收发通过的证据，生产行为未改变；见 [第二版留档](qa/2026-09-23-cross-device/sdk-cloud-v2/README.md)。

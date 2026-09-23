@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-09-23T14:05:50.068554+00:00",
+  "url": "https://env-d1g2bv5sn355fc36e-1301641054.ap-shanghai.app.tcloudbase.com/api/health",
+  "status": 200,
+  "body": {
+    "ok": true
+  },
+  "requestId": "e848cde8-2b5a-46e1-b043-029981982a67"
+}

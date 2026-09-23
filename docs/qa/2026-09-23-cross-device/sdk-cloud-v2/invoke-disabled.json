@@ -1,0 +1,14 @@
+{
+  "data": {
+    "functionType": "Event",
+    "RequestId": "223ba1b4-c23e-4eaf-af30-b7a2199c034a",
+    "FunctionRequestId": "223ba1b4-c23e-4eaf-af30-b7a2199c034a",
+    "InvokeResult": 0,
+    "Log": "Init Report RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a Coldstart: 594ms (InitRuntime: 10ms InitFunction: 584ms) Memory: 256MB MemUsage: 20.20MB\nSTART RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a\nEvent RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a\nResponse RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a RetMsg: {\"status\":503,\"value\":{\"error\":\"连接配置尚未完成，请稍后重试。\"}}\nEND RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a\nReport RequestId: 223ba1b4-c23e-4eaf-af30-b7a2199c034a Duration: 4ms Memory: 256MB MemUsage: 20.582031MB\n",
+    "RetMsg": "{\"status\":503,\"value\":{\"error\":\"连接配置尚未完成，请稍后重试。\"}}",
+    "ErrMsg": "",
+    "MemUsage": 21581824,
+    "Duration": 4,
+    "BillDuration": 100
+  }
+}

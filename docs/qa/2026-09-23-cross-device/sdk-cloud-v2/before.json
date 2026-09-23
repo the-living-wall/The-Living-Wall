@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-09-23",
+  "environment": "env-d1g2bv5sn355fc36e",
+  "region": "ap-shanghai",
+  "source": "d916ba60d2a59ad5f0c0a25ab2973f6b5997b8ff",
+  "anonymousLogin": false,
+  "usernameLogin": true,
+  "emailLogin": false,
+  "phoneLogin": false,
+  "userRego": "",
+  "extensionRego": "",
+  "legacyGatewayPolicyCount": 0,
+  "functions": [
+    "xiaoying-gifts-api",
+    "xiaoying-gifts-cleanup"
+  ],
+  "functionSecurityRule": {
+    "*": {
+      "invoke": "auth != null && auth.loginType != 'ANONYMOUS'"
+    },
+    "xiaoying-gifts-cleanup": {
+      "invoke": false
+    }
+  },
+  "collections": {
+    "xiaoying_gifts": "ADMINONLY",
+    "xiaoying_limits": "ADMINONLY"
+  },
+  "newSourceAbsent": "127.0.0.1:4194",
+  "requestIds": [
+    "765c51d2-9bef-4089-8bec-325e004168e1",
+    "bb98267c-cd71-40bd-b7cd-b461283d3870",
+    "f70daa92-3e8c-4cdd-82bd-8aa76009e987",
+    "bd446998-ddd8-4de7-9396-313a64c19877"
+  ]
+}

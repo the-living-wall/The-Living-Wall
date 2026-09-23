@@ -1,0 +1,17 @@
+{
+  "envId": "env-d1g2bv5sn355fc36e",
+  "functions": [
+    {
+      "name": "xiaoying-gifts-sdk-probe",
+      "handler": "index.sdk",
+      "runtime": "Nodejs20.19",
+      "memorySize": 256,
+      "timeout": 15,
+      "installDependency": true,
+      "envVariables": {
+        "GIFT_ENV_ID": "env-d1g2bv5sn355fc36e",
+        "GIFT_SDK_ENABLED": "false"
+      }
+    }
+  ]
+}
