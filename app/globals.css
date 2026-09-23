@@ -492,7 +492,12 @@ canvas:focus-visible {
 .sound-credits { color:#c4eab2; font-size:12px; }
 
 .showcase-page { min-height:100vh; background:#000; color:#dfe8e7; }
-.showcase-canvas { display:block; width:100%; height:66vh; min-height:420px; }
+.showcase-canvas { display:block; width:100%; height:66vh; min-height:420px; touch-action:none; }
+.showcase-sound { max-width:1180px; margin:18px auto 0; }
+.showcase-sound .sound-controls { position:static; align-items:flex-start; }
+.showcase-sound .sound-row { justify-content:flex-start; }
+.showcase-sound .sound-row > button { border:1px solid #53695d; border-radius:8px; padding:10px 14px; background:#121918; color:#c9d5d2; cursor:pointer; }
+.showcase-sound .sound-message { text-align:left; }
 .showcase-panel { position:relative; z-index:2; margin:-1px auto 0; padding:24px clamp(20px,5vw,72px) 34px; background:rgba(7,12,12,.96); border-top:1px solid rgba(198,239,188,.2); }
 .showcase-heading { display:flex; justify-content:space-between; gap:32px; max-width:1180px; margin:0 auto 22px; }
 .showcase-kicker { margin:0 0 8px; color:#c6efbc; font-size:11px; letter-spacing:.2em; }
