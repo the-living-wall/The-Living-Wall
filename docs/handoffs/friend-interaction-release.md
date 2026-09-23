@@ -63,3 +63,5 @@ Issue #88 / Draft PR #91；依赖 #69 / PR #70、#76 / PR #77。本轮回读三�
 可复制给新会话：
 
 > 继续小莹朋友互动正式接入。先读取 `/private/tmp/xiaoying-cross-device/docs/handoffs/friend-interaction-release.md`，核对 Issue #88 / PR #91、当前分支与实际部署。目标是复用现有网站及 CloudBase，完成免注册双方交流和共同塑造。先验证最小权限接入的可行性，OPA 尚未证明必须且未获环境级切换授权；不要默认新增服务器、数据库、备案资源或改云端权限。继承已通过的验收，仅补实际缺口；先给出基于证据的下一步。
+
+2026-09-24 最新续做：主站 `/friends/` 及构建开关已经实现，完整腾讯产物、本机 SDK 创建及关闭重建回退已验证；尚未生产发布。现有 GitHub CLI 位于原项目 `.runtime/gh-2.101.0/bin/gh` 且登录可用，连接器 403 不阻塞 PR 操作。当前准确进度与待发布步骤见 [生产候选记录](../qa/2026-09-24-production-candidate/README.md)。

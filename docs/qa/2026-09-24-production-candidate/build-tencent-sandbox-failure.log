@@ -1,0 +1,69 @@
+
+  vinext build  (Vite 8.0.13)
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 226 modules transformed.
+rendering chunks...
+✓ built in 277ms
+[2/5] analyze server references...
+[2Ktransforming...✓ 176 modules transformed.
+rendering chunks...
+✓ built in 114ms
+[3/5] build rsc environment...
+[2Ktransforming...✓ 223 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 198ms
+[4/5] build client environment...
+[2Ktransforming...✓ 184 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 256ms
+[5/5] build ssr environment...
+[2Ktransforming...✓ 178 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 169ms
+[0m  Pre-rendering all routes (output: 'export')...
+file:///private/tmp/xiaoying-cross-device/node_modules/vinext/dist/server/socket-error-backstop.js:180
+		if (process.env.VINEXT_PRERENDER === "1") throw err;
+		                                          ^
+
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:2145:21)
+    at listenInCluster (node:net:2224:12)
+    at node:net:2448:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:2203:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+
+Node.js v24.19.0
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /Users/livehigh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/vinext/dist/cli.js build
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:942:11)
+    at execFileSync (node:child_process:978:15)
+    at file:///private/tmp/xiaoying-cross-device/scripts/build-tencent.mjs:25:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 7,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 82608,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.19.0

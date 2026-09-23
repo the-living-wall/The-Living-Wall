@@ -11,7 +11,7 @@
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt",
-    "build:tencent": "DEPLOY_TARGET=tencent vinext build",
+    "build:tencent": "node scripts/build-tencent.mjs",
     "test": "node --experimental-strip-types --test tests/creature.test.ts tests/recording-batch.test.mjs tests/depth-bridge.test.ts tests/depth-input.test.ts tests/creature-archive.test.ts tests/sound-state.test.ts tests/visual-stage.test.ts tests/trust-copy.test.ts tests/shared-shaping.test.ts tests/gifts.test.ts tests/gifts-cloudbase.test.ts tests/gifts-transport.test.ts",
     "qa:lighting": "node scripts/lighting-browser-qa.mjs",
     "spec:validate": "openspec validate --all --strict",

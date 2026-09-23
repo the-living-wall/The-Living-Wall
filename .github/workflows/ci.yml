@@ -57,3 +57,12 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Build Tencent site with friends
+        run: npm run build:tencent
+        env:
+          VITE_GIFTS_ONLINE: 'true'
+          VITE_GIFTS_TRANSPORT: cloudbase
+          VITE_GIFTS_CLOUDBASE_ENV: ci-build-only
+          VITE_GIFTS_CLOUDBASE_REGION: ap-shanghai
+          VITE_GIFTS_CLOUDBASE_FUNCTION: ci-build-only

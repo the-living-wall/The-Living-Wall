@@ -482,6 +482,10 @@ export default function Home() {
           <div className="help-shortcuts"><kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面</div>
         </div>
         <div className="control-stack">
+          {import.meta.env.VITE_GIFTS_ONLINE === 'true' && (
+            // oxlint-disable-next-line next/no-html-link-for-pages -- Separate static bundle, outside the Next router.
+            <a className="friends-entry" href="/friends/">给朋友留一份心意 ↗</a>
+          )}
           {message && !projection && (
             <output className="message">{message}</output>
           )}

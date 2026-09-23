@@ -486,7 +486,12 @@ export default function Companion({
             <div className="eyebrow">THE LIVING WALL</div>
           </div>
         </div>
-        <span className="edition">小莹 · 把陪伴长成光</span>
+        {connection && import.meta.env.BASE_URL === '/friends/' ? (
+          // oxlint-disable-next-line next/no-html-link-for-pages -- Leave the standalone bundle with a full page navigation.
+          <a className="edition" href="/">回到个人陪伴</a>
+        ) : (
+          <span className="edition">小莹 · 把陪伴长成光</span>
+        )}
       </header>
       {giftView === 'home' ? (
         <section className="guide">

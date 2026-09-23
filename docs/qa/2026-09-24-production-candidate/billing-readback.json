@@ -1,0 +1,12 @@
+{
+  "env": "env-d1g2bv5sn355fc36e",
+  "package": "个人版",
+  "autoRenew": true,
+  "overrun": true,
+  "expiry": "2026-10-23 23:59:59",
+  "qps": {
+    "QpsQuota": 500,
+    "QpsCustomLimit": -1
+  },
+  "requestId": "795a3a7e-7207-414d-afe9-fb578f729525"
+}
