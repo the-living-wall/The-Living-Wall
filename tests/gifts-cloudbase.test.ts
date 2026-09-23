@@ -426,3 +426,52 @@ for (const [name, first, reply, choice, active] of [
     assert.equal((await call('GET', id, undefined, friend)).status, 404);
   });
 }
+
+void test('CloudBase quota: aborted conflicts retry once per committed count across a minute boundary', async () => {
+  const db = database();
+  const run = db.runTransaction.bind(db);
+  let now = 59999,
+    attempts = 0;
+  db.runTransaction = async (fn) => {
+    attempts++;
+    if (attempts === 1) {
+      now = 60000;
+      throw { code: 'DATABASE_TRANSACTION_CONFLICT' };
+    }
+    return run(fn);
+  };
+  const store = new CloudGiftStore(db, () => now);
+  await store.allowRequest();
+  assert.equal(attempts, 2);
+  for (let i = 1; i < 120; i++) await store.allowRequest();
+  await assert.rejects(store.allowRequest(), { status: 429 });
+  assert.equal(attempts, 122);
+  now = 120000;
+  await store.allowRequest();
+});
+
+void test('CloudBase quota: bounded contention is busy, not a business version conflict', async () => {
+  const db = database();
+  let attempts = 0;
+  db.runTransaction = async () => {
+    attempts++;
+    throw { code: 'DATABASE_TRANSACTION_CONFLICT' };
+  };
+  await assert.rejects(new CloudGiftStore(db).allowRequest(), { status: 503 });
+  assert.equal(attempts, 3);
+});
+
+void test('CloudBase quota: ambiguous failures are not retried', async () => {
+  const db = database();
+  let attempts = 0;
+  const failure = new Error('response lost after possible commit');
+  db.runTransaction = async () => {
+    attempts++;
+    throw failure;
+  };
+  await assert.rejects(
+    new CloudGiftStore(db).allowRequest(),
+    (e) => e === failure,
+  );
+  assert.equal(attempts, 1);
+});

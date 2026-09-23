@@ -225,15 +225,37 @@ export class CloudGiftStore {
     });
   }
   async allowRequest() {
-    const now = this.now(),
-      bucket = Math.floor(now / 60000);
-    await this.atomic(async (tx) => {
-      const doc = tx.collection(LIMITS).doc('requests');
-      const previous = await first<{ bucket: number; count: number }>(doc);
-      const count = previous?.bucket === bucket ? previous.count : 0;
-      check(count < 120, 429, '测试站访问较频繁，请稍后再试。');
-      await doc.set({ bucket, count: count + 1 });
-    });
+    // Retry only aborted quota transactions, never business mutations or
+    // ambiguous transport errors (which may already have committed).
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await this.db.runTransaction(async (tx) => {
+          const bucket = Math.floor(this.now() / 60000);
+          const doc = tx.collection(LIMITS).doc('requests');
+          const previous = await first<{ bucket: number; count: number }>(doc);
+          const count = previous?.bucket === bucket ? previous.count : 0;
+          check(count < 120, 429, '测试站访问较频繁，请稍后再试。');
+          await doc.set({ bucket, count: count + 1 });
+        });
+        return;
+      } catch (e) {
+        if (
+          e instanceof GiftError ||
+          typeof e !== 'object' ||
+          !e ||
+          !('code' in e) ||
+          e.code !== 'DATABASE_TRANSACTION_CONFLICT'
+        )
+          throw e;
+        if (attempt === 2) throw new GiftError(503, '服务繁忙，请稍后重试。');
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            25 * (attempt + 1) + Math.floor(Math.random() * 50),
+          ),
+        );
+      }
+    }
   }
   async purge() {
     // Up to the entire 1000-gift test capacity per scheduled run, in bounded batches.
