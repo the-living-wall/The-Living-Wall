@@ -6,7 +6,10 @@ import type { SharedAction, SharedState } from './shared-state';
 
 const KEY = 'xiaoying-friends-access-v1';
 const RETENTION_NOTICE =
-  '交流创建七天后不可访问，活动数据会清理。云平台备份按平台保留周期清除，删除不意味着所有副本立即消失。';
+  '这份心意保留 7 天，到期后就不能再打开了，留言和共同记录也会被清理。';
+const BACKUP_NOTICE = '服务商的备份会按其保存期限清除，可能不会立即消失。';
+const RETURN_NOTICE =
+  '想回来看看，请继续使用这个浏览器；清除浏览器的网站数据后，可能找不回来。';
 type Access = {
   id: string;
   token: string;
@@ -277,6 +280,7 @@ export default function OnlineApp() {
         <h1>{access ? '正在找回这份交流' : '有人为你留了一点光。'}</h1>
         <p>接受后，这个浏览器成为接收方。发送者可以删除整份心意。无需注册。</p>
         <p>{RETENTION_NOTICE}</p>
+        <p>{BACKUP_NOTICE}</p>
         {error && <p role="alert">{error}</p>}
         {!access && invitation ? (
           <button
@@ -391,7 +395,7 @@ export function ConnectionPanel({
             </section>
           )}
           {c.view.actor === 'sender' && (
-            <details>
+            <details className="gift-management">
               <summary>管理这份心意</summary>
               <button
                 className="gift-text"
@@ -408,13 +412,7 @@ export function ConnectionPanel({
           {mode === 'create' && (
             <div className="gift-storage-summary">
               <span>交流保存 7 天</span>
-              <details>
-                <summary>保存与找回说明</summary>
-                <p>{RETENTION_NOTICE}</p>
-                <p>
-                  请用这个浏览器回来查看；清除网站数据后，可能无法找回这份交流。
-                </p>
-              </details>
+              <StorageNotice />
             </div>
           )}
           {c.saved.length > 0 && (
@@ -447,18 +445,52 @@ export function ConnectionPanel({
   );
 }
 
+function StorageNotice() {
+  const dialog = useRef<HTMLDialogElement>(null);
+  return (
+    <>
+      <button
+        className="gift-text gift-storage-trigger"
+        aria-haspopup="dialog"
+        onClick={() => dialog.current?.showModal()}
+      >
+        保存说明
+      </button>
+      <dialog
+        ref={dialog}
+        className="gift-storage-dialog"
+        aria-label="保存说明"
+      >
+        <div className="gift-storage-heading">
+          <h3>关于这份心意</h3>
+          <button
+            className="gift-text"
+            onClick={() => dialog.current?.close()}
+            autoFocus
+          >
+            关闭
+          </button>
+        </div>
+        <p>{RETENTION_NOTICE}</p>
+        <p>{RETURN_NOTICE}</p>
+        <p>{BACKUP_NOTICE}</p>
+      </dialog>
+    </>
+  );
+}
+
 export function RetentionPanel({ connection: c }: { connection: Connection }) {
   if (!c.view) return null;
   return (
     <div className="connection-panel connection-retention">
       <p className="gift-retention" aria-label="这份交流的保存期限">
-        交流保存至 {new Date(c.view.expires).toLocaleDateString('zh-CN')}。
+        这份心意可查看至{' '}
+        {new Date(c.view.expires).toLocaleDateString('zh-CN', {
+          month: 'long',
+          day: 'numeric',
+        })}
       </p>
-      <details>
-        <summary>保存与删除说明</summary>
-        <p>{RETENTION_NOTICE}</p>
-        <p>请用这个浏览器回来查看；清除网站数据后，可能无法找回这份交流。</p>
-      </details>
+      <StorageNotice />
     </div>
   );
 }

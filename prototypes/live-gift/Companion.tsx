@@ -64,6 +64,23 @@ export default function Companion({
   const [giftView, setGiftView] = useState<'home' | 'create' | 'receive'>(
     connection?.view ? 'receive' : 'home',
   );
+  const toolbar = useRef<HTMLElement>(null);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  useEffect(() => {
+    const element = toolbar.current;
+    if (!element) return;
+    const measure = () =>
+      element
+        .closest<HTMLElement>('.gift-preview')
+        ?.style.setProperty(
+          '--friend-toolbar-height',
+          `${element.getBoundingClientRect().height}px`,
+        );
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    measure();
+    return () => observer.disconnect();
+  }, []);
   const [intent, setIntent] = useState('rest');
   const openings: Record<string, string> = {
     rest: '最近辛苦了。没什么要紧的事，只是想陪你歇一会儿。',
@@ -690,7 +707,7 @@ export default function Companion({
         </p>
         <em className="trust-state">{trustLabel}</em>
       </aside>
-      <footer className="bottom">
+      <footer className="bottom" ref={toolbar}>
         <div className="help">
           {depth
             ? '本地近墙区域实验 · 不等于手部识别或物理触碰'
@@ -751,40 +768,65 @@ export default function Companion({
             creature={creature}
             autoStart={giftView !== 'receive'}
           />
-          <div className="controls">
-            <Button className="primary" onClick={toggleCamera}>
-              {camera ? '关闭摄像头' : '启用摄像头'}
-            </Button>
-            {depth && (
-              <>
-                <label className="depth-option">
-                  <input
-                    type="checkbox"
-                    checked={mirrorX}
-                    onChange={(e) => setMirrorX(e.target.checked)}
-                  />
-                  左右镜像
-                </label>
-                <label className="depth-option">
-                  <input
-                    type="checkbox"
-                    checked={mirrorY}
-                    onChange={(e) => setMirrorY(e.target.checked)}
-                  />
-                  上下镜像
-                </label>
-                <a
-                  className="depth-lab-link"
-                  href="http://127.0.0.1:8769/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  打开深度测试台校准
-                </a>
-              </>
-            )}
-            <Button onClick={reset}>重新相遇</Button>
-            <Button onClick={enterProjection}>全屏纯画面</Button>
+          <div
+            className={`friend-device-settings${toolsOpen ? ' is-open' : ''}`}
+          >
+            <button
+              className="gift-text friend-tools-trigger"
+              aria-expanded={toolsOpen}
+              aria-controls="friend-device-controls"
+              onClick={() => setToolsOpen(!toolsOpen)}
+            >
+              互动设置
+            </button>
+            <div className="controls" id="friend-device-controls">
+              <button
+                className="gift-text friend-tools-close"
+                onClick={() => setToolsOpen(false)}
+              >
+                收起设置
+              </button>
+              <Button className="primary" onClick={toggleCamera}>
+                {camera ? '关闭摄像头' : '启用摄像头'}
+              </Button>
+              {depth && (
+                <>
+                  <label className="depth-option">
+                    <input
+                      type="checkbox"
+                      checked={mirrorX}
+                      onChange={(e) => setMirrorX(e.target.checked)}
+                    />
+                    左右镜像
+                  </label>
+                  <label className="depth-option">
+                    <input
+                      type="checkbox"
+                      checked={mirrorY}
+                      onChange={(e) => setMirrorY(e.target.checked)}
+                    />
+                    上下镜像
+                  </label>
+                  <a
+                    className="depth-lab-link"
+                    href="http://127.0.0.1:8769/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    打开深度测试台校准
+                  </a>
+                </>
+              )}
+              <Button onClick={reset}>重新相遇</Button>
+              <Button
+                onClick={() => {
+                  setToolsOpen(false);
+                  void enterProjection();
+                }}
+              >
+                全屏纯画面
+              </Button>
+            </div>
           </div>
         </div>
       </footer>

@@ -291,7 +291,7 @@ try {
       await appears(b.getByText('断线后重试，只有一条。', { exact: true }));
       await appears(a.getByText('断线后重试，只有一条。', { exact: true }));
     }
-    await btn(a, '一起塑造小莹').click();
+    await btn(a, '共同选择').click();
     await a.getByRole('dialog').getByRole('checkbox').first().check();
     if (style) await a.getByRole('radio', { name: style, exact: true }).check();
     await btn(a, '提出这个选择').click();

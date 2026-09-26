@@ -195,7 +195,7 @@ export default function SharedExperience({
             disabled={!!pending}
             onClick={() => open('style')}
           >
-            一起塑造小莹
+            共同选择
           </button>
         </div>
       </section>
