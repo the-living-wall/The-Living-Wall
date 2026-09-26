@@ -98,5 +98,6 @@ MediaPipe 是预训练的手部视觉模型；小莹的行为是可测试的规�
 - [呈现与需求](docs/03-呼吸与陪伴.md)
 - [报名简介与演示脚本](docs/hackathon.md)
 - [第三方资源说明](THIRD_PARTY_NOTICES.md)
+- [商业化知识产权准备与工作模板](docs/ip/README.md)
 
 视觉灵感来自 [Are.na 收藏动图](https://www.are.na/block/1994119)，原作者与制作方法未核实。未将该动图或私人演示视频加入仓库；碎片图形由代码生成。
