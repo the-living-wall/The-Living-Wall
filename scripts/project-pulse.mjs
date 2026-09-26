@@ -8,7 +8,7 @@
 
 import { readFile, writeFile } from "node:fs/promises";
 
-const REPO = process.env.GITHUB_REPOSITORY || "3013038780-design/The-Living-Wall";
+const REPO = process.env.GITHUB_REPOSITORY || "the-living-wall/The-Living-Wall";
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const TIMELINE_LIMIT = 20;
 const RECENT_DAYS = 7;

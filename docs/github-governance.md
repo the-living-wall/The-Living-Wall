@@ -4,7 +4,7 @@
 
 ## 当前状态与完成条件
 
-Issue [#30](https://github.com/3013038780-design/The-Living-Wall/issues/30) 的初始检查（2026-09-17）：`main.protected=false`、仓库 rulesets 为空；执行账号 `livehighhigh` 有 push 权限，无 admin 权限。此记录是检查时的快照，不代表之后的实时状态。
+Issue [#30](https://github.com/the-living-wall/The-Living-Wall/issues/30) 的初始检查（2026-09-17）：`main.protected=false`、仓库 rulesets 为空；执行账号 `livehighhigh` 有 push 权限，无 admin 权限。此记录是检查时的快照，不代表之后的实时状态。
 
 配置文件入库或 PR 合并均不会自动启用分支保护。管理员完成设置并读取验证结果后，在 #30 记录证据；其余验收也完成后才能关闭 Issue。
 
@@ -18,19 +18,19 @@ Issue [#30](https://github.com/3013038780-design/The-Living-Wall/issues/30) 的�
 
 ```sh
 # 确认当前账号有管理权限；先检查已有保护和 rulesets。
-gh api repos/3013038780-design/The-Living-Wall --jq .permissions
-gh api repos/3013038780-design/The-Living-Wall/branches/main/protection
-gh api repos/3013038780-design/The-Living-Wall/rulesets
+gh api repos/the-living-wall/The-Living-Wall --jq .permissions
+gh api repos/the-living-wall/The-Living-Wall/branches/main/protection
+gh api repos/the-living-wall/The-Living-Wall/rulesets
 
 # 先确认一次 PR CI 已成功报告下述同名检查。
-gh pr checks <PR编号> --repo 3013038780-design/The-Living-Wall
+gh pr checks <PR编号> --repo the-living-wall/The-Living-Wall
 
 # 应用已审阅配置（需要仓库 Administration 写权限）。
-gh api --method PUT repos/3013038780-design/The-Living-Wall/branches/main/protection --input .github/main-branch-protection.json
+gh api --method PUT repos/the-living-wall/The-Living-Wall/branches/main/protection --input .github/main-branch-protection.json
 
 # 读取并核对结果，不使用强推或删除主分支来测试。
-gh api repos/3013038780-design/The-Living-Wall/branches/main --jq .protected
-gh api repos/3013038780-design/The-Living-Wall/branches/main/protection
+gh api repos/the-living-wall/The-Living-Wall/branches/main --jq .protected
+gh api repos/the-living-wall/The-Living-Wall/branches/main/protection
 ```
 
 若已有保护或 rulesets，先比较再应用，不能用本配置覆盖更严格的约束。读取保护返回 404 也可能是权限不足，应结合管理员权限、分支 `protected` 与 rulesets 判断。
