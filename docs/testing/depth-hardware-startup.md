@@ -29,6 +29,21 @@ SDK 安装失败时参照[深度工具说明](../../tools/depth-lab/README.md)�
 
 ### 2. 终端 A：启动前端
 
+先确认当前终端能找到 Node 和 npm：
+
+```sh
+node --version
+npm --version
+```
+
+若提示找不到命令，先加载自己已安装的 Node 环境，不要用 `sudo` 解决。此前本机使用的布局是项目下 `work/main-preview` 工作目录、上两级项目内的 `.runtime/node-v24.21.0-darwin-arm64/bin`。**仅在仍使用这一布局时**，在 `work/main-preview` 中执行下面的命令，再检查版本：
+
+```sh
+export PATH="$PWD/../../.runtime/node-v24.21.0-darwin-arm64/bin:$PATH"
+```
+
+其他目录/成员使用各自实际的 Node 安装路径；这只是当前终端的 PATH 设置，不更改系统配置，且 `.runtime` 不随 Git 拉取。确认命令可用后启动：
+
 ```sh
 npm run dev -- --port 3018
 ```
