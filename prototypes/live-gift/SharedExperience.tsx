@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import FriendGuide from './FriendGuide';
 import type { Connection } from './OnlineApp';
 import {
   actorName,
@@ -17,6 +18,7 @@ import {
 
 type Props = {
   state: SharedState;
+  actions?: ReactNode;
   dispatch: (action: SharedAction) => void | Promise<boolean>;
   connection?: Connection;
   trial: StyleKey | null;
@@ -25,6 +27,7 @@ type Props = {
 type Mode = 'reply' | 'style' | 'watch' | 'name';
 export default function SharedExperience({
   state,
+  actions,
   dispatch,
   connection,
   trial,
@@ -39,6 +42,16 @@ export default function SharedExperience({
   const [style, setStyle] = useState<StyleKey>(ORIGINAL);
   const [expected, setExpected] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  const feedbackKey = `${connection?.view?.revision ?? 0}:${state.feedback}`;
+  const [dismissedFeedback, setDismissedFeedback] = useState('');
+  useEffect(() => {
+    if (!state.feedback) return;
+    const timer = window.setTimeout(
+      () => setDismissedFeedback(feedbackKey),
+      5000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [state.feedback, feedbackKey]);
   const pending = state.pending;
   const availableSources = getProposalSources(state, expected);
   const messages = state.messages;
@@ -124,6 +137,8 @@ export default function SharedExperience({
   );
   return (
     <div className="shared-experience">
+      <FriendGuide />
+      <h3 className="shared-section-title">留言互动</h3>
       <div className="shared-role">
         {connection?.view ? (
           <span>
@@ -156,19 +171,20 @@ export default function SharedExperience({
         </button>
       </div>
       <section className="shared-conversation" aria-label="我们的对话">
-        {messages.length > 4 && (
+        {messages.length > 3 && (
           <details className="shared-history">
-            <summary>之前的话（{messages.length - 4}）</summary>
-            {messages.slice(0, -4).map(renderMessage)}
+            <summary>之前的话（{messages.length - 3}）</summary>
+            {messages.slice(0, -3).map(renderMessage)}
           </details>
         )}
-        {messages.slice(-4).map(renderMessage)}
+        {messages.slice(-3).map(renderMessage)}
       </section>
       <button className="gift-text shared-reply" onClick={() => open('reply')}>
         回一句给朋友
       </button>
+      {actions}
       <section className="shared-current" aria-label="共同小莹的选择">
-        <span className="shared-eyebrow">我们的小莹</span>
+        <h3 className="shared-section-title">一起塑造小莹</h3>
         <strong data-testid="active-temperament">
           {TEMPERAMENTS[state.active].name}
         </strong>
@@ -179,7 +195,7 @@ export default function SharedExperience({
             disabled={!!pending}
             onClick={() => open('style')}
           >
-            一起塑造小莹
+            共同选择
           </button>
         </div>
       </section>
@@ -368,7 +384,9 @@ export default function SharedExperience({
             ))}
         </details>
       )}
-      <output className="shared-feedback">{state.feedback}</output>
+      <output className="shared-feedback">
+        {(!connection || dismissedFeedback !== feedbackKey) && state.feedback}
+      </output>
       {mode && (
         <dialog
           ref={dialog}

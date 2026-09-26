@@ -530,7 +530,7 @@ canvas:focus-visible {
 .sound-panel p,.sound-message { font-size:12px; max-width:360px; }
 @media(max-width:700px) {
   .control-stack { align-items:flex-end; }
-  .sound-controls { position:absolute; right:0; top:70px; display:flex; justify-content:flex-end; }
+  .sound-controls { position:relative; right:auto; top:auto; display:flex; justify-content:flex-end; }
   .sound-controls { flex-direction:column; align-items:flex-end; }
   .sound-row { gap:6px; justify-content:flex-end; }
   .sound-row button { font-size:12px; padding:8px 10px; }
@@ -546,8 +546,12 @@ canvas:focus-visible {
 .sound-controls { position:relative; pointer-events:auto; }
 .control-stack > .message { width:min(220px, calc(100vw - 44px)); max-width:220px; line-height:1.5; margin-bottom:2px; }
 @media(max-width:700px) { .sound-options { position:static; } .sound-panel { right:0; left:auto; max-width:calc(100vw - 48px); } }
-@media(max-width:700px) { .sound-controls { position:absolute; right:0; top:70px; } }
+@media(max-width:700px) { .sound-controls { position:relative; right:auto; top:auto; } }
 .friends-entry {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #c3e8b7;
   align-self: flex-end;
   padding: 10px 0;
@@ -555,3 +559,6 @@ canvas:focus-visible {
 }
 .friends-entry:hover { text-decoration: underline; }
 .friends-entry:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+.sound-retry { color: #c6efbc; background: none; border: 0; min-height: 44px; font-size: 12px; padding: 8px 0; }
+@media(max-width:700px) { .control-stack { margin-top: 12px; } .sound-message { overflow-wrap: anywhere; } }

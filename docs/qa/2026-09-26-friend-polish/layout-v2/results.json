@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "1280x900: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "850x550: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "760x420: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "390x844: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "320x568: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "850x650 150% text: scrolling, toolbar, full-screen canvas, bounded notice, focus return",
+    "mobile pure view hides toolbar; Escape restores usable toolbar"
+  ],
+  "errors": [],
+  "physicalWeChat": false
+}

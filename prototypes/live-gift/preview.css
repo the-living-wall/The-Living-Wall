@@ -639,3 +639,112 @@
   .gift-preview[data-gift-view='receive'] .gift-address { max-width: calc(100% - 90px); }
   .gift-preview[data-gift-view='receive'] .shared-role { margin-top: 22px; }
 }
+
+/* Business actions follow the letter; utility controls keep the stage clear. */
+.gift-preview .gift-create-action { margin-top: 18px; }
+.gift-preview .gift-create-action .gift-send { font-size: 17px; }
+.gift-preview .gift-guide .connection-panel { margin-top: 16px; text-align: left; }
+.gift-preview .gift-guide .gift-share > button { margin: 0; }
+.gift-preview .gift-share > button:not(.gift-send) { font-size: 13px; color: #a6b0b3; }
+.gift-preview .gift-share output:empty,
+.gift-preview .shared-feedback:empty { display: none; }
+.gift-preview .gift-storage-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 16px; font-size: 12px; }
+.gift-preview .gift-storage-summary details { margin: 0; }
+.gift-preview .gift-storage-summary details[open] { flex-basis: 100%; }
+.gift-preview .connection-panel summary,
+.gift-preview .shared-history > summary { min-height: 44px; padding: 10px 0; }
+.gift-preview .shared-section-title { margin: 0 0 12px; color: #dae4df; font-size: 15px; font-weight: 400; letter-spacing: 1px; }
+.gift-preview .shared-current { margin-top: 20px; }
+.gift-preview .shared-current::before { width: 100%; max-width: 80px; margin-bottom: 18px; }
+.gift-preview .shared-conversation .shared-message { margin-bottom: 14px; }
+.gift-preview .shared-role { margin-bottom: 12px; }
+.gift-preview .friend-guide { margin-bottom: 12px; }
+.gift-preview .friend-guide-intro { max-height: 0; opacity: 0; visibility: hidden; overflow: hidden; transition: opacity 300ms, max-height 300ms, visibility 300ms; color: #c6efbc; }
+.gift-preview .friend-guide-intro.is-visible { max-height: 110px; opacity: 1; visibility: visible; }
+.gift-preview .friend-guide p { font-size: 12px; margin: 4px 0; }
+.gift-preview .friend-guide-help > summary { cursor: pointer; min-height: 44px; padding: 10px 0; color: #8e9999; font-size: 12px; }
+.gift-preview .friend-guide-help[open] { padding-bottom: 10px; }
+@media(prefers-reduced-motion: reduce) { .gift-preview .friend-guide-intro { transition: none; } }
+
+/* Viewport utilities are independent of the length of the letter. The canvas stays full-screen. */
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) {
+  display: block;
+  height: 100dvh;
+  min-height: 0;
+  --friend-toolbar-height: 140px;
+}
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .mast { padding: 22px 32px; margin: 0; }
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .gift-guide {
+  position: absolute; inset: 100px auto 28px 32px; margin: 0;
+  width: min(370px, 43vw); max-width: none;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  scrollbar-color: #35413d transparent; padding: 0 16px 20px 0;
+}
+.gift-preview .gift-guide h2 { font-size: 24px; line-height: 1.4; margin: 8px 0 12px; }
+.gift-preview .gift-guide > button { margin-bottom: 0; }
+.gift-preview .gift-address { margin: 8px 0; }
+.gift-preview .shared-experience { margin-top: 12px; }
+.gift-preview .shared-role { margin-bottom: 6px; }
+.gift-preview .shared-section-title { margin-bottom: 6px; }
+.gift-preview .friend-guide { margin-bottom: 4px; }
+.gift-preview .shared-current { margin-top: 12px; }
+.gift-preview .shared-current::before { margin-bottom: 12px; }
+.gift-preview .shared-current > strong { font-size: 18px; }
+.gift-preview .shared-conversation .shared-message { margin-bottom: 10px; }
+.gift-preview .connection-receive { display: flex; align-items: start; flex-wrap: wrap; gap: 0 18px; }
+.gift-preview .connection-receive .gift-share { flex: 1 1 140px; }
+.gift-preview .connection-receive .gift-share > button { font-size: 14px; letter-spacing: 0; }
+.gift-preview .connection-receive .gift-management { margin: 0; font-size: 12px; }
+.gift-preview .connection-receive [role='alert'] { flex-basis: 100%; }
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .bottom {
+  position: fixed; inset: auto 28px 24px auto; margin: 0;
+  max-width: calc(100vw - min(370px, 43vw) - 80px); display: block;
+}
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .bottom > .help { display: none; }
+.gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .gift-preview-label { position: fixed; inset: auto auto 7px 32px; margin: 0; }
+.gift-preview .control-stack > .connection-retention { width: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0 12px; }
+.gift-preview .connection-panel .gift-retention { margin: 0 !important; }
+.gift-preview .connection-panel .gift-storage-trigger { margin: 0; font-size: 12px; color: #a6b0b3; }
+.gift-preview .gift-storage-dialog {
+  position: fixed; inset: 0; margin: auto; width: min(360px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px); overflow-y: auto;
+  color: #c1cbca; background: #101615; border: 1px solid #35413d; border-radius: 12px; padding: 16px 20px;
+  text-align: left; font-size: 14px; line-height: 1.8;
+}
+.gift-preview .gift-storage-dialog::backdrop { background: #0005; }
+.gift-preview .gift-storage-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.gift-preview .gift-storage-heading h3 { font-size: 16px; font-weight: 400; margin: 0; }
+.gift-preview .gift-storage-heading button { margin: 0; }
+.gift-preview .gift-storage-dialog p { margin: 12px 0 !important; }
+.friend-device-settings { pointer-events: auto; }
+.friend-tools-trigger, .friend-tools-close { display: none; }
+@media (max-width: 700px) {
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) { height: auto; min-height: 100dvh; padding-bottom: calc(var(--friend-toolbar-height) + 24px); }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .mast { padding: 18px 16px; }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .gift-guide { position: relative; inset: auto; width: auto; margin: 12px 16px 0; padding: 0; overflow: visible; }
+  .gift-preview .gift-guide h2 { max-width: calc(100% - 110px); font-size: 22px; }
+  .gift-preview[data-gift-view='create'] .gift-guide h2 { max-width: none; }
+  .gift-preview[data-gift-view='receive'] .status { top: 104px; right: 16px; }
+  .gift-preview .shared-role { margin-top: 0; }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .bottom {
+    inset: auto 0 0; width: 100%; max-width: none; padding: 8px 16px max(12px, env(safe-area-inset-bottom));
+    background: #080c0bf5; border-top: 1px solid #202a25;
+  }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .control-stack { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 4px 12px; margin: 0; }
+  .gift-preview .control-stack > .connection-retention, .gift-preview .control-stack > .message { grid-column: 1 / -1; }
+  .gift-preview .control-stack > .connection-retention { justify-content: flex-end; }
+  .gift-preview .sound-row { justify-content: flex-start; flex-wrap: wrap; }
+  .gift-preview .sound-message { text-align: left; }
+  .gift-preview .friend-tools-trigger, .gift-preview .friend-tools-close { display: block; }
+  .gift-preview .friend-device-settings .controls { display: none; }
+  .gift-preview .friend-device-settings.is-open .controls { display: flex; position: absolute; right: 16px; bottom: calc(100% + 8px); flex-direction: column; align-items: stretch; margin: 0; padding: 12px; min-width: 180px; max-height: calc(100dvh - var(--friend-toolbar-height) - 24px); overflow-y: auto; background: #101615; border: 1px solid #35413d; border-radius: 10px; }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .gift-preview-label { display: none; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .mast { padding-top: 12px; padding-bottom: 12px; }
+  .gift-preview:is([data-gift-view='create'], [data-gift-view='receive']) .gift-guide { top: 80px; bottom: 20px; }
+}
+.gift-preview.projection .mast,
+.gift-preview.projection .guide,
+.gift-preview.projection .status,
+.gift-preview.projection .bottom { display: none; }
