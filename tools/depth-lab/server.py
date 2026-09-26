@@ -17,6 +17,22 @@ from detector import Detector
 ROOT = Path(__file__).resolve().parent
 
 
+def describe_device_error(exc):
+    detail = f'{type(exc).__name__}: {exc}'
+    if isinstance(exc, ImportError):
+        if sys.platform == 'win32':
+            return ('相机 Python 库未安装或无法加载。请运行「安装环境.bat」；'
+                    '若提示 DLL 加载失败，请检查 VC++ x64 运行库。原始错误：' + detail)
+        return 'Orbbec Python 包无法加载，请按 README 在虚拟环境中安装依赖。原始错误：' + detail
+    if sys.platform == 'darwin' and 'uvc_open' in str(exc) and 'Code: -3' in str(exc):
+        return ('相机已检测到，但 macOS 拒绝打开 USB 视频接口。请从 Mac 终端启动测试台后重试；'
+                '若仍失败，需要进一步处理设备访问权限。错误：' + detail)
+    if sys.platform == 'win32':
+        return ('Windows 无法打开相机。请关闭 Orbbec Viewer 和其他占用软件，'
+                '使用 USB 3 直连，并按官方安装指南检查设备环境。错误：' + detail)
+    return detail
+
+
 def read_exact(count, stop):
     data = bytearray()
     while len(data) < count:
@@ -164,11 +180,7 @@ class Lab:
                     self.image=base64.b64encode(cv2.imencode('.jpg',rgb,[cv2.IMWRITE_JPEG_QUALITY,75])[1]).decode()
         except Exception as exc:
             with self.lock:
-                self.message = (
-                    '相机已检测到，但 macOS 拒绝打开 USB 视频接口。请从 Mac 终端启动测试台后重试；若仍失败，需要进一步处理设备访问权限。错误：' + str(exc)
-                    if 'uvc_open' in str(exc) and 'Code: -3' in str(exc)
-                    else f'{type(exc).__name__}: {exc}'
-                )
+                self.message = describe_device_error(exc)
                 self.result={'state':'error'}
                 self.mode='error'
                 self.image=None
@@ -273,6 +285,8 @@ if __name__=='__main__':
     parser.add_argument('--capture-stdin',action='store_true')
     parser.add_argument('--open',action='store_true')
     args=parser.parse_args()
+    if args.capture_stdin and sys.platform == 'win32':
+        parser.error('独立管道读取仅用于 macOS；Windows 请运行启动深度测试.bat，在网页连接相机。')
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
     server.capture_stdin = args.capture_stdin
     print(f'碎光深度测试台 http://127.0.0.1:{args.port}',flush=True)
