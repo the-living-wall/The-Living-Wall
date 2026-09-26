@@ -639,3 +639,29 @@
   .gift-preview[data-gift-view='receive'] .gift-address { max-width: calc(100% - 90px); }
   .gift-preview[data-gift-view='receive'] .shared-role { margin-top: 22px; }
 }
+
+/* Business actions follow the letter; utility controls keep the stage clear. */
+.gift-preview .gift-create-action { margin-top: 18px; }
+.gift-preview .gift-create-action .gift-send { font-size: 17px; }
+.gift-preview .gift-guide .connection-panel { margin-top: 16px; text-align: left; }
+.gift-preview .gift-guide .gift-share > button { margin: 0; }
+.gift-preview .gift-share > button:not(.gift-send) { font-size: 13px; color: #a6b0b3; }
+.gift-preview .gift-share output:empty,
+.gift-preview .shared-feedback:empty { display: none; }
+.gift-preview .gift-storage-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 16px; font-size: 12px; }
+.gift-preview .gift-storage-summary details { margin: 0; }
+.gift-preview .gift-storage-summary details[open] { flex-basis: 100%; }
+.gift-preview .connection-panel summary,
+.gift-preview .shared-history > summary { min-height: 44px; padding: 10px 0; }
+.gift-preview .shared-section-title { margin: 0 0 12px; color: #dae4df; font-size: 15px; font-weight: 400; letter-spacing: 1px; }
+.gift-preview .shared-current { margin-top: 20px; }
+.gift-preview .shared-current::before { width: 100%; max-width: 80px; margin-bottom: 18px; }
+.gift-preview .shared-conversation .shared-message { margin-bottom: 14px; }
+.gift-preview .shared-role { margin-bottom: 12px; }
+.gift-preview .friend-guide { margin-bottom: 12px; }
+.gift-preview .friend-guide-intro { max-height: 0; opacity: 0; visibility: hidden; overflow: hidden; transition: opacity 300ms, max-height 300ms, visibility 300ms; color: #c6efbc; }
+.gift-preview .friend-guide-intro.is-visible { max-height: 110px; opacity: 1; visibility: visible; }
+.gift-preview .friend-guide p { font-size: 12px; margin: 4px 0; }
+.gift-preview .friend-guide-help > summary { cursor: pointer; min-height: 44px; padding: 10px 0; color: #8e9999; font-size: 12px; }
+.gift-preview .friend-guide-help[open] { padding-bottom: 10px; }
+@media(prefers-reduced-motion: reduce) { .gift-preview .friend-guide-intro { transition: none; } }

@@ -338,6 +338,11 @@ export function ConnectionPanel({
     'idle',
   );
 
+  useEffect(() => {
+    if (copyState !== 'copied') return;
+    const timer = window.setTimeout(() => setCopyState('idle'), 4000);
+    return () => window.clearTimeout(timer);
+  }, [copyState]);
   const linkInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (copyState === 'failed') {
@@ -355,7 +360,7 @@ export function ConnectionPanel({
           {c.invitation && (
             <section className="gift-share" aria-label="把心意分享给朋友">
               <button
-                className="gift-text gift-send"
+                className={`gift-text${friendReplied ? '' : ' gift-send'}`}
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(c.invitation);
@@ -370,11 +375,9 @@ export function ConnectionPanel({
               <output>
                 {copyState === 'failed'
                   ? '没能自动复制，请选中下方完整链接，手动复制。'
-                  : friendReplied
-                    ? '朋友已回复，可以继续聊。'
-                    : copyState === 'copied'
-                      ? '链接已复制，粘贴给这位朋友即可。'
-                      : '心意已创建，复制链接发给这位朋友。'}
+                  : copyState === 'copied'
+                    ? '链接已复制，粘贴给这位朋友即可。'
+                    : ''}
               </output>
               {copyState === 'failed' && (
                 <input
@@ -399,26 +402,20 @@ export function ConnectionPanel({
               </button>
             </details>
           )}
-          <p className="gift-retention" aria-label="这份交流的保存期限">
-            交流保存至 {new Date(c.view.expires).toLocaleDateString('zh-CN')}。
-          </p>
-          <details>
-            <summary>保存与删除说明</summary>
-            <p>{RETENTION_NOTICE}</p>
-          </details>
         </>
       ) : (
         <>
-          {c.creationPending && (
-            <p>
-              上次创建结果尚未确认，请重试生成以找回同一份心意，原文不会重复发布。
-            </p>
-          )}
           {mode === 'create' && (
-            <>
-              <p>{RETENTION_NOTICE}</p>
-              <p>请保留当前浏览器数据，以便找回。</p>
-            </>
+            <div className="gift-storage-summary">
+              <span>交流保存 7 天</span>
+              <details>
+                <summary>保存与找回说明</summary>
+                <p>{RETENTION_NOTICE}</p>
+                <p>
+                  请用这个浏览器回来查看；清除网站数据后，可能无法找回这份交流。
+                </p>
+              </details>
+            </div>
           )}
           {c.saved.length > 0 && (
             <details>
@@ -436,12 +433,32 @@ export function ConnectionPanel({
           )}
         </>
       )}
-      {c.error && <p role="alert">{c.error}</p>}
+      {(c.error || (c.creationPending && !c.busy)) && (
+        <p role="alert">
+          {c.creationPending ? '暂未收到保存确认，内容已保留。' : c.error}
+        </p>
+      )}
       {c.hasPending && (
         <button className="gift-text" disabled={c.busy} onClick={c.retry}>
           重试上次操作
         </button>
       )}
+    </div>
+  );
+}
+
+export function RetentionPanel({ connection: c }: { connection: Connection }) {
+  if (!c.view) return null;
+  return (
+    <div className="connection-panel connection-retention">
+      <p className="gift-retention" aria-label="这份交流的保存期限">
+        交流保存至 {new Date(c.view.expires).toLocaleDateString('zh-CN')}。
+      </p>
+      <details>
+        <summary>保存与删除说明</summary>
+        <p>{RETENTION_NOTICE}</p>
+        <p>请用这个浏览器回来查看；清除网站数据后，可能无法找回这份交流。</p>
+      </details>
     </div>
   );
 }

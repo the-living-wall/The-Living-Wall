@@ -103,9 +103,11 @@ try {
     await a.getByLabel('你的落款（可选）').fill('阿禾');
     if (index === 0 && !remote) {
       await sender.setOffline(true);
-      await a.getByRole('button', { name: /生成分享链接/ }).click();
+      await a
+        .getByRole('button', { name: /生成分享链接|重试生成链接/ })
+        .click();
       await appears(
-        a.getByText('连接暂时中断，请稍后重试；未发送的内容仍保留。', {
+        a.getByText('暂未收到保存确认，内容已保留。', {
           exact: true,
         }),
       );
@@ -123,12 +125,10 @@ try {
         fullPage: true,
       });
     }
-    await a.getByRole('button', { name: /生成分享链接/ }).click();
+    await a.getByRole('button', { name: /生成分享链接|重试生成链接/ }).click();
     const copyButton = btn(a, '复制邀请链接 ↗');
     await appears(copyButton);
-    await appears(
-      a.getByText('心意已创建，复制链接发给这位朋友。', { exact: true }),
-    );
+    assert.ok(await copyButton.evaluate((e) => !!e.closest('.gift-guide')));
     assert.equal(await a.getByLabel('朋友的邀请链接').count(), 0);
     assert.equal(await a.getByText('手动复制链接', { exact: true }).count(), 0);
     await sender.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -236,7 +236,10 @@ try {
     }
     await say(b, second);
     await appears(a.getByText(second, { exact: true }));
-    await appears(a.getByText('朋友已回复，可以继续聊。', { exact: true }));
+    assert.equal(
+      await copyButton.evaluate((e) => e.classList.contains('gift-send')),
+      false,
+    );
     for (const page of [a, b]) {
       const conversation = page.getByLabel('我们的对话', { exact: true });
       await appears(conversation.getByText(first, { exact: true }));

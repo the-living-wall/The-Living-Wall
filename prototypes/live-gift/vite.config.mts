@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
         transform(code, id) {
           if (
             base === '/' ||
-            !/\/(?:lib\/creature-audio\.ts|app\/hand-camera\.tsx|prototypes\/live-gift\/SoundControls\.tsx)$/.test(
+            !/\/(?:lib\/creature-audio\.ts|app\/(?:hand-camera|sound-controls)\.tsx|prototypes\/live-gift\/SoundControls\.tsx)$/.test(
               id,
             )
           )

@@ -4,7 +4,7 @@ import HandCamera from '../../app/hand-camera';
 import DepthInputPoller from '../../app/depth-input';
 import SoundControls from './SoundControls';
 import SharedExperience from './SharedExperience';
-import { ConnectionPanel, type Connection } from './OnlineApp';
+import { ConnectionPanel, RetentionPanel, type Connection } from './OnlineApp';
 import {
   cleanName,
   actorName,
@@ -560,6 +560,11 @@ export default function Companion({
           {giftView === 'receive' && (
             <SharedExperience
               connection={connection}
+              actions={
+                connection && (
+                  <ConnectionPanel connection={connection} mode="receive" />
+                )
+              }
               state={shared}
               dispatch={dispatchShared}
               trial={trial}
@@ -642,7 +647,29 @@ export default function Companion({
                   />
                 </label>
               </div>
+              <div className="gift-create-action">
+                <button
+                  className="gift-text gift-send"
+                  disabled={connection?.busy}
+                  onClick={() =>
+                    connection
+                      ? connection.create(note, shared.names)
+                      : go('receive')
+                  }
+                >
+                  {connection
+                    ? connection.busy
+                      ? '正在生成…'
+                      : connection.creationPending
+                        ? '重试生成链接'
+                        : '生成分享链接 ↗'
+                    : '预览这份心意 ↗'}
+                </button>
+              </div>
             </div>
+          )}
+          {connection && giftView === 'create' && (
+            <ConnectionPanel connection={connection} mode="create" />
           )}
         </section>
       )}
@@ -703,40 +730,20 @@ export default function Companion({
           <kbd>R</kbd> 重新相遇　<kbd>Esc</kbd> / 双击退出纯画面
         </div>
         <div className="control-stack">
-          {connection && giftView !== 'home' && (
-            <ConnectionPanel connection={connection} mode={giftView} />
+          {connection && giftView === 'receive' && (
+            <RetentionPanel connection={connection} />
           )}
           {message && !projection && (
             <output className="message">{message}</output>
           )}
-          {giftView !== 'receive' && (
+          {giftView === 'home' && (
             <div className="gift-actions">
-              {giftView === 'home' ? (
-                <button
-                  className="gift-text gift-send"
-                  onClick={() => go('create')}
-                >
-                  送给朋友 ↗
-                </button>
-              ) : (
-                <>
-                  <button
-                    className="gift-text gift-send"
-                    disabled={connection?.busy}
-                    onClick={() =>
-                      connection
-                        ? connection.create(note, shared.names)
-                        : go('receive')
-                    }
-                  >
-                    {connection
-                      ? connection.busy
-                        ? '正在生成…'
-                        : '生成分享链接 ↗'
-                      : '预览这份心意 ↗'}
-                  </button>
-                </>
-              )}
+              <button
+                className="gift-text gift-send"
+                onClick={() => go('create')}
+              >
+                送给朋友 ↗
+              </button>
             </div>
           )}
           <SoundControls
