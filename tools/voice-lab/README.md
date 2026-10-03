@@ -4,6 +4,8 @@
 
 `import-ios-resources.mjs` 只接收已经筛选并获授权的派生 WAV，验证 48 kHz、单声道、16-bit PCM 后再复制到 iOS 资源目录，并生成清单。它不会读取或复制 `.m4a` 原始录音。
 
+`prepare-selected-voice.mjs` 读取试听页导出的选择 JSON，把中文情绪和源文件名映射为 iOS 标准音素名，保留全部勾选项并生成 `voice-resource-manifest.json`。
+
 先用 `--dry-run` 检查文件命名：
 
 ```bash

@@ -20,7 +20,9 @@ public final class LocalVoiceEngine: XiaoyingVoiceEngine {
     public func preload() async {
         for phoneme in XiaoyingPhoneme.allCases {
             var loaded: [AVAudioPCMBuffer] = []
-            for index in 1...3 {
+            // The creator may approve several nuanced takes for one phoneme.
+            // Keep the pool bounded for memory and predictable randomness.
+            for index in 1...8 {
                 guard let url = bundle.url(forResource: "\(phoneme.rawValue)_\(String(format: "%02d", index))", withExtension: "wav"),
                       let file = try? AVAudioFile(forReading: url),
                       let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length)) else { continue }
