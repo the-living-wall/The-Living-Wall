@@ -1,0 +1,20 @@
+{
+  "models": [
+    {
+      "id": "xiaoying-household-v1",
+      "name": "小莹家庭模型（待训练）",
+      "version": "pending",
+      "kind": "household",
+      "path": "/models/xiaoying-household-v1.tflite",
+      "available": false
+    },
+    {
+      "id": "efficientdet-lite0",
+      "name": "通用物体模型",
+      "version": "coco-80",
+      "kind": "generic",
+      "path": "/models/efficientdet_lite0.tflite",
+      "available": true
+    }
+  ]
+}
