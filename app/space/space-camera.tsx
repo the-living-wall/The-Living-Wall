@@ -10,9 +10,19 @@ export type AnchorDetection = {
   y: number;
 };
 
+export type SceneObject = {
+  label: string;
+  score: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 type SpaceCameraProps = {
   onHand: (x: number, y: number, open: boolean) => void;
   onAnchor: (anchor: AnchorDetection | null) => void;
+  onObjects: (objects: SceneObject[]) => void;
   onStatus: (status: string) => void;
   onScannerMode: (mode: 'native' | 'polyfill' | null) => void;
   onFailure: (message: string) => void;
@@ -28,7 +38,7 @@ declare global {
   }
 }
 
-export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode, onFailure }: SpaceCameraProps) {
+export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onScannerMode, onFailure }: SpaceCameraProps) {
   const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -36,10 +46,12 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
     let stream: MediaStream | undefined;
     let tracker: HandLandmarker | undefined;
     let detector: BarcodeDetectorLike | undefined;
+    let objectDetector: { detectForVideo(video: HTMLVideoElement, timestamp: number): { detections: Array<{ boundingBox?: { originX: number; originY: number; width: number; height: number }; categories?: Array<{ categoryName?: string; score?: number }> }> } } | undefined;
     let frame = 0;
     let lastVideoTime = -1;
     let lastHandAt = 0;
     let lastScanAt = 0;
+    let lastObjectAt = 0;
 
     const stop = () => {
       cancelAnimationFrame(frame);
@@ -78,6 +90,27 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
           tracker = await HandLandmarker.createFromOptions(files, { ...options, baseOptions: { ...options.baseOptions, delegate: 'GPU' } });
         } catch {
           tracker = await HandLandmarker.createFromOptions(files, options);
+        }
+        try {
+          const { ObjectDetector } = await import('@mediapipe/tasks-vision');
+          objectDetector = await ObjectDetector.createFromOptions(files, {
+            baseOptions: { modelAssetPath: '/models/efficientdet_lite0.tflite', delegate: 'GPU' },
+            runningMode: 'VIDEO',
+            maxResults: 10,
+            scoreThreshold: 0.35,
+          });
+        } catch {
+          try {
+            const { ObjectDetector } = await import('@mediapipe/tasks-vision');
+            objectDetector = await ObjectDetector.createFromOptions(files, {
+              baseOptions: { modelAssetPath: '/models/efficientdet_lite0.tflite' },
+              runningMode: 'VIDEO',
+              maxResults: 10,
+              scoreThreshold: 0.35,
+            });
+          } catch {
+            objectDetector = undefined;
+          }
         }
         if (window.BarcodeDetector) {
           detector = new window.BarcodeDetector({ formats: ['qr_code', 'data_matrix', 'aztec'] });
@@ -122,6 +155,19 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
                 onAnchor({ value: code.rawValue, format: code.format, x: box ? box.x / element.videoWidth : 0.5, y: box ? box.y / element.videoHeight : 0.5 });
               }).catch(() => onAnchor(null));
             }
+            if (objectDetector && now - lastObjectAt > 700 && element.readyState >= 2) {
+              lastObjectAt = now;
+              try {
+                const result = objectDetector.detectForVideo(element, now);
+                const objects = result.detections.flatMap((detection) => {
+                  const category = detection.categories?.[0];
+                  const box = detection.boundingBox;
+                  if (!category?.categoryName || !box || !category.score || category.score < 0.35) return [];
+                  return [{ label: category.categoryName, score: category.score, x: box.originX / element.videoWidth, y: box.originY / element.videoHeight, width: box.width / element.videoWidth, height: box.height / element.videoHeight }];
+                });
+                onObjects(objects);
+              } catch { onObjects([]); }
+            }
           } catch {
             fail('摄像头识别中断，请重新进入空间模式。');
             return;
@@ -139,7 +185,7 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
       cancelled = true;
       stop();
     };
-  }, [onAnchor, onFailure, onHand, onScannerMode, onStatus]);
+  }, [onAnchor, onFailure, onHand, onObjects, onScannerMode, onStatus]);
 
   return <video ref={video} className="space-camera" autoPlay muted playsInline aria-label="后置摄像头预览，画面仅在本机处理" />;
 }
