@@ -2,6 +2,14 @@ import XCTest
 @testable import XiaoyingARCore
 
 final class VoiceInteractionTests: XCTestCase {
+    func testMapLifecycleIsSilentAndCannotWake() {
+        let interaction = VoiceInteraction()
+        XCTAssertNotNil(interaction.gesture(for: .resting, at: time))
+        for event in [XiaoyingAREvent.relocalizing, .restored, .mapSaved, .restoreFailed] {
+            XCTAssertNil(interaction.gesture(for: event, at: time.addingTimeInterval(20)))
+            XCTAssertTrue(interaction.isResting)
+        }
+    }
     let time = Date(timeIntervalSince1970: 100)
     func testCooldownAndPriority() {
         let interaction = VoiceInteraction()

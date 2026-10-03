@@ -1,6 +1,6 @@
 import Foundation
 
-public enum XiaoyingAREvent { case placed, invited, moved, tilted, startled, settled, resting }
+public enum XiaoyingAREvent { case placed, relocalizing, restored, mapSaved, restoreFailed, invited, moved, tilted, startled, settled, resting }
 
 /// Event-level policy is independent of ARKit and audio availability.
 public final class VoiceInteraction {
@@ -15,6 +15,8 @@ public final class VoiceInteraction {
     public func gesture(for event: XiaoyingAREvent, at time: Date) -> VocalGesture? {
         let phonemes: [XiaoyingPhoneme]
         switch event {
+        // Map lifecycle is operational state, not a vocal interaction or wake.
+        case .relocalizing, .restored, .mapSaved, .restoreFailed: return nil
         case .placed: phonemes = [.curiosity]
         case .invited: phonemes = [.curiosity, .invite]
         case .moved: phonemes = [.relocate]
