@@ -1,6 +1,6 @@
 # The Living Wall · 小莹
 
-**[在线试玩 · Play the demo](https://thelivingwall.cn/)** — 无需安装或投影仪，打开后即可用鼠标互动，也可主动启用自己的摄像头。
+**[在线试玩 · Play the demo](https://thelivingwall.cn/)** — 无需安装或投影仪，打开后即可用鼠标互动，也可主动启用自己的摄像头。手机后置摄像头空间模式见 [`/space`](https://thelivingwall.cn/space)。
 
 **把陪伴长成光。一个会呼吸、试探、享受抚摸，并随陪伴成长的异次元生命体。**
 
@@ -18,6 +18,7 @@ The Living Wall is an experimental light companion that responds to gentle inter
 - **边界**：连续抚摸会疲倦，需要完整休息；连续惊扰会累积警惕。
 - **成长**：有效抚摸积累体积、色彩与长期亲密度，静止挂机不成长，缺席不退化。
 - **输入**：鼠标、触摸屏、方向键，以及 MediaPipe 单手掌心追踪。纯画面模式适合投影输出。
+- **手机空间模式（MVP）**：打开 [`/space`](https://thelivingwall.cn/space)，用后置摄像头扫描床头二维码/视觉锚点；首次绑定后，小莹只在同一锚点附近出现，并可用张开掌心邀请。该版本不宣称自动识别家具或提供跨设备空间定位。
 
 ## 两分钟体验
 
@@ -69,6 +70,7 @@ MediaPipe 是预训练的手部视觉模型；小莹的行为是可测试的规�
 - `lib/creature.ts`：独立行为引擎及本机成长档案。
 - `lib/draw-creature.ts`：程序化碎片渲染。
 - `app/hand-camera.tsx`：摄像头与 MediaPipe 推理。
+- `app/space/`：手机后置摄像头、掌心邀请与视觉锚点栖息地 MVP。
 - `app/page.tsx`：输入、界面与生命周期。
 - `tests/creature.test.ts`：12 项行为测试，包含遮挡、惊扰、余韵、成长、休息及接触门控。
 
