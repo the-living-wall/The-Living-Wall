@@ -4,6 +4,7 @@
 
 - `GestureComposer`：1–3 个音素、固定种子、受范围限制的时长/音高。
 - `LocalVoiceEngine`：AVAudioEngine、TimePitch、EQ，初始化失败时由应用选择 `SilentVoiceEngine`。
-- `ARSceneCoordinator`：ARWorldTracking、水平/垂直平面、点击放置 anchor，并将移动事件抛给应用层。
+- `ARSceneCoordinator`：ARWorldTracking、水平/垂直平面、点击放置 anchor，并将移动事件抛给应用层；支持本地 ARWorldMap 保存、恢复和失败降级。
+- `WorldMapDataStore` / `ARWorldMapStore`：只写入 host App 选择的本地 Application Support 路径；空文件、损坏文件和缺失文件都会变成可恢复错误。
 
 在 Xcode 中将本目录作为 Swift Package 引入 iOS App；真机验证弱光、桌面/床头、锚点丢失和耳机/扬声器听感。
