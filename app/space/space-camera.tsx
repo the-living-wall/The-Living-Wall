@@ -14,6 +14,7 @@ type SpaceCameraProps = {
   onHand: (x: number, y: number, open: boolean) => void;
   onAnchor: (anchor: AnchorDetection | null) => void;
   onStatus: (status: string) => void;
+  onScannerMode: (mode: 'native' | 'polyfill' | null) => void;
   onFailure: (message: string) => void;
 };
 
@@ -27,7 +28,7 @@ declare global {
   }
 }
 
-export default function SpaceCamera({ onHand, onAnchor, onStatus, onFailure }: SpaceCameraProps) {
+export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode, onFailure }: SpaceCameraProps) {
   const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -80,8 +81,17 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onFailure }: S
         }
         if (window.BarcodeDetector) {
           detector = new window.BarcodeDetector({ formats: ['qr_code', 'data_matrix', 'aztec'] });
+          onScannerMode('native');
+        } else {
+          try {
+            const { BarcodeDetectorPolyfill } = await import('@undecaf/barcode-detector-polyfill');
+            detector = new BarcodeDetectorPolyfill({ formats: ['qr_code'] });
+            onScannerMode('polyfill');
+          } catch {
+            onScannerMode(null);
+          }
         }
-        onStatus(detector ? '后置摄像头已开启 · 请先让掌心进入画面，再对准床头锚点。' : '后置摄像头已开启 · 当前浏览器不支持视觉锚点扫描。');
+        onStatus(detector ? '后置摄像头已开启 · 请先让掌心进入画面，再对准床头锚点。' : '后置摄像头已开启 · 当前浏览器暂时无法扫描视觉锚点。');
 
         const loop = (now: number) => {
           if (cancelled) return;
@@ -127,8 +137,7 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onFailure }: S
       cancelled = true;
       stop();
     };
-  }, [onAnchor, onFailure, onHand, onStatus]);
+  }, [onAnchor, onFailure, onHand, onScannerMode, onStatus]);
 
   return <video ref={video} className="space-camera" autoPlay muted playsInline aria-label="后置摄像头预览，画面仅在本机处理" />;
 }
-
