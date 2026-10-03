@@ -49,3 +49,8 @@ next-env.d.ts
 /personal-learning/
 # Alias path used by apprentice mentor (local only)
 /private-learning/
+
+# Creator voice recordings and derived local experiments must remain private.
+/private-voice/
+*.creator.wav
+*.creator.m4a
