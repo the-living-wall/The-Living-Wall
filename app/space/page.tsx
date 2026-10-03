@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { clearSpaceHabitat, loadSpaceHabitat, saveSpaceHabitat, type SpaceHabitat } from '@/lib/space-habitat';
 import type { SemanticSceneBox } from '@/lib/scene-vocabulary';
 import type { SceneModelDefinition } from '@/lib/scene-model';
+import { shouldShowCreature } from '@/lib/space-visibility';
 
 export default function SpaceMode() {
   const [active, setActive] = useState(false);
@@ -40,7 +41,14 @@ export default function SpaceMode() {
   } : null;
   // 掌心模式是默认入口：没有固定栖息地时，张开掌心即可邀请小莹。
   // 只有用户主动绑定了栖息地后，才要求重新看到同一个锚点。
-  const creatureVisible = Boolean(active && ((hand.open && !habitat) || anchorMatches || (anchor && !habitat) || sceneTargetPoint));
+  const creatureVisible = shouldShowCreature({
+    active,
+    handOpen: hand.open,
+    hasHabitat: Boolean(habitat),
+    anchorMatches,
+    hasAnchor: Boolean(anchor),
+    hasSceneTarget: Boolean(sceneTargetPoint),
+  });
   const status = useMemo(() => {
     if (!active) return habitat ? `小莹住在「${habitat.name}」 · 找到锚点才会出现` : '张开掌心即可邀请小莹';
     if (habitat && !anchor) return `小莹住在「${habitat.name}」 · 请先对准锚点召回她`;
@@ -78,13 +86,13 @@ export default function SpaceMode() {
     <section className="space-panel">
       <p className="eyebrow">手机后置摄像头 MVP</p>
       <h1>让小莹出现在你的空间里</h1>
-      <p className="space-copy">打开摄像头后，张开手掌可以邀请小莹；对准床、沙发、桌子等稳定物体，她也会尝试停在那里。二维码只用于把某个位置保存成长期栖息地。</p>
+      <p className="space-copy">打开摄像头后，张开手掌可以邀请小莹；对准床、沙发、桌子等模型已支持的物体，她也会尝试停在那里。二维码不是识别世界的必要条件，只是把某个位置保存成长期栖息地的临时方案。</p>
       <output className="space-status">{message || status}</output>
       {!active ? <Button onClick={begin}>打开后置摄像头</Button> : <Button variant="secondary" onClick={stop}>关闭空间模式</Button>}
       {active && anchor && !habitat && <Button onClick={bind}>固定小莹在这里</Button>}
       {active && habitat && anchor && !anchorMatches && <p className="space-hint">这个锚点不是小莹的家。请回到床头。</p>}
       {habitat && <button className="space-forget" onClick={forget}>清除「{habitat.name}」栖息地</button>}
-      {!active && <p className="space-note">首次测试：打开摄像头后伸出张开的手掌即可。固定空间功能可再放置二维码绑定。</p>}
+      {!active && <p className="space-note">首次测试：打开摄像头后伸出张开的手掌即可，不需要二维码。固定空间功能目前可用二维码绑定；真正的房间级持久锚点正在原生 ARKit 路线开发。</p>}
       {active && scannerMode === 'polyfill' && <p className="space-note">Safari 正在使用兼容扫描器。二维码识别在本机完成，不上传摄像头画面。</p>}
       {active && sceneModel && <p className="space-note">环境模型：{sceneModel.name} · {sceneModel.kind === 'household' ? '家庭模型' : '通用模型兜底'} · 本机运行</p>}
       {active && sceneObjects.length > 0 && <p className="space-note">我看见了：{Array.from(new Set(sceneObjects.map((object) => object.displayName))).join('、')} · 识别在本机完成{sceneObjects.some((object) => object.support === 'planned') ? ' · 部分类别待训练' : ''}</p>}
