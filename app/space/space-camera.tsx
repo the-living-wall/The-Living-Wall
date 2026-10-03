@@ -91,7 +91,7 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
             onScannerMode(null);
           }
         }
-        onStatus(detector ? '后置摄像头已开启 · 请先让掌心进入画面，再对准床头锚点。' : '后置摄像头已开启 · 当前浏览器暂时无法扫描视觉锚点。');
+        onStatus(detector ? '后置摄像头已开启 · 伸出张开的手掌邀请小莹；需要固定位置时再扫描二维码。' : '后置摄像头已开启 · 掌心模式可用，但当前浏览器暂时无法扫描固定位置二维码。');
 
         const loop = (now: number) => {
           if (cancelled) return;
