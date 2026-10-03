@@ -9,7 +9,7 @@
 ```bash
 node tools/voice-lab/import-ios-resources.mjs \
   --input /path/to/xiaoying-derived/selected \
-  --resources ios/XiaoyingAR/Resources/Audio \
+  --resources ios/XiaoyingAR/Sources/XiaoyingARCore/Audio \
   --dry-run
 ```
 

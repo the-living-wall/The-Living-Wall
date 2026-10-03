@@ -1,6 +1,6 @@
 # 本地音频资源命名
 
-将经过授权的派生 WAV 放入 iOS App target 的资源目录。`LocalVoiceEngine` 会为每个音素预加载最多八个变体：
+将经过授权的派生 WAV 放入 Swift Package 的 `Sources/XiaoyingARCore/Audio` 资源目录。`LocalVoiceEngine` 会从 package bundle（或显式传入的宿主 bundle）为每个音素预加载最多八个变体：
 
 ```text
 curiosity_01.wav … curiosity_08.wav
@@ -33,8 +33,10 @@ node tools/voice-lab/prepare-selected-voice.mjs \
 ```bash
 node tools/voice-lab/import-ios-resources.mjs \
   --input /path/to/xiaoying-derived/selected \
-  --resources ios/XiaoyingAR/Resources/Audio \
+  --resources ios/XiaoyingAR/Sources/XiaoyingARCore/Audio \
   --dry-run
 ```
 
 完整说明见 [`docs/voice/ios-resource-import.md`](../../../docs/voice/ios-resource-import.md)，真机执行见 [`DeviceValidationChecklist.md`](./DeviceValidationChecklist.md)。
+
+`Package.swift` 已声明 `Audio` 为处理资源目录。不要把原始创作者录音提交到仓库；如果宿主工程把授权派生资源放在自己的 bundle 中，可用 `LocalVoiceEngine(bundle: hostBundle)` 覆盖默认的 package bundle。
