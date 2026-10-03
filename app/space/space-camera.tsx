@@ -103,7 +103,9 @@ export default function SpaceCamera({ onHand, onAnchor, onStatus, onScannerMode,
               if (hand) {
                 const palm = hand[9] ?? hand[0];
                 const openness = Math.hypot(hand[8].x - hand[0].x, hand[8].y - hand[0].y) > 0.18;
-                onHand(1 - palm.x, palm.y, openness);
+                // The rear-camera preview is not mirrored; keep landmark X in
+                // the same coordinate system as the visible video.
+                onHand(palm.x, palm.y, openness);
                 lastHandAt = now;
               } else if (now - lastHandAt > 250) onHand(0.5, 0.5, false);
             }
