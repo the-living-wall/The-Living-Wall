@@ -6,7 +6,11 @@ let package = Package(
     platforms: [.iOS(.v16)],
     products: [.library(name: "XiaoyingARCore", targets: ["XiaoyingARCore"])],
     targets: [
-        .target(name: "XiaoyingARCore", path: "Sources/XiaoyingARCore"),
+        .target(
+            name: "XiaoyingARCore",
+            path: "Sources/XiaoyingARCore",
+            resources: [.process("Audio")]
+        ),
         .testTarget(name: "XiaoyingARCoreTests", dependencies: ["XiaoyingARCore"], path: "Tests/XiaoyingARCoreTests"),
     ]
 )

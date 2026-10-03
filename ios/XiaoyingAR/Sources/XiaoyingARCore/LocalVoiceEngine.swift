@@ -14,8 +14,12 @@ public final class LocalVoiceEngine: XiaoyingVoiceEngine {
     private var playbackID: UInt64 = 0
     private var currentPriority = 0
 
-    public init(bundle: Bundle = .main) {
-        self.bundle = bundle
+    public init(bundle: Bundle? = nil) {
+        #if SWIFT_PACKAGE
+        self.bundle = bundle ?? .module
+        #else
+        self.bundle = bundle ?? .main
+        #endif
         engine.attach(player); engine.attach(pitch); engine.attach(eq)
         engine.connect(player, to: pitch, format: nil); engine.connect(pitch, to: eq, format: nil); engine.connect(eq, to: engine.mainMixerNode, format: nil)
     }
