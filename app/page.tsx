@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import HandCamera from './hand-camera';
 import DepthInputPoller from './depth-input';
 import SoundControls from './sound-controls';
@@ -486,6 +487,7 @@ export default function Home() {
             // oxlint-disable-next-line next/no-html-link-for-pages -- Separate static bundle, outside the Next router.
             <a className="friends-entry" href="/friends/">给朋友留一份心意 ↗</a>
           )}
+          <Link className="space-entry" href="/space">让小莹住进空间 ↗</Link>
           {message && !projection && (
             <output className="message">{message}</output>
           )}

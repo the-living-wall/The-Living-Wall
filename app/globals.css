@@ -343,6 +343,31 @@ canvas:focus-visible {
   border: 1px solid #30383c;
   opacity: 0.8;
 }
+.space-mode {
+  min-height: 100svh;
+  background: #11191b;
+  color: #eef4f0;
+  overflow: hidden;
+}
+.space-camera { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.space-scrim { position: fixed; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,14,15,.78), rgba(8,14,15,.06) 45%, rgba(8,14,15,.78)); pointer-events: none; }
+.space-header, .space-panel { position: relative; z-index: 2; }
+.space-header { display: flex; justify-content: space-between; padding: 24px; font-size: 14px; }
+.space-header a { color: inherit; text-decoration: none; }
+.space-panel { max-width: 520px; margin: 8vh 24px 0; }
+.space-panel h1 { max-width: 430px; margin: 10px 0; font-size: clamp(34px, 8vw, 62px); line-height: 1.05; }
+.eyebrow { color: #9ad7bb; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
+.space-copy { max-width: 420px; color: #cad7d1; line-height: 1.7; }
+.space-status { min-height: 52px; margin: 24px 0 12px; padding: 14px 16px; border: 1px solid rgba(190, 230, 209, .24); border-radius: 10px; background: rgba(9, 23, 21, .68); line-height: 1.5; }
+.space-panel button { margin: 0 8px 10px 0; }
+.space-hint, .space-note { color: #f0c98d; font-size: 13px; line-height: 1.6; }
+.space-forget { display: block; border: 0; background: none; color: #b8c5bf; padding: 8px 0; font-size: 12px; text-decoration: underline; }
+.space-creature { position: fixed; z-index: 3; width: 130px; height: 130px; transform: translate(-50%, -50%); pointer-events: none; display: grid; place-items: center; }
+.space-core { width: 62px; height: 62px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #effff4, #a9f2d2 28%, #62b995 60%, #315d55); box-shadow: 0 0 28px #8ef0c4, 0 0 80px rgba(92, 229, 178, .55); animation: space-breathe 2.4s ease-in-out infinite; }
+.space-ring { position: absolute; inset: 18px; border: 1px solid rgba(180, 255, 223, .75); border-radius: 50%; animation: space-ring 2.4s ease-out infinite; }
+.space-creature span { position: absolute; top: 112px; white-space: nowrap; color: #d9f8e8; font-size: 12px; }
+@keyframes space-breathe { 50% { transform: scale(1.12); opacity: .82; } }
+@keyframes space-ring { 50% { inset: 0; opacity: 0; } }
 .projection .mast,
 .projection .guide,
 .projection .status,
@@ -559,6 +584,18 @@ canvas:focus-visible {
 }
 .friends-entry:hover { text-decoration: underline; }
 .friends-entry:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.space-entry {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #c3e8b7;
+  align-self: flex-end;
+  padding: 10px 0;
+  text-decoration: none;
+}
+.space-entry:hover { text-decoration: underline; }
+.space-entry:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 
 .sound-retry { color: #c6efbc; background: none; border: 0; min-height: 44px; font-size: 12px; padding: 8px 0; }
 @media(max-width:700px) { .control-stack { margin-top: 12px; } .sound-message { overflow-wrap: anywhere; } }
