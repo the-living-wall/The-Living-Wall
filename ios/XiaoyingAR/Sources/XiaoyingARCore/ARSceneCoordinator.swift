@@ -3,7 +3,7 @@ import ARKit
 import SceneKit
 import UIKit
 
-public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate {
+public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDelegate {
     public let sceneView: ARSCNView
     public private(set) var anchor: ARAnchor?
     public var onEvent: ((XiaoyingAREvent) -> Void)?
@@ -13,7 +13,14 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate {
     private var lastEventTime: TimeInterval = 0
     private var wasMoving = false
 
-    public init(sceneView: ARSCNView) { self.sceneView = sceneView; super.init(); sceneView.delegate = self }
+    public init(sceneView: ARSCNView) {
+        self.sceneView = sceneView
+        super.init()
+        sceneView.delegate = self
+        // Rendering and frame updates use separate delegates. Without this
+        // registration, the motion-to-voice callback is never delivered.
+        sceneView.session.delegate = self
+    }
 
     public func start() {
         guard ARWorldTrackingConfiguration.isSupported else { return }
