@@ -7,6 +7,8 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
     public let sceneView: ARSCNView
     public private(set) var anchor: ARAnchor?
     public var onEvent: ((XiaoyingAREvent) -> Void)?
+    private let worldMapStore: ARWorldMapStore?
+    var configuredWorldMapStore: ARWorldMapStore? { worldMapStore }
     private static let homeAnchorName = "xiaoying-home"
     private var pendingAnchorID: UUID?
     private var restoreStartedAt: TimeInterval?
@@ -15,9 +17,12 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
     private var lastMotionTime: TimeInterval = 0
     private var lastEventTime: TimeInterval = 0
     private var wasMoving = false
+    private var saveInFlight = false
+    private var hasSavedCurrentPlacement = false
 
-    public init(sceneView: ARSCNView) {
+    public init(sceneView: ARSCNView, worldMapStore: ARWorldMapStore? = nil) {
         self.sceneView = sceneView
+        self.worldMapStore = worldMapStore
         super.init()
         sceneView.delegate = self
         sceneView.session.delegate = self
@@ -27,6 +32,7 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
     public func start() {
         anchor = nil; pendingAnchorID = nil; restoreStartedAt = nil
         previousPosition = nil; previousTime = nil; wasMoving = false
+        saveInFlight = false; hasSavedCurrentPlacement = false
         guard ARWorldTrackingConfiguration.isSupported else { return }
         let configuration = ARWorldTrackingConfiguration(); configuration.planeDetection = [.horizontal, .vertical]; sceneView.session.run(configuration)
     }
@@ -37,6 +43,7 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
     public func start(restoring store: ARWorldMapStore) {
         anchor = nil; pendingAnchorID = nil; restoreStartedAt = nil
         previousPosition = nil; previousTime = nil; wasMoving = false
+        saveInFlight = false; hasSavedCurrentPlacement = false
         guard ARWorldTrackingConfiguration.isSupported else { onEvent?(.restoreFailed); return }
         let configuration = ARWorldTrackingConfiguration(); configuration.planeDetection = [.horizontal, .vertical]
         if let worldMap = try? store.load(),
@@ -78,7 +85,11 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
         guard pendingAnchorID == nil else { return }
         guard let result = sceneView.session.raycast(query).first else { return }
         if let anchor { sceneView.session.remove(anchor: anchor) }
-        let newAnchor = ARAnchor(name: Self.homeAnchorName, transform: result.worldTransform); anchor = newAnchor; sceneView.session.add(anchor: newAnchor); onEvent?(.placed)
+        let newAnchor = ARAnchor(name: Self.homeAnchorName, transform: result.worldTransform)
+        anchor = newAnchor
+        hasSavedCurrentPlacement = false
+        sceneView.session.add(anchor: newAnchor)
+        onEvent?(.placed)
     }
 
     private func updateRestoration(_ session: ARSession, frame: ARFrame) -> Bool {
@@ -86,7 +97,7 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
             if case .normal = frame.camera.trackingState,
                let restoredAnchor = frame.anchors.first(where: { $0.identifier == pendingID }) {
                 anchor = restoredAnchor
-                pendingAnchorID = nil; restoreStartedAt = nil
+                pendingAnchorID = nil; restoreStartedAt = nil; hasSavedCurrentPlacement = true
                 onEvent?(.restored)
             } else if let started = restoreStartedAt,
                       ProcessInfo.processInfo.systemUptime - started > 30 {
@@ -125,6 +136,15 @@ public final class ARSceneCoordinator: NSObject, ARSCNViewDelegate, ARSessionDel
         }
         guard anchor != nil, case .normal = frame.camera.trackingState else {
             previousPosition = nil; previousTime = nil; return
+        }
+        if let worldMapStore, !hasSavedCurrentPlacement, !saveInFlight,
+           frame.worldMappingStatus == .mapped || frame.worldMappingStatus == .extending {
+            saveInFlight = true
+            saveCurrentMap(to: worldMapStore) { [weak self] result in
+                guard let self else { return }
+                self.saveInFlight = false
+                if case .success = result { self.hasSavedCurrentPlacement = true }
+            }
         }
         let column = frame.camera.transform.columns.3
         let position = SIMD3<Float>(column.x, column.y, column.z)
