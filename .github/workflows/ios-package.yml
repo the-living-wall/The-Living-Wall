@@ -1,0 +1,39 @@
+name: iOS Package
+
+on:
+  pull_request:
+    paths:
+      - 'ios/XiaoyingAR/**'
+      - '.github/workflows/ios-package.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'ios/XiaoyingAR/**'
+      - '.github/workflows/ios-package.yml'
+
+jobs:
+  ios-package:
+    name: Swift Package / iOS SDK
+    runs-on: macos-14
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select the newest installed Xcode
+        shell: bash
+        run: |
+          set -euo pipefail
+          developer_dir="$(find /Applications -maxdepth 1 -type d -name 'Xcode*.app' -print | sort -V | tail -n 1)/Contents/Developer"
+          test -d "$developer_dir"
+          echo "DEVELOPER_DIR=$developer_dir" >> "$GITHUB_ENV"
+          xcodebuild -version
+
+      - name: Run package tests
+        working-directory: ios/XiaoyingAR
+        run: swift test
+
+      - name: Compile the package against the iOS SDK
+        working-directory: ios/XiaoyingAR
+        run: xcodebuild -scheme XiaoyingAR-Package -destination 'generic/platform=iOS' build
