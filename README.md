@@ -30,6 +30,8 @@ The Living Wall is an experimental light companion that responds to gentle inter
 
 声音仍处于单段试听与确认阶段，尚未接入网站。目标是动作触发的稀疏身体声与核心回应；没有触碰时基本安静，只偶尔有很低的呼吸声。详见 [当前设定与实现边界](docs/PRD.md#11-当前设定与实现边界2026-09-20)。
 
+小莹独立生命声音与 iOS ARKit 原型见 [Issue #103](https://github.com/the-living-wall/The-Living-Wall/issues/103)。录音隐私规范、共享音素目录、离线处理入口和 Swift 骨架分别位于 [`docs/voice/`](docs/voice/)、[`tools/voice-lab/`](tools/voice-lab/) 和 [`ios/XiaoyingAR/`](ios/XiaoyingAR/)。该原型是增量能力，不替换当前 Web 音频，也不上传原始录音。
+
 ## 本地运行
 
 Node.js 22.13 或更新版本；推荐 Node.js 24。

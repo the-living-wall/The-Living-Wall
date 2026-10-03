@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "phonemes": [
+    {"id":"curiosity","emotion":"好奇","durationMs":[280,900],"pitchSemitones":[-2,5],"brightness":0.72,"motion":"look","repeatable":true,"cooldownMs":900},
+    {"id":"invite","emotion":"邀请","durationMs":[350,1100],"pitchSemitones":[-1,4],"brightness":0.68,"motion":"approach","repeatable":true,"cooldownMs":1200},
+    {"id":"comfort","emotion":"安心","durationMs":[700,1800],"pitchSemitones":[-4,1],"brightness":0.42,"motion":"breathe","repeatable":true,"cooldownMs":2200},
+    {"id":"refuse","emotion":"拒绝","durationMs":[250,800],"pitchSemitones":[-5,0],"brightness":0.35,"motion":"retreat","repeatable":false,"cooldownMs":1800},
+    {"id":"startle","emotion":"受惊","durationMs":[180,650],"pitchSemitones":[1,8],"brightness":0.9,"motion":"flinch","repeatable":false,"cooldownMs":2600},
+    {"id":"remember","emotion":"想念","durationMs":[800,1900],"pitchSemitones":[-3,3],"brightness":0.5,"motion":"turn","repeatable":true,"cooldownMs":3200},
+    {"id":"sleep","emotion":"困倦","durationMs":[1100,2600],"pitchSemitones":[-6,-1],"brightness":0.2,"motion":"rest","repeatable":false,"cooldownMs":5000},
+    {"id":"play","emotion":"玩耍","durationMs":[250,1000],"pitchSemitones":[0,7],"brightness":0.84,"motion":"bounce","repeatable":true,"cooldownMs":1000},
+    {"id":"relocate","emotion":"迁移","durationMs":[450,1300],"pitchSemitones":[-1,6],"brightness":0.62,"motion":"fly","repeatable":false,"cooldownMs":1800},
+    {"id":"settle","emotion":"安定","durationMs":[900,2200],"pitchSemitones":[-5,0],"brightness":0.3,"motion":"land","repeatable":false,"cooldownMs":3000}
+  ]
+}
