@@ -23,6 +23,7 @@ export class CreatureRenderer {
     dt: number,
     c: Creature,
     marker: boolean,
+    clearBackground = true,
   ) {
     const unit = Math.min(w, h),
       cx = c.x * w,
@@ -30,8 +31,12 @@ export class CreatureRenderer {
       visual = getVisualStageParams(c.growthStage),
       base = unit * 0.165 * c.growthScale * visual.bodyScale,
       t = c.time;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, w, h);
+    if (clearBackground) {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      ctx.clearRect(0, 0, w, h);
+    }
     const breathe = 1 + (c.breath - 0.5) * (0.09 + c.enjoyment * 0.12);
     const heading = c.heading,
       cos = Math.cos(heading),

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import SpaceCamera, { type AnchorDetection } from './space-camera';
+import SpaceCreature from './space-creature';
 import { Button } from '@/components/ui/button';
 import { clearSpaceHabitat, loadSpaceHabitat, saveSpaceHabitat, type SpaceHabitat } from '@/lib/space-habitat';
 
@@ -61,8 +62,6 @@ export default function SpaceMode() {
       {!active && <p className="space-note">首次测试：打开摄像头后伸出张开的手掌即可。固定空间功能可再放置二维码绑定。</p>}
       {active && scannerMode === 'polyfill' && <p className="space-note">Safari 正在使用兼容扫描器。二维码识别在本机完成，不上传摄像头画面。</p>}
     </section>
-    {active && creatureVisible && <div className="space-creature" style={{ left: `${Math.max(12, Math.min(88, (anchor?.x ?? hand.x) * 100))}%`, top: `${Math.max(18, Math.min(78, (anchor?.y ?? hand.y) * 100))}%` }} aria-label="小莹已在栖息地">
-      <div className="space-core" /><div className="space-ring" /><span>小莹在这里</span>
-    </div>}
+    {creatureVisible && <SpaceCreature x={anchor?.x ?? hand.x} y={anchor?.y ?? hand.y} active={active} />}
   </main>;
 }

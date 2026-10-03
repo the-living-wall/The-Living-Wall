@@ -350,6 +350,7 @@ canvas:focus-visible {
   overflow: hidden;
 }
 .space-camera { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.space-creature-canvas { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
 .space-scrim { position: fixed; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,14,15,.78), rgba(8,14,15,.06) 45%, rgba(8,14,15,.78)); pointer-events: none; }
 .space-header, .space-panel { position: relative; z-index: 2; }
 .space-header { display: flex; justify-content: space-between; padding: 24px; font-size: 14px; }
