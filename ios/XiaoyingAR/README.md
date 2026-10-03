@@ -9,3 +9,5 @@
 - `XiaoyingPrototypeView`：可直接放入宿主 App 的 SwiftUI 体验壳，提供邀请、休息、静音和音量控制。
 
 在 Xcode 中将本目录作为 Swift Package 引入 iOS App；真机验证弱光、桌面/床头、锚点丢失和耳机/扬声器听感。
+
+最小宿主入口见 [`HostApp/XiaoyingARHostApp.swift`](./HostApp/XiaoyingARHostApp.swift)，接入步骤见 [`HostApp/README.md`](./HostApp/README.md)。仓库不提交完整 Xcode 工程、签名配置或个人开发者信息。
