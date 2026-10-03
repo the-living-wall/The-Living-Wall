@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { HandLandmarker } from '@mediapipe/tasks-vision';
+import { stabilizeSceneObjects, type SceneBox, type TrackedSceneBox } from '@/lib/scene-tracking';
 
 export type AnchorDetection = {
   value: string;
@@ -10,14 +11,7 @@ export type AnchorDetection = {
   y: number;
 };
 
-export type SceneObject = {
-  label: string;
-  score: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+export type SceneObject = SceneBox;
 
 type SpaceCameraProps = {
   onHand: (x: number, y: number, open: boolean) => void;
@@ -52,6 +46,7 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
     let lastHandAt = 0;
     let lastScanAt = 0;
     let lastObjectAt = 0;
+    let trackedObjects: TrackedSceneBox[] = [];
 
     const stop = () => {
       cancelAnimationFrame(frame);
@@ -165,8 +160,12 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
                   if (!category?.categoryName || !box || !category.score || category.score < 0.35) return [];
                   return [{ label: category.categoryName, score: category.score, x: box.originX / element.videoWidth, y: box.originY / element.videoHeight, width: box.width / element.videoWidth, height: box.height / element.videoHeight }];
                 });
-                onObjects(objects);
-              } catch { onObjects([]); }
+                trackedObjects = stabilizeSceneObjects(trackedObjects, objects, now);
+                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => object));
+              } catch {
+                trackedObjects = stabilizeSceneObjects(trackedObjects, [], now);
+                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => object));
+              }
             }
           } catch {
             fail('摄像头识别中断，请重新进入空间模式。');
