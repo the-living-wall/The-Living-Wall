@@ -10,9 +10,11 @@ public struct VocalGesture: Equatable, Sendable {
     public let pitchSemitones: Double
     public let brightness: Double
     public let priority: Int
+    public let variantSeed: UInt64
 
-    public init(phonemes: [XiaoyingPhoneme], duration: TimeInterval, pitchSemitones: Double, brightness: Double, priority: Int) {
+    public init(phonemes: [XiaoyingPhoneme], duration: TimeInterval, pitchSemitones: Double, brightness: Double, priority: Int, variantSeed: UInt64 = 42) {
         self.phonemes = phonemes; self.duration = duration; self.pitchSemitones = pitchSemitones; self.brightness = brightness; self.priority = priority
+        self.variantSeed = variantSeed
     }
 }
 
@@ -45,7 +47,7 @@ public enum GestureComposer {
         let definitions = phonemes.compactMap { XiaoyingCatalog.definitions[$0] }
         let duration = definitions.reduce(0) { $0 + Double.random(in: $1.duration, using: &generator) }
         let pitch = definitions.reduce(0) { $0 + Double.random(in: $1.pitch, using: &generator) } / Double(definitions.count)
-        return VocalGesture(phonemes: phonemes, duration: duration, pitchSemitones: pitch, brightness: 0.5, priority: definitions.map(\.priority).max() ?? 0)
+        return VocalGesture(phonemes: phonemes, duration: duration, pitchSemitones: pitch, brightness: 0.5, priority: definitions.map(\.priority).max() ?? 0, variantSeed: seed)
     }
 }
 
