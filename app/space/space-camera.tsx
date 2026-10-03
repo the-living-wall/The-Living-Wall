@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import type { HandLandmarker } from '@mediapipe/tasks-vision';
-import { stabilizeSceneObjects, type SceneBox, type TrackedSceneBox } from '@/lib/scene-tracking';
+import { stabilizeSceneObjects, type TrackedSceneBox } from '@/lib/scene-tracking';
+import { enrichSceneBox, type SemanticSceneBox } from '@/lib/scene-vocabulary';
 
 export type AnchorDetection = {
   value: string;
@@ -11,7 +12,7 @@ export type AnchorDetection = {
   y: number;
 };
 
-export type SceneObject = SceneBox;
+export type SceneObject = SemanticSceneBox;
 
 type SpaceCameraProps = {
   onHand: (x: number, y: number, open: boolean) => void;
@@ -161,10 +162,10 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
                   return [{ label: category.categoryName, score: category.score, x: box.originX / element.videoWidth, y: box.originY / element.videoHeight, width: box.width / element.videoWidth, height: box.height / element.videoHeight }];
                 });
                 trackedObjects = stabilizeSceneObjects(trackedObjects, objects, now);
-                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => object));
+                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => enrichSceneBox(object)));
               } catch {
                 trackedObjects = stabilizeSceneObjects(trackedObjects, [], now);
-                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => object));
+                onObjects(trackedObjects.map(({ lastSeenAt: _lastSeenAt, ...object }) => enrichSceneBox(object)));
               }
             }
           } catch {

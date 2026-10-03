@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import SpaceCamera, { type AnchorDetection, type SceneObject } from './space-camera';
+import SpaceCamera, { type AnchorDetection } from './space-camera';
 import SpaceCreature from './space-creature';
 import { Button } from '@/components/ui/button';
 import { clearSpaceHabitat, loadSpaceHabitat, saveSpaceHabitat, type SpaceHabitat } from '@/lib/space-habitat';
-
-const sceneLabel: Record<string, string> = {
-  bed: '床', couch: '沙发', sofa: '沙发', chair: '椅子', 'dining table': '桌子',
-  table: '桌子', bench: '长凳', desk: '桌子', tv: '电视', laptop: '电脑', cat: '猫', dog: '狗',
-};
+import type { SemanticSceneBox } from '@/lib/scene-vocabulary';
 
 export default function SpaceMode() {
   const [active, setActive] = useState(false);
@@ -21,7 +17,7 @@ export default function SpaceMode() {
   ));
   const [message, setMessage] = useState('');
   const [scannerMode, setScannerMode] = useState<'native' | 'polyfill' | null>(null);
-  const [sceneObjects, setSceneObjects] = useState<SceneObject[]>([]);
+  const [sceneObjects, setSceneObjects] = useState<SemanticSceneBox[]>([]);
   const anchorMatches = Boolean(anchor && habitat && anchor.value === habitat.anchorValue);
   // Prefer a large, stable surface as a temporary home. The detector reports
   // normalized image coordinates; placing Xiaoying at the upper-middle edge
@@ -48,7 +44,7 @@ export default function SpaceMode() {
     if (habitat && !anchor) return `小莹住在「${habitat.name}」 · 请先对准锚点召回她`;
     if (habitat && !anchorMatches) return '发现了其他锚点 · 小莹只会在自己的家出现';
     if (hand.open) return '小莹看见你的掌心了 · 保持稳定，她会靠近';
-    if (sceneTarget) return `小莹发现了${sceneLabel[sceneTarget.label.toLowerCase()] ?? sceneTarget.label} · 她会先停在这里`;
+    if (sceneTarget) return `小莹发现了${sceneTarget.displayName} · 她会先停在这里`;
     return '张开手掌，或把摄像头对准一个稳定的生活物体';
   }, [active, anchor, anchorMatches, habitat, hand.open, sceneTarget]);
 
@@ -87,7 +83,7 @@ export default function SpaceMode() {
       {habitat && <button className="space-forget" onClick={forget}>清除「{habitat.name}」栖息地</button>}
       {!active && <p className="space-note">首次测试：打开摄像头后伸出张开的手掌即可。固定空间功能可再放置二维码绑定。</p>}
       {active && scannerMode === 'polyfill' && <p className="space-note">Safari 正在使用兼容扫描器。二维码识别在本机完成，不上传摄像头画面。</p>}
-      {active && sceneObjects.length > 0 && <p className="space-note">我看见了：{Array.from(new Set(sceneObjects.map((object) => sceneLabel[object.label.toLowerCase()] ?? object.label))).join('、')} · 识别在本机完成</p>}
+      {active && sceneObjects.length > 0 && <p className="space-note">我看见了：{Array.from(new Set(sceneObjects.map((object) => object.displayName))).join('、')} · 识别在本机完成{sceneObjects.some((object) => object.support === 'planned') ? ' · 部分类别待训练' : ''}</p>}
     </section>
     {creatureVisible && <SpaceCreature x={hand.open ? hand.x : anchor?.x ?? sceneTargetPoint?.x ?? hand.x} y={hand.open ? hand.y : anchor?.y ?? sceneTargetPoint?.y ?? hand.y} active={active} />}
   </main>;
