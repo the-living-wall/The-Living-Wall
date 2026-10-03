@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import type { HandLandmarker } from '@mediapipe/tasks-vision';
 import { stabilizeSceneObjects, type TrackedSceneBox } from '@/lib/scene-tracking';
 import { enrichSceneBox, type SemanticSceneBox } from '@/lib/scene-vocabulary';
+import { loadSceneModelConfig, selectSceneModels, type SceneModelDefinition } from '@/lib/scene-model';
 
 export type AnchorDetection = {
   value: string;
@@ -19,6 +20,7 @@ type SpaceCameraProps = {
   onAnchor: (anchor: AnchorDetection | null) => void;
   onObjects: (objects: SceneObject[]) => void;
   onStatus: (status: string) => void;
+  onModel: (model: SceneModelDefinition) => void;
   onScannerMode: (mode: 'native' | 'polyfill' | null) => void;
   onFailure: (message: string) => void;
 };
@@ -33,7 +35,7 @@ declare global {
   }
 }
 
-export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onScannerMode, onFailure }: SpaceCameraProps) {
+export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onModel, onScannerMode, onFailure }: SpaceCameraProps) {
   const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -87,27 +89,36 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
         } catch {
           tracker = await HandLandmarker.createFromOptions(files, options);
         }
-        try {
-          const { ObjectDetector } = await import('@mediapipe/tasks-vision');
-          objectDetector = await ObjectDetector.createFromOptions(files, {
-            baseOptions: { modelAssetPath: '/models/efficientdet_lite0.tflite', delegate: 'GPU' },
-            runningMode: 'VIDEO',
-            maxResults: 10,
-            scoreThreshold: 0.35,
-          });
-        } catch {
+        const modelCandidates = selectSceneModels(await loadSceneModelConfig());
+        let activeModel: SceneModelDefinition | undefined;
+        for (const candidate of modelCandidates) {
           try {
             const { ObjectDetector } = await import('@mediapipe/tasks-vision');
             objectDetector = await ObjectDetector.createFromOptions(files, {
-              baseOptions: { modelAssetPath: '/models/efficientdet_lite0.tflite' },
+              baseOptions: { modelAssetPath: candidate.path, delegate: 'GPU' },
               runningMode: 'VIDEO',
               maxResults: 10,
               scoreThreshold: 0.35,
             });
+            activeModel = candidate;
+            break;
           } catch {
-            objectDetector = undefined;
+            try {
+              const { ObjectDetector } = await import('@mediapipe/tasks-vision');
+              objectDetector = await ObjectDetector.createFromOptions(files, {
+                baseOptions: { modelAssetPath: candidate.path },
+                runningMode: 'VIDEO',
+                maxResults: 10,
+                scoreThreshold: 0.35,
+              });
+              activeModel = candidate;
+              break;
+            } catch {
+              objectDetector = undefined;
+            }
           }
         }
+        if (activeModel) onModel(activeModel);
         if (window.BarcodeDetector) {
           detector = new window.BarcodeDetector({ formats: ['qr_code', 'data_matrix', 'aztec'] });
           onScannerMode('native');
@@ -120,7 +131,8 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
             onScannerMode(null);
           }
         }
-        onStatus(detector ? '后置摄像头已开启 · 伸出张开的手掌邀请小莹；需要固定位置时再扫描二维码。' : '后置摄像头已开启 · 掌心模式可用，但当前浏览器暂时无法扫描固定位置二维码。');
+        const modelNote = activeModel ? ` · ${activeModel.name} ${activeModel.version}` : ' · 环境物体模型未加载';
+        onStatus(detector ? `后置摄像头已开启${modelNote} · 伸出张开的手掌邀请小莹；需要固定位置时再扫描二维码。` : `后置摄像头已开启${modelNote} · 掌心模式可用，但当前浏览器暂时无法扫描固定位置二维码。`);
 
         const loop = (now: number) => {
           if (cancelled) return;
@@ -185,7 +197,7 @@ export default function SpaceCamera({ onHand, onAnchor, onObjects, onStatus, onS
       cancelled = true;
       stop();
     };
-  }, [onAnchor, onFailure, onHand, onObjects, onScannerMode, onStatus]);
+  }, [onAnchor, onFailure, onHand, onModel, onObjects, onScannerMode, onStatus]);
 
   return <video ref={video} className="space-camera" autoPlay muted playsInline aria-label="后置摄像头预览，画面仅在本机处理" />;
 }
