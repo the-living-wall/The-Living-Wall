@@ -1,0 +1,11 @@
+<!-- Merge these keys into the host iOS app's Info.plist. This package does not own the host app plist. -->
+<dict>
+  <key>NSCameraUsageDescription</key>
+  <string>小莹需要摄像头来出现在你的桌面、床头或手掌所在的空间。</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>小莹需要麦克风来理解轻声互动；你也可以随时关闭声音和麦克风。</string>
+  <key>UIRequiredDeviceCapabilities</key>
+  <array>
+    <string>arkit</string>
+  </array>
+</dict>

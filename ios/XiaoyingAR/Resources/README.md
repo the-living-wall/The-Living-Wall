@@ -14,3 +14,16 @@ play_01.wav       play_02.wav       play_03.wav
 ```
 
 `relocate` 和 `settle` 在没有专门素材时保持静默，不复制其他语义的原始录音冒充它们。应用没有资源、没有声音权限或音频引擎启动失败时，AR 画面仍继续运行。
+
+## 导入与真机验证
+
+不要手工把原始录音拖入工程。使用仓库工具校验并复制已授权派生素材：
+
+```bash
+node tools/voice-lab/import-ios-resources.mjs \
+  --input /path/to/xiaoying-derived/selected \
+  --resources ios/XiaoyingAR/Resources/Audio \
+  --dry-run
+```
+
+完整说明见 [`docs/voice/ios-resource-import.md`](../../../docs/voice/ios-resource-import.md)，真机执行见 [`DeviceValidationChecklist.md`](./DeviceValidationChecklist.md)。
