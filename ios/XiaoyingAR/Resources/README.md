@@ -3,14 +3,14 @@
 将经过授权的派生 WAV 放入 iOS App target 的资源目录。`LocalVoiceEngine` 会为每个音素预加载最多八个变体：
 
 ```text
-curiosity_01.wav  curiosity_02.wav  curiosity_03.wav
-invite_01.wav     invite_02.wav     invite_03.wav
-comfort_01.wav    comfort_02.wav    comfort_03.wav
-refuse_01.wav     refuse_02.wav     refuse_03.wav
-startle_01.wav    startle_02.wav    startle_03.wav
-remember_01.wav   remember_02.wav   remember_03.wav
-sleep_01.wav      sleep_02.wav      sleep_03.wav
-play_01.wav       play_02.wav       play_03.wav
+curiosity_01.wav … curiosity_08.wav
+invite_01.wav     … invite_08.wav
+comfort_01.wav    … comfort_08.wav
+refuse_01.wav     … refuse_08.wav
+startle_01.wav    … startle_08.wav
+remember_01.wav   … remember_08.wav
+sleep_01.wav      … sleep_08.wav
+play_01.wav       … play_08.wav
 ```
 
 创作者从试听页导出的 `xiaoying-voice-selections.json` 可以用工具转换为标准资源名：

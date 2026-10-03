@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PHONEMES = ['curiosity', 'invite', 'comfort', 'refuse', 'startle', 'remember', 'sleep', 'play'];
+const MAX_VARIANTS = 8;
 const usage = 'node tools/voice-lab/import-ios-resources.mjs --input <selected-dir> --resources <ios-resources-dir> [--dry-run]';
 
 function arg(name) {
@@ -58,11 +59,15 @@ if (!names.length) {
   process.exit();
 }
 const expected = new Set();
-for (const phoneme of PHONEMES) for (let i = 1; i <= 3; i += 1) expected.add(`${phoneme}_${String(i).padStart(2, '0')}.wav`);
+for (const phoneme of PHONEMES) {
+  for (let i = 1; i <= MAX_VARIANTS; i += 1) {
+    expected.add(`${phoneme}_${String(i).padStart(2, '0')}.wav`);
+  }
+}
 const manifest = [];
 for (const name of names) {
   if (!expected.has(name)) {
-    fail(`${name} 不是允许的音素资源名（只允许 8 个已录制音素、每个最多 3 个变体）`);
+    fail(`${name} 不是允许的音素资源名（只允许 8 个已录制音素、每个最多 ${MAX_VARIANTS} 个变体）`);
     continue;
   }
   try {
