@@ -2,8 +2,9 @@
 <dict>
   <key>NSCameraUsageDescription</key>
   <string>小莹需要摄像头来出现在你的桌面、床头或手掌所在的空间。</string>
+  <!-- 只有接入语音输入后才加入下面的 key；当前原型不请求麦克风。 -->
   <key>NSMicrophoneUsageDescription</key>
-  <string>小莹需要麦克风来理解轻声互动；你也可以随时关闭声音和麦克风。</string>
+  <string>小莹使用麦克风理解轻声互动；你可以随时关闭麦克风。</string>
   <key>UIRequiredDeviceCapabilities</key>
   <array>
     <string>arkit</string>

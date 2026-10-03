@@ -8,7 +8,7 @@
 2. 将仓库中的 `ios/XiaoyingAR` 作为本地 Swift Package 添加，并让 App target 依赖 `XiaoyingARCore`。
 3. 将 `XiaoyingARHostApp.swift` 加入 App target；删除 Xcode 自动生成的 `App.swift`，避免出现两个 `@main`。
 4. 把经授权筛选的 `Audio/` 目录加入 App target 的 Copy Bundle Resources。原始 `.m4a` 和未筛选素材不得加入工程。
-5. 将 `Resources/InfoPlist.example.xml` 中的摄像头、麦克风和 ARKit 能力键合并到宿主 App 的 Info.plist。
+5. 将 `Resources/InfoPlist.example.xml` 中的摄像头和 ARKit 能力键合并到宿主 App 的 Info.plist；当前原型不需要麦克风，只有接入语音输入后才加入麦克风用途键。
 6. 在真机运行 `XiaoyingPrototypeView`，按 `Resources/DeviceValidationChecklist.md` 记录结果。
 
 ## 第一版边界
